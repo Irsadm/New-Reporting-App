@@ -151,6 +151,8 @@ class PicController extends BaseController
     public function showItem($request, $response, $args)
     {
         $user = new \App\Models\Users\UserModel($this->db);
+        $userGroup = new \App\Models\UserGroupModel($this->db);
+        $page = !$request->getQueryParam('page') ? 1 : $request->getQueryParam('page');
         // $id = $_SESSION['login']['id'];
         try {
             $result = $this->client->request('GET', 'item/show/'.$args['id'].'?'
@@ -168,19 +170,22 @@ class PicController extends BaseController
             $comment = $e->getResponse();
         }
 
+        $getMember = $userGroup->findAll($data['data']['group_id'])->setPaginate($page,40);
         $allComment = json_decode($comment->getBody()->getContents(), true);
 
         $userId = $data['data']['user_id'];
         $findUser = $user->find('id', $userId);
-        // var_dump($data['data']);die();
+        // var_dump($data); die();
 
 
         if ($data['data']) {
 
             return $this->view->render($response, 'pic/show-item-tugas.twig', [
-                'items' => $data['data'],
-                'comment' => $allComment['data'],
-                'user'    => $findUser['username'],
+                'items'        => $data['data'],
+                'comment'      => $allComment['data'],
+                'member'       => $getMember['data'],
+                'user_data'    => $findUser,
+                'user'         => $userId,
             ]);
         } else {
             return $response->withRedirect($this->router->pathFor('home'));
@@ -222,6 +227,48 @@ class PicController extends BaseController
 
             return $this->view->render($response, 'pic/search-user.twig', $data);
         }
+
+    }
+
+    public function editItem($request, $response, $args)
+    {
+
+            $query = $request->getQueryParams();
+            $group = $request->getParam('group');
+            $itemId = $args['id'];
+            // var_dump($request->getParam('user_id')); die();
+            try {
+                $result = $this->client->request('PUT', 'item/'.$args['id'], [
+                    'form_params' => [
+                        'name'          => $request->getParam('name'),
+                        'description'   => $request->getParam('description'),
+                        'recurrent'     => $request->getParam('recurrent'),
+                        'start_date'    => $request->getParam('start_date'),
+                        'user_id'    	=> $request->getParam('user_id'),
+                        'group_id'      => $request->getParam('group'),
+                        'creator'    	=> $_SESSION['login']['id'],
+                        'public'        => $request->getParam('public'),
+                    ]
+                ]);
+            } catch (GuzzleException $e) {
+                $result = $e->getResponse();
+            }
+
+            $content = $result->getBody()->getContents();
+            $contents = json_decode($content, true);
+            // var_dump($contents); die();
+            if ($contents['code'] == 201) {
+                $this->flash->addMessage('succes', $contents['message']);
+                return $response->withRedirect($this->router->pathFor('web.pic.show.item',['id' => $id ]));
+            } else {
+                // foreach ($contents['message'] as $value ) {
+                // }
+                $_SESSION['errors'] = $contents['message'];
+                $_SESSION['old']    = $request->getParams();
+                return $response->withRedirect($this->router->pathFor('web.pic.show.item',['id' => $id ]));
+                // var_dump($_SESSION['errors']); die();
+            }
+
 
     }
 

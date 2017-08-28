@@ -19,20 +19,19 @@ $('#create').modal('show');
     <div class="span12">
         <div class="widget-box" style="margin-top:0px;">
             <div style="background:#ffffff" class="">
-                <div style="padding-bottom:0px; padding-top:0px; background:#24272E;" class="panel-heading">
-                    <div class="widget-title span8">
-                        <ul style="text-align:center" class="nav nav-tabs">
-                            <li ><a href="{{ base_url()}}/pic/group/{{group}}/member" class="btn btn-info">Anggota Group</a></li>
-                            <li class="active"><a >Tugas</a></li>
-                            <li ><a href="{{ base_url() }}/pic/items/group/{{group}}/reported"
-                                 class="btn btn-info">Laporan Anggota</a></li>
-                        </ul>
+                <!-- <div style="padding-bottom:0px; padding-top:0px; background:#24272E;" class="panel-heading"> -->
+                    <div class="widget-title span12">
+                        <div class="btn-group btn-group-justified">
+                          <a href="{{ base_url()}}/pic/group/{{group}}/member" class="btn btn-primary">Anggota Group</a>
+                          <a href="#" class="btn btn-primary active">Tugas</a>
+                          <a href="{{ base_url() }}/pic/items/group/{{group}}/reported" class="btn btn-primary">Laporan</a>
+                        </div>
                     <span style="float:right; margin-top:5px;">
                         <!-- <div class="btn-group span4"> -->
                             <a  data-toggle="modal" data-target="#create"><i class="icon-collapse"></i> <button type="button" class="btn btn-info"><span class="glyphicon glyphicon-plus"></span> Tambahkan Tugas</button> </a>
                         <!-- </div> -->
                     </span>
-                    </div>
+                    <!-- </div> -->
                 </div>
                 <div class="panel-body" style="padding-top:0px;">
                     <div class="widget-content tab-content">
@@ -61,18 +60,11 @@ $('#create').modal('show');
                                       <td class="taskStatus"><span class="in-progress">{{ item.recurrent }}
                                       </span></td>
                                       <td class="taskOptions">
-                                        <a href="{{ base_url()}}/pic/items/delete/{{ item.id}}"
-                                          value="{{item.id}}"title="Hapus tugas"
-                                          style="margin-bottom:7px">
-                                          <button class="btn btn-primary btn-md"
-                                          style="margin-right:10px">Hapus</button>
-                                      </a>
-                                        <a href="{{ base_url()}}/pic/show/item/{{ item.id}}"
-                                          value="{{item.id}}"title="Detail Tugas"
-                                          style="margin-bottom:7px">
-                                          <button class="btn btn-info btn-md"
-                                          style="margin-right:10px">Detail</button>
-                                      </a>
+                                          <div class="btn-group-sm">
+                                              <a href="{{ base_url()}}/pic/items/delete/{{ item.id}}" value="{{item.id}}"title="Hapus tugas" class="btn btn-info">Hapus</a>
+                                              <a href="{{ base_url()}}/pic/show/item/{{ item.id}}"
+                                                value="{{item.id}}"title="Detail Tugas" class="btn btn-primary">Detail Tugas</a>
+                                          </div>
                                   </td>
                               </tr>
                               {% endfor %}

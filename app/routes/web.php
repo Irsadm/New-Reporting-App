@@ -71,6 +71,7 @@ $app->group('', function() use ($app, $container) {
         $app->get('/show/item/{id}', 'App\Controllers\web\PicController:showItem')->setName('web.pic.show.item');
         $app->post('/set/guardian', 'App\Controllers\web\GuardController:createGuardian')->setName('web.pic.set.guardian');
         $app->post('/comment', 'App\Controllers\web\CommentController:postPicComment')->setName('pic.post.comment');
+        $app->post('/edit/item/{id}', 'App\Controllers\web\PicController:editItem')->setName('pic.edit.item');
     });
     // ->add(new \App\Middlewares\web\GuardMiddleware($container));
     // )->add(new \App\Middlewares\web\AuthMiddleware($container)

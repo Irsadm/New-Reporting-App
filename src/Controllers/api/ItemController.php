@@ -368,7 +368,7 @@ class ItemController extends BaseController
                 $updateItem = $item->update($request->getParsedBody(), $args['id']);
                 $recentItemUpdated = $item->find('id', $args['id']);
 
-                $data = $this->responseDetail(200, false, 'Item berhasil diperbarui', [
+                $data = $this->responseDetail(200, false, 'Tugas berhasil diperbarui', [
                     'data' => $recentItemUpdated,
                 ]);
 
@@ -377,7 +377,7 @@ class ItemController extends BaseController
                 $data = $this->responseDetail(400, true, $this->validator->errors());
             }
         } else {
-            $data = $this->responseDetail(404, true, 'Item tidak ditemukan');
+            $data = $this->responseDetail(404, true, 'Tugas tidak ditemukan');
         }
 
         return $data;

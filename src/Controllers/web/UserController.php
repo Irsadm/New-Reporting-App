@@ -154,7 +154,7 @@ class UserController extends BaseController
         $data['count']    = count($data['users']);
         $data['pagination'] = $result['pagination'];
         $data['search'] = $search;
-        var_dump($data['users']); die();
+        // var_dump($data['users']); die();
         if (!empty($data['group'])) {
 
             return $this->view->render($response, 'pic/search-result.twig', $data);

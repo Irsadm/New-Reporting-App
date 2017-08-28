@@ -18,9 +18,9 @@ class GuardController extends BaseController
 
         try {
             $result = $this->client->request('GET', $this->router->pathFor('api.guard.show.user', ['id' => $args['id']]));
-            $content = json_decode($client->getBody()->getContents());
+            $content = json_decode($client->getBody()->getContents(), true);
         } catch (GuzzleException $e) {
-            $content = json_decode($e->getResponse()->getBody()->getContents());
+            $content = json_decode($e->getResponse()->getBody()->getContents(), true);
         }
         var_dump($content);die();
             // return $this->view->render($response, 'guard/show-user.twig', $content->reporting);

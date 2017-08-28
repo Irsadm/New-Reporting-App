@@ -36,8 +36,9 @@ class Item extends BaseModel
             'description' => $data['description'],
             'recurrent'   => $data['recurrent'],
             'start_date'  => $data['start_date'],
+            'user_id'     => $data['user_id'],
             'group_id'    => $data['group_id'],
-            'public'      => $data['public'],
+            'privacy'     => $data['public'],
             'updated_at'  => $date
         ];
         $this->updateData($data, $id);

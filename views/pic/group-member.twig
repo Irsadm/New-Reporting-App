@@ -10,14 +10,13 @@
     <div class="span12">
         <div class="widget-box" style="margin-top:0px;">
             <div style="background:#ffffff" class="">
-                <div style="padding-bottom:0px; padding-top:0px; background:#24272E;" class="panel-heading">
+                <!-- <div style="padding-bottom:0px; padding-top:0px; background:#24272E;" class="panel-heading"> -->
                     <div class="widget-title span8">
-                    <ul style="text-align:center" class="nav nav-tabs">
-                        <li class="active"><a data-toggle="tab" href="#tab1">Anggota Group ({{ pagination.total_data }})</a></li>
-                        <li><a href="{{ base_url()}}/pic/items/group/{{ group }}" class="btn btn-info">Tugas</a></li>
-                        <li ><a  href="{{ base_url() }}/pic/items/group/{{group}}/reported"
-                             class="btn btn-info">Laporan Anggota</a></li>
-                    </ul>
+                        <div class="btn-group btn-group-justified">
+                          <a href="{{ base_url()}}/pic/group/{{group}}/member" class="btn btn-primary active">Anggota Group</a>
+                          <a href="{{ base_url()}}/pic/items/group/{{group}}" class="btn btn-primary ">Tugas</a>
+                          <a href="{{ base_url() }}/pic/items/group/{{group}}/reported" class="btn btn-primary ">Laporan</a>
+                        </div>
 
                     </div>
 
@@ -27,7 +26,7 @@
                     		Tambah Anggota</button>
                         </div>
                     </span>
-                </div>
+                <!-- </div> -->
                 <div class="panel-body" style="padding-top:40px;">
 
                             	{% for member in members %}
