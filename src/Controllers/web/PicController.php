@@ -81,7 +81,7 @@ class PicController extends BaseController
         }
 
         $data = json_decode($result->getBody()->getContents(), true);
-        // var_dump($data['data']); die();
+        // var_dump($data); die();
         return $this->view->render($response, 'pic/laporan.twig', [
             'items'	=> $data['data'],
             'group'	=> $args['id'],
@@ -97,7 +97,7 @@ class PicController extends BaseController
 			$client = $this->client->request('DELETE', 'item/'.$args['id']);
 
 			$content = json_decode($client->getBody()->getContents(), true);
-            $this->flash->addMessage('succes', 'Tugas telah berhasil dihapus');
+            $this->flash->addMessage('success', 'Tugas telah berhasil dihapus');
 		} catch (GuzzleException $e) {
 			$content = json_decode($e->getResponse()->getBody()->getContents(), true );
 			$this->flash->addMessage('warning', 'Anda tidak diizinkan menghapus tugas ini ');
@@ -112,7 +112,13 @@ class PicController extends BaseController
 
             $query = $request->getQueryParams();
             $group = $request->getParam('group');
-            // var_dump($_SESSION['login']); die();
+            if ($request->getParam('user_id') == "null")
+            {
+                $userId = null;
+            } else {
+                $userId = $request->getParam('user_id');
+            }
+            // var_dump($request->getParam('user_id')); die();
             try {
                 $result = $this->client->request('POST', 'item', [
                     'form_params' => [
@@ -120,10 +126,10 @@ class PicController extends BaseController
                         'description'   => $request->getParam('description'),
                         'recurrent'     => $request->getParam('recurrent'),
                         'start_date'    => $request->getParam('start_date'),
-                        'user_id'    	=> $request->getParam('user_id'),
+                        'user_id'    	=> $userId,
                         'group_id'      => $request->getParam('group'),
                         'creator'    	=> $_SESSION['login']['id'],
-                        'public'        => $request->getParam('public'),
+                        'privacy'       => $request->getParam('public'),
                     ]
                 ]);
             } catch (GuzzleException $e) {
@@ -134,7 +140,7 @@ class PicController extends BaseController
             $contents = json_decode($content, true);
             // var_dump($contents); die();
             if ($contents['code'] == 201) {
-                $this->flash->addMessage('succes', $contents['message']);
+                $this->flash->addMessage('success', $contents['message']);
                 return $response->withRedirect($this->router->pathFor('pic.item.group',['id' => $group ]));
             } else {
                 // foreach ($contents['message'] as $value ) {
@@ -209,6 +215,7 @@ class PicController extends BaseController
     {
         $user = new \App\Models\Users\UserModel($this->db);
 
+        // var_dump($_SESSION['guard']); die();
         $search = $request->getParam('search');
         $_SESSION['search'] = $search;
         // $userId = $_SESSION['login']['id'];
@@ -236,6 +243,12 @@ class PicController extends BaseController
             $query = $request->getQueryParams();
             $group = $request->getParam('group');
             $itemId = $args['id'];
+            if ($request->getParam('user_id') == "null")
+            {
+                $userId = null;
+            } else {
+                $userId = $request->getParam('user_id');
+            }
             // var_dump($request->getParam('user_id')); die();
             try {
                 $result = $this->client->request('PUT', 'item/'.$args['id'], [
@@ -244,10 +257,10 @@ class PicController extends BaseController
                         'description'   => $request->getParam('description'),
                         'recurrent'     => $request->getParam('recurrent'),
                         'start_date'    => $request->getParam('start_date'),
-                        'user_id'    	=> $request->getParam('user_id'),
+                        'user_id'    	=> $userId,
                         'group_id'      => $request->getParam('group'),
                         'creator'    	=> $_SESSION['login']['id'],
-                        'public'        => $request->getParam('public'),
+                        'privacy'        => $request->getParam('privacy'),
                     ]
                 ]);
             } catch (GuzzleException $e) {
@@ -256,7 +269,7 @@ class PicController extends BaseController
 
             $content = $result->getBody()->getContents();
             $contents = json_decode($content, true);
-            // var_dump($contents); die();
+            var_dump($contents); die();
             if ($contents['code'] == 201) {
                 $this->flash->addMessage('succes', $contents['message']);
                 return $response->withRedirect($this->router->pathFor('web.pic.show.item',['id' => $id ]));

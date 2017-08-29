@@ -17,9 +17,8 @@ class Item extends BaseModel
             'start_date'  => $data['start_date'],
             'group_id'    => $data['group_id'],
             'user_id'     => $data['user_id'],
-            'image'       => $data['image'],
             'creator'     => $data['creator'],
-            'privacy'     => $data['public'],
+            'privacy'     => $data['privacy'],
             'status'      => $data['status'],
             'reported_at' => $data['reported_at'],
             'updated_at'  => $date
@@ -38,7 +37,7 @@ class Item extends BaseModel
             'start_date'  => $data['start_date'],
             'user_id'     => $data['user_id'],
             'group_id'    => $data['group_id'],
-            'privacy'     => $data['public'],
+            'privacy'     => $data['privacy'],
             'updated_at'  => $date
         ];
         $this->updateData($data, $id);
@@ -75,21 +74,23 @@ class Item extends BaseModel
         ->execute();
 
         $qb1 = $this->db->createQueryBuilder();
-        if ($query1->fetchAll()[0] != NULL) {
+        if (!empty($query1->fetchAll()[0])) {
             $this->query = $qb1->select('i.*')
             ->from($this->table, 'i')
             ->join('i', 'reported_item', 'r', $qb1->expr()->notIn('i.id', $query1))
-            ->where('i.user_id = '. $userId .'&&'. 'i.group_id = '. $groupId)
-            ->orWhere('i.group_id = '. $groupId)
+            ->where(('i.user_id = '. $userId || 'i.user_id = NULL').'&&'. 'i.group_id = '. $groupId)
             ->andWhere('i.deleted = 0 && i.status = 0')
             ->groupBy('i.id');
         } else {
             $this->query = $qb1->select('*')
             ->from($this->table)
-            ->where('user_id = '. $userId .'&&'. 'group_id = '. $groupId)
-            ->orWhere('group_id = '. $groupId)
-            ->andWhere('deleted = 0 && status = 0');
+            ->where(('user_id = '. $userId || 'user_id = NULL').'&&'. 'group_id = '. $groupId)
+            // ->where('user_id = '. $userId .'&& group_id = '. $groupId)
+            // ->orWhere('group_id = '. $groupId . '&& user_id = NULL')
+            ->andWhere('deleted = 0 && status = 0')
+            ->groupBy('id');
         }
+        // var_dump($this->fetchAll());die;
         return $this->fetchAll();
     }
 
@@ -99,7 +100,9 @@ class Item extends BaseModel
         $this->query = $qb->select('*')
         ->from($this->table)
         ->where('user_id = '. $userId .'&&'. 'group_id = '. $groupId)
-        ->andWhere('deleted = 0 && status = 1');
+        ->andWhere('deleted = 0 && status = 1')
+        ->groupBy('id');
+
         return $this->fetchAll();
     }
 
@@ -236,7 +239,7 @@ class Item extends BaseModel
         ->leftJoin('it', 'comments', 'c', 'it.id = c.item_id')
         ->leftJoin('it', 'groups', 'g', 'g.id = it.group_id')
         ->where('it.id = :id')
-        ->andWhere('it.privacy = 0')
+        // ->andWhere('it.privacy = 0')
         ->setParameter(':id', $id);
 
         $result = $qb->execute();
@@ -261,7 +264,7 @@ class Item extends BaseModel
         ->leftJoin('it', 'comments', 'c', 'it.id = c.item_id')
         ->leftJoin('it', 'groups', 'g', 'g.id = it.group_id')
         ->where('it.id = :id')
-        ->andWhere('it.privacy = 0')
+        // ->andWhere('it.privacy = 0')
         ->andWhere('it.user_id is null')
         ->setParameter(':id', $id);
 
@@ -276,7 +279,7 @@ class Item extends BaseModel
         $qb->select('*')
             ->from($this->table)
             ->where('YEAR(updated_at) = :year')
-            ->andWhere('MONTH(updated_at) = :month')
+            ->andWhere('MONTH(reported_at) = :month')
             ->andWhere('user_id = :id')
             ->andWhere('status = 1');
 
@@ -293,7 +296,7 @@ class Item extends BaseModel
         $qb = $this->db->createQueryBuilder();
         $qb->select('*')
             ->from($this->table)
-            ->where('YEAR(updated_at) = :year')
+            ->where('YEAR(reported_at) = :year')
             ->andWhere('user_id = :id')
             ->andWhere('status = 1');
 
@@ -302,6 +305,33 @@ class Item extends BaseModel
 
         $query = $qb->execute();
         return $query->fetchAll();
+    }
+
+    public function getUserGuardItem($guardId)
+    {
+        $qb = $this->db->createQueryBuilder();
+        $query = $qb->select('user_id')
+        ->from('guardian')
+        ->where('guard_id =' . $guardId)
+        ->execute();
+
+        $qb1 = $this->db->createQueryBuilder();
+        $query1 = $qb1->select('i.*', 'u.username as user', 'u.image as user_image', 'c.comment',
+                'us.username as creator', 'us.image as creator_image','gr.name as group_name', 'img.image')
+                ->from($this->table, 'i')
+                ->where('i.deleted = 0')
+                ->andWhere('i.privacy = 0')
+                ->join('i', 'guardian', 'gu', $qb1->expr()->in('i.user_id',$query))
+                ->leftJoin('i', 'users', 'u', 'i.user_id = u.id')
+                ->leftJoin('i', 'users', 'us', 'i.creator = us.id')
+                ->leftJoin('i', 'groups', 'gr', 'i.group_id = gr.id')
+                ->leftJoin('i', 'image_item', 'img', 'i.id = img.item_id')
+                ->leftJoin('i', 'comments', 'c', 'i.id = c.item_id')
+                ->orderBy('i.updated_at', 'desc')
+                ->execute();
+
+        return  $query1->fetchAll();
+
     }
 
     public function reportedGroupItem($groupId)

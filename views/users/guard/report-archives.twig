@@ -1,8 +1,16 @@
 {% extends 'templates/default.twig' %}
 
-{% block title %} Group {% endblock %}
+{% block title %} Arsip Laporan {% endblock %}
+{% block js %}
+{% if query.year == null %}
+<script>window.onload = function(){
+  document.forms['archive'].submit();
+}</script>
+{% endif %}
+{% endblock %}
 
-{% block current %} Group {{group.name}} > Arsip laporan {% endblock %}
+
+{% block current %} Arsip laporan {{user.username}}{% endblock %}
 
 {% block content %}
 <div class="row-fluid">
@@ -12,9 +20,9 @@
                 <div style="padding-bottom:0px; padding-top:0px; background:#24272E;" class="panel-heading">
                     <div class="widget-title span8">
                     <ul style="text-align:center" class="nav nav-tabs">
-                        <li class="active"><a data-toggle="tab" href="#">Arsip laporan</a></li>
-                        <li ><a  href="#"
-                             class="btn btn-info">Tugas tidak dilaporkan</a></li>
+                        <li class="active"><a data-toggle="tab" href="#">Arsip laporan </a></li>
+                        <!-- <li ><a  href="#"
+                             class="btn btn-primary">Tugas tidak dilaporkan</a></li> -->
                     </ul>
                     </div>
                 </div>
@@ -25,19 +33,24 @@
                                 <h4><i class="fa fa-list-alt" aria-hidden="true">
                                     {% if query.month != null %}
                                     {% if query.month == 'all' %}
-                                        Daftar laporan Tahun {{query.year}}
+                                    Daftar Laporan Tahunan {{user.username}}
                                     {% else %}
-                                    Daftar laporan Bulan {{ date(query.year ~ '-' ~ query.month ~ '-01') |date('F Y') }}
+                                    Daftar Laporan Bulanan {{user.username}}
                                     {% endif %}
                                     {% endif %}
                                 </i></h4>
-                                    <form  action="{{path_for('search.item.archive',{'id': '2'})}}"
+                                    <form name="archive" action="{{path_for('search.item.archive',{'id': user_id })}}"
                                     method="POST" enctype="multipart/form-data">
                                 <div class="input-group">
                                     <span style="background:#99a199; color:#fff;" class="input-group-addon">Bulan</span>
                                     <select class="form-control" name="month" >
-                                        <option value="all" {% if  query.month == null or query.month == "all" %}
+                                        {% if query.year == null %}
+                                        <option value="{{"now"|date("m")}}"
+                                         selected="selected">{{"now"|date("F")}}</option>
+                                        {% else %}
+                                            <option value="all" {% if  query.month == null or query.month == "all" %}
                                          selected="selected"{% endif %}>Semua bulan</option>
+                                         {% endif %}
                                         <option value="1" {% if query.month == 1 %}
                                          selected="selected"{% endif %}>Januari</option>
                                         <option value="2" {% if query.month == 2 %}
@@ -63,6 +76,7 @@
                                         <option value="12" {% if query.month == 12 %}
                                          selected="selected"{% endif %}>Desember</option>
                                     </select>
+                                <!-- </div><div> -->
                                     <span style="background:#99a199; color:#fff;"
                                      class="input-group-addon">Tahun</span>
                                     <span class="input-group-addon" style="width:0px;
@@ -82,7 +96,7 @@
                                                 <th>No</th>
                                                 <th>Nama</th>
                                                 <th>Pengulangan</th>
-                                                <th>Tanggal lapor</th>
+                                                <th>Waktu lapor</th>
                                             </tr>
                                         </thead>
                                         <tbody>

@@ -21,13 +21,13 @@ class ItemsSeed extends AbstractSeed
                 'group_id'   =>  '1',
                 'creator'   =>  '1',
                 'start_date' =>  '2017-06-9',
-                'recurrent'  =>  'daily',
+                'recurrent'  =>  'Harian',
             ];
 
             $data[] = [
                 'name'       =>  'Upacara',
                 'description'=>  'Upacara bendera Hari Senin',
-                'recurrent'  =>  'weekly',
+                'recurrent'  =>  'Mingguan',
                 'start_date' =>  '2017-06-4',
                 'creator'   =>  '1',
                 'group_id'   =>  '1',
@@ -37,6 +37,7 @@ class ItemsSeed extends AbstractSeed
                 'name'       =>  'Tugas Bulanan',
                 'start_date' =>  '2017-05-8',
                 'start_date' =>  '2017-06-4',
+                'recurrent'  =>  'Bulanan',
                 'creator'   =>  '1',
                 'group_id'   =>  '1',
             ];

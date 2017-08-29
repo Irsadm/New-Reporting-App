@@ -31,4 +31,12 @@ class ImageItem extends BaseModel
            return $result->fetchAll();
     }
 
+    public function deleteImageItem($itemId)
+    {
+        $images = $this->findAllImage($itemId);
+
+        if($images)
+           return $result->fetchAll();
+    }
+
 }

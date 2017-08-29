@@ -27,15 +27,15 @@ class PostTable extends AbstractMigration
      */
     public function change()
     {
-        // $post = $this->table('posts');
-        // $post->addColumn('content', 'string')
-        //      ->addColumn('image', 'string', ['null' => true])
-        //      ->addColumn('group_id', 'integer')
-        //      ->addColumn('creator', 'integer')
-        //      ->addColumn('created_at', 'timestamp', ['default' => 'CURRENT_TIMESTAMP'])
-        //      ->addColumn('updated_at', 'timestamp', ['default' => 'CURRENT_TIMESTAMP','update' => 'CURRENT_TIMESTAMP'])
-        //      ->addForeignKey('group_id', 'groups', 'id', ['delete' => 'CASCADE', 'update' => 'NO_ACTION'])
-        //      ->addForeignKey('creator', 'users', 'id', ['delete' => 'CASCADE', 'update' => 'NO_ACTION'])
-        //      ->create();
+        $post = $this->table('posts');
+        $post->addColumn('content', 'string')
+             ->addColumn('image', 'string', ['null' => true])
+             ->addColumn('group_id', 'integer')
+             ->addColumn('creator', 'integer')
+             ->addColumn('created_at', 'timestamp', ['default' => 'CURRENT_TIMESTAMP'])
+             ->addColumn('updated_at', 'timestamp', ['default' => 'CURRENT_TIMESTAMP','update' => 'CURRENT_TIMESTAMP'])
+             ->addForeignKey('group_id', 'groups', 'id', ['delete' => 'CASCADE', 'update' => 'NO_ACTION'])
+             ->addForeignKey('creator', 'users', 'id', ['delete' => 'CASCADE', 'update' => 'NO_ACTION'])
+             ->create();
          }
 }

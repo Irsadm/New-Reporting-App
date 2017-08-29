@@ -12,8 +12,8 @@ class GroupModel extends BaseModel
 		$data = [
 			'name' 			=> 	$data['name'],
 			'description'	=>	$data['description'],
-			'image'			=>	$data['image'],
 			'creator'		=>	$data['creator'],
+			// 'image'			=>	$data['image'],
 		];
 		$this->createData($data);
 
@@ -97,6 +97,6 @@ class GroupModel extends BaseModel
 							->where('deleted = 1');
 
 		return $this;
-	}	
+	}
 }
 ?>

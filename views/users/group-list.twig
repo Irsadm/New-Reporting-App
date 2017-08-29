@@ -11,8 +11,8 @@
 <div style="padding:10px; background:#fff;"class="span12">
     <span style="float:right;">
         <div class="btn-group">
-            <a class="btn btn-info" href="#"><i class="icon-collapse"></i> Lainnya</a>
-            <a class="btn btn-info dropdown-toggle" data-toggle="dropdown" href="#">
+            <a class="btn btn-primary" href="#"><i class="icon-collapse"></i> Lainnya</a>
+            <a class="btn btn-primary dropdown-toggle" data-toggle="dropdown" href="#">
                 <i class="fa fa-caret-down"></i>
             </a>
             <ul class="dropdown-menu">
@@ -30,8 +30,7 @@
             <div class="row">
                 <div class="col-md-3" style="padding-right:0px;">
                     <div  style="line-height:4em;" class="panel box-body" >
-                        <a href="{{ path_for('reported.item.user.group',
-                         {'group': data.id, 'user':login.id}) }}"
+                        <a href="{{ path_for('enter.group', {'id': data.id})}}"
                          title="Masuk ke grup {{ data.name }}"><center>
                         <h1><img src="{{ base_url() }}/assets/images/{{ data.image }}"
                             align="center" alt="{{ data.name }}" width="234" height="234">
@@ -56,20 +55,20 @@
                     <div class="caption" style="padding:20px;">
                         {% if login.status == 1 %}
                         <a href="{{ base_url() }}/admin/group/{{ group.id }}/allusers"
-                        class="btn btn-primary btn btn-info btn-md" style="margin-bottom:7px">
+                        class="btn btn-primary btn btn-primary btn-md" style="margin-bottom:7px">
                         <b>Add member to group</b></a>
 
                         <a href="{{ base_url() }}/admin/group/{{ group.id }}/users"
-                        class="btn btn-primary btn btn-info btn-md" style="margin-bottom:7px">
+                        class="btn btn-primary btn btn-primary btn-md" style="margin-bottom:7px">
                         <b>{{ group.name }} Members</b></a>
 
                         {% elseif login.status == 0 %}
                         <a href="{{ base_url() }}/pic/{{ group.id }}/allusers"
-                        class="btn btn-primary btn btn-info btn-md" style="margin-bottom:7px">
+                        class="btn btn-primary btn btn-primary btn-md" style="margin-bottom:7px">
                         <b>Add member to group</b></a>
 
                         <a href="{{ base_url() }}/pic/{{ group.id }}/users"
-                        class="btn btn-primary btn btn-info btn-md" style="margin-bottom:7px">
+                        class="btn btn-primary btn btn-primary btn-md" style="margin-bottom:7px">
                         <b>{{ group.name }} Members</b></a>
 
                         <span class="pull-right">
@@ -125,7 +124,7 @@
             <div class="modal-body">
 
                 <!-- modal content -->
-                <form action="{{ base_url() }}/group/create" method='POST'>
+                <form action="{{ base_url() }}/group/create" method="POST">
                     <div class="form-group">
                         <label for="exampleInputEmail1">Nama</label>
                         <input type="text" name="name" class="form-control" placeholder="Nama grup">

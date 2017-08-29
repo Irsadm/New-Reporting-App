@@ -39,7 +39,7 @@ class CommentController extends BaseController
 
         if ($data['code'] == 201) {
 
-                $this->flash->addMessage('succes', $data['message']);
+                $this->flash->addMessage('success', $data['message']);
                 return $response->withRedirect($this->router->pathFor('show.item',
                  ['id' => $request->getParam('item_id')]));
 
@@ -107,7 +107,7 @@ class CommentController extends BaseController
             // var_dump($data);die();
 
             if ($data['code'] == 201) {
-                $this->flash->addMessage('succes', 'Pendaftaran berhasil,
+                $this->flash->addMessage('success', 'Pendaftaran berhasil,
                 silakan cek email anda untuk mengaktifkan akun');
                 return $response->withRedirect($this->router->pathFor('signup'));
             } else {
@@ -143,7 +143,7 @@ class CommentController extends BaseController
 
         if ($data['code'] == 201) {
 
-                $this->flash->addMessage('succes', $data['message']);
+                $this->flash->addMessage('success', $data['message']);
                 return $response->withRedirect($this->router->pathFor('web.pic.show.item',
                  ['id' => $request->getParam('item_id')]));
 

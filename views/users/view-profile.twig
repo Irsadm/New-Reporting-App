@@ -23,7 +23,7 @@
                             <div class="btn-group" role="group">
                                 <button type="button" class="btn btn-social-button btn-pinterest">
                                     <a href="" data-toggle="modal" data-target="#{{data.id}}"
-                                    value="{{item.id}}" title="View Group Details"
+                                    value="{{data.id}}" title="View Group Details"
                                     style="color:#fff;"> Ubah foto
                                 </button>
 
@@ -42,7 +42,7 @@
                             <b><span class="col1">Jenis Kelamin </span>:  </b> {{data.gender}}<br><br>
                             <b><span class="col1">Alamat </span>:  </b> {{data.address}}<br><br>
                             <b><span class="col1">No.Telepon </span>:  </b> {{data.phone}}<br><br>
-                            <b><span class="col1">Mulai Bergabung</span>:  </b>{{data.created_at | date("F jS Y ")}}</p>
+                            <b><span class="col1">Mulai Bergabung</span>:  </b>{{data.created_at | date("j F Y ")}}</p>
                         </div>
                     </div>
                     <!-- </ul> -->

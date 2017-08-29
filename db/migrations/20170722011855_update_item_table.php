@@ -25,10 +25,10 @@ class UpdateItemTable extends AbstractMigration
      * Remember to call "create()" or "update()" and NOT "save()" when working
      * with the Table class.
      */
-    public function change()
-    {
-        $table = $this->table('items');
-        $table->addColumn('public', 'integer', ['after' => 'status', 'default' => 0])
-        ->update();
-    }
+    // public function change()
+    // {
+    //     $table = $this->table('items');
+    //     $table->addColumn('privacy', 'integer', ['after' => 'status', 'default' => 0])
+    //     ->update();
+    // }
 }

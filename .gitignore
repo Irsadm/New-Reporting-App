@@ -7,4 +7,4 @@ phinx.yml
 composer.lock
 Dockerfile
 views0/
-src/Controllers/old-web/
+src/Controllers/old-web

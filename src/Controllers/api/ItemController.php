@@ -18,8 +18,7 @@ class ItemController extends BaseController
         $countItems = count($getItems);
         $query = $request->getQueryParams();
 
-        if ($getItems) {
-
+        if ($getItems['data']) {
                 $data = $this->responseDetail(200, false, 'Data tersedia', [
                     'data'        => $getItems['data'],
                     'pagination'  => $getItems['pagination']
@@ -137,9 +136,9 @@ class ItemController extends BaseController
         $item       = new Item($this->db);
         $groupId    = $args['group'];
         $page = !$request->getQueryParam('page') ?  1 : $request->getQueryParam('page');
+        $perPage = $request->getQueryParam('perpage');
         $findItem   = $item->getItem('user_id',
-            $args['user'], 'status', 1)
-            ->setPaginate($page,5);
+            $args['user'], 'status', 1)->setPaginate($page, $perPage);
         $countItem  = count($findItem);
 
         // var_dump($findItem); die();
@@ -168,7 +167,7 @@ class ItemController extends BaseController
         $perPage = $request->getQueryParam('perpage');
         $findItem   = $item->getUnreportedUserItemInGroup($userId, $groupId);
         $result = $this->paginateArray($findItem, $page, $perPage);
-
+// var_dump($result);die;
         if ($findItem) {
             return $this->responseDetail(200, false, 'Data tersedia', [
                 'data'          => $result['data'],
@@ -213,7 +212,7 @@ class ItemController extends BaseController
                 ['start_date'],
                 ['group_id'],
                 ['creator'],
-                ['public'],
+                ['privacy'],
             ],
 
         ];
@@ -227,10 +226,11 @@ class ItemController extends BaseController
             'start_date'  => 'Start date',
             'group_id'    => 'Group id',
             'creator '    => 'Creator',
-            'public'      => 'Public'
+            'privacy'      => 'privacy'
         ]);
         // var_dump($this->validator);
         // die();
+
 
         if ($this->validator->validate()) {
 
@@ -241,8 +241,7 @@ class ItemController extends BaseController
                 "start_date"    => $request->getParsedBody()['start_date'],
                 "user_id"       => $request->getParsedBody()['user_id'],
                 "group_id"      => $request->getParsedBody()['group_id'],
-                "image"         => $request->getParsedBody()['image'],
-                "public"        => $request->getParsedBody()['public'],
+                "privacy"       => $request->getParsedBody()['privacy'],
                 "creator"       => $request->getParsedBody()['creator'],
                 "status"        => 0,
                 "reported_at"   => null,
@@ -266,26 +265,25 @@ class ItemController extends BaseController
     //Create item
     public function createItemUser($request, $response, $args)
     {
-        $userToken = new \App\Models\Users\UserToken($this->db);
-        $userGroup = new \App\Models\UserGroupModel($this->db);
+        // $userGroup = new \App\Models\UserGroupModel($this->db);
+        $item = new Item($this->db);
         $token = $request->getHeader('Authorization')[0];
-        $userId = $userToken->getUserId($token);
+        $user = $item->getUserByToken($token);
+
         $rules = [
             'required' => [
                 ['name'],
-                ['recurrent'],
-                ['description'],
+                // ['recurrent'],
+                // ['description'],
                 ['start_date'],
                 // ['user_id'],
                 ['group_id'],
-                // ['creator'],
-                ['public'],
+                ['creator'],
+                ['privacy'],
             ],
-
         ];
 
         $this->validator->rules($rules);
-
         $this->validator->labels([
             'name'        => 'Name',
             'recurrent'   => 'Recurrent',
@@ -294,7 +292,7 @@ class ItemController extends BaseController
             'user_id'     => 'User id',
             'group_id'    => 'Group id',
             'creator '    => 'Creator',
-            'public'      => 'Public'
+            'privacy'     => 'Privacy'
         ]);
         // var_dump($this->validator);
         // die();
@@ -306,21 +304,19 @@ class ItemController extends BaseController
                 'description'   => $request->getParams()['description'],
                 'recurrent'     => $request->getParams()['recurrent'],
                 'start_date'    => $request->getParams()['start_date'],
-                'user_id'       => $userId,
-                'group_id'      => $args['group'],
-                'image'         => $request->getParams()['image'],
-                'public'        => $request->getParams()['public'],
-                'creator'       => $userId,
+                'user_id'       => $request->getParams()['user_id'],
+                'group_id'      => $request->getParams()['group_id'],
+                // 'image'         => $request->getParams()['image'],
+                'privacy'        => $request->getParams()['privacy'],
+                'creator'       => $user['id'],
                 'status'        => 0,
                 'reported_at'   => null,
             ];
-            $item = new Item($this->db);
             $newItem = $item->create($data);
             $recentItem = $item->find('id', $newItem);
 
             $data = $this->responseDetail(201, false, 'Item baru telah berhasil ditambahkan', [
                 'data' => $recentItem
-
             ]);
 
         } else {
@@ -345,8 +341,8 @@ class ItemController extends BaseController
                     ['description'],
                     ['start_date'],
                     ['group_id'],
-                    ['user_id'],
-                    ['public'],
+                    // ['user_id'],
+                    ['privacy'],
                 ],
 
             ];
@@ -359,7 +355,7 @@ class ItemController extends BaseController
                 'description' => 'Description',
                 'start_date'  => 'Start date',
                 'user_id'     => 'User id',
-                'public'      => 'Public'
+                'privacy'     => 'Privacy'
             ]);
 
 
@@ -442,123 +438,122 @@ class ItemController extends BaseController
         return $data;
     }
 
-    public function reportItem($request, $response, $args)
-    {
-        $item = new Item($this->db);
-        $mailer = new \App\Extensions\Mailers\Mailer();
-        $users = new \App\Models\Users\UserModel($this->db);
-        $reportedItem = new \App\Models\ReportedItem($this->db);
-        $guards  = new \App\Models\GuardModel($this->db);
-        $userGroups = new \App\Models\UserGroupModel($this->db);
-// die(kk);
-        $token = $request->getHeader('Authorization')[0];
-        // var_dump($token);die();
-        $user  = $item->getUserByToken($token);
-        $userId = $user['id'];
-        $userName = $user['name'];
-        $guardian = $guards->find('user_id', $userId);
-        $guard = $users->find('id', $guardian['guard_id']);
-        $findItem = $item->find('id', $args['item']);
-        $picGroup = $userGroups->findTwo('group_id', $findItem['group_id'], 'status', 1);
-        if (!empty($picGroup)) {
-            $pic = $users->find('id', $picGroup[0]['user_id']);
-        }
+    // public function userReportItem($request, $response, $args)
+    // {
+    //     $item = new Item($this->db);
+    //     $mailer = new \App\Extensions\Mailers\Mailer();
+    //     $users = new \App\Models\Users\UserModel($this->db);
+    //     $reportedItem = new \App\Models\ReportedItem($this->db);
+    //     $guards  = new \App\Models\GuardModel($this->db);
+    //     $userGroups = new \App\Models\UserGroupModel($this->db);
+    //     // var_dump($token);die();
+    //     $token = $request->getHeader('Authorization')[0];
+    //     $user  = $item->getUserByToken($token);
+    //     $userId = $user['id'];
+    //     $userName = $user['username'];
+    //     $guardian = $guards->find('user_id', $userId);
+    //     $guard = $users->find('id', $guardian['guard_id']);
+    //     $findItem = $item->find('id', $args['item']);
+    //     $picGroup = $userGroups->findTwo('group_id', $findItem['group_id'], 'status', 1);
+    //
+    //     if (!empty($picGroup)) {
+    //         $pic = $users->find('id', $picGroup[0]['user_id']);
+    //     }
+    //     // var_dump($findItem); die();
+    //     if ($findItem) {
+    //         $rules = [
+    //             'required' => [
+    //                 ['description']
+    //             ],
+    //         ];
+    //
+    //         $this->validator->rules($rules);
+    //         $this->validator->labels([
+    //             'description' => 'Description',
+    //             'privacy'      => 'privacy',
+    //         ]);
+    //         // var_dump($this->validator); die();
+    //
+    //         if ($this->validator->validate()) {
+    //             $date = date('Y-m-d H:i:s');
+    //             $dataNewItem = [
+    //                 'name'        => $findItem['name'],
+    //                 'recurrent'   => $findItem['recurrent'],
+    //                 'description' => $request->getParams()['description'],
+    //                 'start_date'  => $findItem['start_date'],
+    //                 'group_id'    => $findItem['group_id'],
+    //                 'creator'     => $findItem['creator'],
+    //                 'reported_at' => $date,
+    //                 'privacy'      => $findItem['privacy'],
+    //                 'status'      => 1,
+    //                 'user_id'     => $userId,
+    //             ];
+    //             $updateData = [
+    //                 'description' => $request->getParsedBody()['description'],
+    //                 'status'      => 1,
+    //                 'reported_at' => $date
+    //             ];
+    //
+    //             if ($findItem['creator'] == $findItem['user_id']) {
+    //                 $item->updateData($updateData, $args['item']);
+    //                 $result = $findItem;
+    //
+    //
+    //             } else {
+    //                 $newItem = $item->create($dataNewItem);
+    //                 $result= $item->find('id', $newItem);
+    //                 $reportedItem->createData([
+    //                     'user_id' => $userId,
+    //                     'item_id' => $newItem
+    //                 ]);
+    //             }
+    //
+    //             $date = date('d M Y H:i:s');
+    //             $content = $userName.' telah melaporkan '.$findItem['name'].' pada '.$date;
+    //
+    //             if ($guard) {
+    //                 $dataGuard = [
+    //                     'subject' => $userName.' laporan item',
+    //                     'from'    =>'reportingmit@gmail.com',
+    //                     'to'      => $guard['email'],
+    //                     'sender'  => 'Reporting App',
+    //                     'receiver'=> $guard['name'],
+    //                     'content' => $content,
+    //                 ];
+    //
+    //                 $mailer->send($dataGuard);
+    //             }
+    //
+    //             if ($pic && $pic['id'] != $guard['id']) {
+    //                 $dataPic = [
+    //                     'subject' => $userName.'laporan item',
+    //                     'from'    =>'reportingmit@gmail.com',
+    //                     'to'      => $pic['email'],
+    //                     'sender'  => 'Reporting App',
+    //                     'receiver'=> $pic['name'],
+    //                     'content' => $content,
+    //                 ];
+    //
+    //                 $mailer->send($dataPic);
+    //             }
+    //
+    //             $data = $this->responseDetail(200, false, 'Item telah berhasil dilaporkan',
+    //             [
+    //                 'data' => $result
+    //             ]);
+    //
+    //         } else {
+    //
+    //             $data = $this->responseDetail(400, true, $this->validator->errors());
+    //         }
+    //
+    //     } else {
+    //         $data = $this->responseDetail(404, true, 'Item tidak ditemukan ');
+    //     }
 
-        // var_dump($findItem); die();
-        if ($findItem) {
-            $rules = [
-                'required' => [
-                    ['description']
-                ],
-            ];
-
-            $this->validator->rules($rules);
-            $this->validator->labels([
-                'description' => 'Description',
-                'public'      => 'Public',
-            ]);
-            // var_dump($this->validator); die();
-
-            if ($this->validator->validate()) {
-                $date = date('Y-m-d H:i:s');
-                $dataNewItem = [
-                    'name'        => $findItem['name'],
-                    'recurrent'   => $findItem['recurrent'],
-                    'description' => $request->getParams()['description'],
-                    'start_date'  => $findItem['start_date'],
-                    'group_id'    => $findItem['group_id'],
-                    'creator'     => $findItem['creator'],
-                    'reported_at' => $date,
-                    'privacy'      => $findItem['privacy'],
-                    'status'      => 1,
-                    'user_id'     => $userId,
-                ];
-                $updateData = [
-                    'description' => $request->getParsedBody()['description'],
-                    'status'      => 1,
-                    'reported_at' => $date
-                ];
-
-                if ($findItem['creator'] == $findItem['user_id']) {
-                    $item->updateData($updateData, $args['item']);
-                    $result = $findItem;
-
-
-                } else {
-                    $newItem = $item->create($dataNewItem);
-                    $result= $item->find('id', $newItem);
-                    $reportedItem->createData([
-                        'user_id' => $userId,
-                        'item_id' => $newItem
-                    ]);
-                }
-
-                $date = date('d M Y H:i:s');
-                $content = $userName.' telah melaporkan '.$findItem['name'].' pada '.$date;
-
-                if ($guard) {
-                    $dataGuard = [
-                        'subject' => $userName.' laporan item',
-                        'from'    =>'reportingmit@gmail.com',
-                        'to'      => $guard['email'],
-                        'sender'  => 'Reporting App',
-                        'receiver'=> $guard['name'],
-                        'content' => $content,
-                    ];
-
-                    $mailer->send($dataGuard);
-                }
-
-                if ($pic && $pic['id'] != $guard['id']) {
-                    $dataPic = [
-                        'subject' => $userName.'laporan item',
-                        'from'    =>'reportingmit@gmail.com',
-                        'to'      => $pic['email'],
-                        'sender'  => 'Reporting App',
-                        'receiver'=> $pic['name'],
-                        'content' => $content,
-                    ];
-
-                    $mailer->send($dataPic);
-                }
-
-                $data = $this->responseDetail(200, false, 'Item telah berhasil dilaporkan',
-                [
-                    'data' => $result
-                ]);
-
-            } else {
-
-                $data = $this->responseDetail(400, true, $this->validator->errors());
-            }
-
-        } else {
-            $data = $this->responseDetail(404, true, 'Item tidak ditemukan ');
-        }
-
-        return $data;
-
-    }
+    //     return $data;
+    //
+    // }
 
     public function postImage($request, $response, $args)
     {
@@ -699,7 +694,7 @@ class ItemController extends BaseController
 
     }
 
-    public function itemTimeline($request, $response, $args)
+    public function userTimeline($request, $response, $args)
     {
         $items = new Item($this->db);
 
@@ -725,6 +720,43 @@ class ItemController extends BaseController
                 $perpage = 5;
             }
             $result = $this->paginateArray($newItem, $page, $perpage);
+            $data = $this->responseDetail(200, false, 'Data tersedia', [
+                'data'        => $result['data'],
+                'pagination'  => $result['pagination']
+            ]);
+
+        } else {
+            $data = $this->responseDetail(404, true, 'Data tidak ditemukan');
+        }
+
+        return $data;
+    }
+
+    public function guardTimeline($request, $response, $args)
+    {
+        $items = new Item($this->db);
+
+        $findItem = $items->getUserGuardItem($args['id']);
+        $page = !$request->getQueryParam('page') ? 1 : $request->getQueryParam('page');
+        $perPage = $request->getQueryParam('perpage');
+
+        $newItem = array();
+        if ($findItem){
+            foreach ($findItem as $item) {
+                if (!empty($newItem[$item['id']])) {
+                    $currentValue1 = (array) $newItem[$item['id']]['image'];
+                    $currentValue2 = (array) $newItem[$item['id']]['comment'];
+                    $newItem[$item['id']]['image'] =
+                     array_unique(array_merge($currentValue1, (array) $item['image']));
+                    $newItem[$item['id']]['comment'] =
+                     array_unique(array_merge($currentValue2, (array) $item['comment']));
+                } else {
+                    $newItem[$item['id']] = $item;
+                }
+            }
+
+            $result = $this->paginateArray($newItem, $page, $perPage);
+            // var_dump($result);die;
             $data = $this->responseDetail(200, false, 'Data tersedia', [
                 'data'        => $result['data'],
                 'pagination'  => $result['pagination']
@@ -823,5 +855,138 @@ class ItemController extends BaseController
             $data = $this->responseDetail(200, false, 'Data kosong');
         }
         return $data;
+     }
+
+     public function reportItem($request, $response)
+     {
+         $items = new Item($this->db);
+         $mailer = new \App\Extensions\Mailers\Mailer();
+         $guards = new \App\Models\GuardModel($this->db);
+         $imageItem = new \App\Models\ImageItem($this->db);
+         $users = new \App\Models\Users\UserModel($this->db);
+         $itemDone = new \App\Models\ReportedItem($this->db);
+         $userGroups = new \App\Models\UserGroupModel($this->db);
+// var_dump($request->getHeader('Authorization'));die;
+         //  $itemId = $request->getParams()['item_id'];
+        //  var_dump($request-> $request->getParsedBody()('item'));die;
+         $token = $request->getHeader('Authorization')[0];
+         $reporter = $items->getUserByToken($token);
+         $itemId =  $request->getParsedBody()['item'];
+         $userId =  $request->getParsedBody()['user'];
+         $user = $users->find('id', $userId);
+         $item = $items->find('id', $itemId);
+         $pic = $users->find('id', $item['creator']);
+         $guardian = $guards->findTwo('user_id', $userId, 'user_id', $userId);
+         $member = $userGroups->findTwo('user_id', $userId, 'group_id', $item['group_id']);
+         $date = date('Y-m-d H:i:s');
+
+         if (!$item) {
+            return $this->responseDetail(404, true, 'Item tidak ditemukan ');
+         }
+
+
+
+         if ($reporter['status'] == 1 || $member[0]['status'] == 1 || $item['user_id'] == $reporter['id']
+         || ($item['user_id'] == null & $member[0])) {
+             $data = [
+                 'description'	=>	 $request->getParsedBody()['description'],
+                 'reported_at'	=>	$date,
+                 'user_id'	    =>	$userId,
+                 'status'		=>	1,
+             ];
+
+             if ($item['user_id'] == null) {
+
+                 $newItem = $items->create($item);
+                 $items->updateData($data, $newItem);
+
+                 $itemDone->createData([
+                 'item_id' 	=>	$newItem,
+                 'user_id'	=>	$userId,
+                 ]);
+
+                 if (!empty($_FILES['image']['name'])) {
+                     $storage = new \Upload\Storage\FileSystem('assets/images');
+                     $image = new \Upload\File('image', $storage);
+                     $image->setName(uniqid());
+                     $image->addValidations(array(
+                         new \Upload\Validation\Mimetype(array('image/png', 'image/gif',
+                         'image/jpg', 'image/jpeg')),
+                         new \Upload\Validation\Size('5M')
+                     ));
+
+                     $image->upload();
+                     $imgName = $image->getNameWithExtension();
+
+                     $dataImage = [
+                         'image'   => $imgName,
+                         'item_id' => $newItem
+                     ];
+                     $imageItem->createData($dataImage);
+                 }
+             } else {
+                 $addItems = $items->updateData($data, $itemId);
+                 if (!empty($_FILES['image']['name'])) {
+                     $storage = new \Upload\Storage\FileSystem('assets/images');
+                     $image = new \Upload\File('image', $storage);
+                     $image->setName(uniqid());
+                     $image->addValidations(array(
+                         new \Upload\Validation\Mimetype(array('image/png', 'image/gif',
+                         'image/jpg', 'image/jpeg')),
+                         new \Upload\Validation\Size('5M')
+                     ));
+
+                     $image->upload();
+                     $imgName = $image->getNameWithExtension();
+
+                     $dataImage = [
+                         'image'   => $imgName,
+                         'item_id' => $itemId
+                     ];
+                     $imageItem->createData($dataImage);
+                 }
+             }
+
+             $itemDone->createData([
+             'item_id' 	=>	$itemId,
+             'user_id'	=>	$userId,
+             ]);
+
+             $content =  $user['username'].' telah menyelesaikan '.$item['name'].' pada '.$date;
+
+             if ($guardian) {
+                 foreach ($guardian as $guard) {
+                     $findGuard = $users->find('id', $guard['guard_id']);
+                     $dataGuard = [
+                         'subject' 	=>	$user['username'].' melaporkan item',
+                         'from'     =>	'reportingmit@gmail.com',
+                         'to'	    =>	$findGuard['email'],
+                         'sender'	=>	'Reporting App',
+                         'receiver'	=>	$findGuard['username'],
+                         'content'	=>	$content,
+                     ];
+                     $mailer->send($dataGuard);
+                 }
+             }
+
+             if (($pic['id'] != $user['id']) && $pic) {
+                 $dataPic = [
+                     'subject' 	=>	$user['username'].' melaporkan item',
+                     'from'     =>	'reportingmit@gmail.com',
+                     'to'	    =>	$pic['email'],
+                     'sender'	=>	'Reporting App',
+                     'receiver'	=>	$pic['username'],
+                     'content'	=>	$content,
+                 ];
+
+                 //  $this->sendWebNotif($report, $pic['id']);
+                 $mailer->send($dataPic);
+             }
+
+             return $this->responseDetail(200, false, 'Item telah dilaporkan');
+         } else {
+             return $this->responseDetail(401, true, 'Anda tidak boleh melaporkan item ini');
+
+         }
      }
 }

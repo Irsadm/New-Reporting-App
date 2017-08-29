@@ -18,7 +18,8 @@ class GroupController extends BaseController
 		$query = $request->getQueryParams();
 		if ($get) {
 			$page = !$request->getQueryParam('page') ? 1 : $request->getQueryParam('page');
-			$getGroup = $group->getAllGroup()->setPaginate($page, 5);
+			$perPage = $request->getQueryParam('perpage');
+			$getGroup = $group->getAllGroup()->setPaginate($page, $perPage);
 
 			if ($getGroup) {
 				$data = $this->responseDetail(200, false,  'Data tersedia', [
@@ -58,9 +59,7 @@ class GroupController extends BaseController
 	{
 		$rules = [
 			'required' => [
-				['name'],
-				['description'],
-				['image'],
+				['name']
 			]
 		];
 
@@ -72,26 +71,28 @@ class GroupController extends BaseController
 
 		$this->validator->rules($rules);
 		if ($this->validator->validate()) {
+			$groups = new \App\Models\GroupModel($this->db);
+			$userGroups = new \App\Models\UserGroupModel($this->db);
 
-			$post = $request->getParams();
-
+			$data = $request->getParams();
 			$token = $request->getHeader('Authorization')[0];
-			$userToken = new \App\Models\Users\UserToken($this->db);
-			$post['creator'] = $userToken->getUserId($token);
-			$query = $request->getQueryParams();
-			$group = new \App\Models\GroupModel($this->db);
-			$addGroup = $group->add($post, $imageName);
+			$data['creator'] = $groups->getUserByToken($token)['id'];
+			$addGroup = $groups->add($data);
+			$findGroup = $groups->find('id', $addGroup);
 
-			$findNewGroup = $group->find('id', $addGroup);
+			$dataPic = [
+				'user_id'	=> $data['creator'],
+				'group_id'	=> $addGroup,
+				'status'	=> 1
+			];
+			$setPicGroup = $userGroups->add($dataPic);
 
-			$data = $this->responseDetail(201, false, 'Berhasil ditambahkan', [
-					'data'	=>	$findNewGroup
+			return $this->responseDetail(201, false, 'Grup '.$findGroup['name'].' berhasil dibuat', [
+					'data'	=>	$findGroup
 				]);
 		} else {
-			$data = $this->responseDetail(400, true, $this->validator->errors());
+			return $this->responseDetail(400, true, $this->validator->errors());
 		}
-
-		return $data;
 	}
 
 	//Edit group
@@ -188,8 +189,8 @@ class GroupController extends BaseController
 		if ($group) {
 			if ($finduserGroup || $user['status'] == 1) {
 				$page = !$request->getQueryParam('page') ? 1 : $request->getQueryParam('page');
-
-				$findAll = $userGroup->findAll($args['id'])->setPaginate($page, $perpage);
+				$perPage = $request->getQueryParam('perpage');
+				$findAll = $userGroup->findAll($args['id'])->setPaginate($page, $perPage);
 
 				$data = $this->responseDetail(200, false, 'Berhasil', [
 					'data'			=>	$findAll['data'],
@@ -330,7 +331,8 @@ class GroupController extends BaseController
 		if ($group) {
 			$getGroup = $userGroup->findAllGroup($userId);
 			$page = !$request->getQueryParam('page') ? 1 : $request->getQueryParam('page');
-			$get = $group->getAllGroup()->setPaginate($page, 5);
+			$perPage = $request->getQueryParam('perpage');
+			$get = $group->getAllGroup()->setPaginate($page, $perPage);
 
 			$data = $this->responseDetail(200, false, 'Berhasil menampilkan data', [
 					'data'			=>	$get['data'],
@@ -497,8 +499,9 @@ class GroupController extends BaseController
     	$getGroup = $group->getInActive();
     	$countGroups = count($getGroup);
     	$query = $request->getQueryParams();
-    	$page = !$request->getQueryParam('page') ? 1 : $request->getQueryParam('page');
-		$get = $group->getAllGroupNonActive()->setPaginate($page, 5);
+		$page = !$request->getQueryParam('page') ? 1 : $request->getQueryParam('page');
+		$perPage = $request->getQueryParam('perpage');
+		$get = $group->getAllGroupNonActive()->setPaginate($page, $perPage);
 
     	if ($countGroups == 0) {
     		return $this->responseDetail(404, true, 'Data tidak ditemukan');
@@ -522,7 +525,8 @@ class GroupController extends BaseController
 		$query = $request->getQueryParams();
 
 		$page = !$request->getQueryParam('page') ? 1 : $request->getQueryParam('page');
-		$get = $getGroup->setPaginate($page, 5);
+		$perPage = $request->getQueryParam('perpage');
+		$get = $getGroup->setPaginate($page, $perPage);
 
 		if ($getGroup == 0) {
 			return $this->responseDetail(404, true, 'Data tidak ditemukan');
@@ -674,10 +678,11 @@ class GroupController extends BaseController
 
 		$token = $request->getHeader('Authorization')[0];
 		$userToken = new \App\Models\Users\UserToken($this->db);
-		$userId = $userToken->getUserId($token);
 
+		$userId = $userToken->getUserId($token);
 		$page = !$request->getQueryParam('page') ? 1 : $request->getQueryParam('page');
-		$users = $userGroup->notMember($args['id'])->setPaginate($page, 5);
+		$perPage = $request->getQueryParam('perpage');
+		$users = $userGroup->notMember($args['id'])->setPaginate($page, $perPage);
 		$pic = $userGroup->findUser('group_id', $args['id'], 'user_id', $userId);
 		$query = $request->getQueryParams();
 
@@ -796,6 +801,28 @@ class GroupController extends BaseController
 			]);
 		} else {
 			return $this->responseDetail(404, true, 'Group tidak tersedia');
+		}
+	}
+
+	public function enterGroup($request, $response, $args)
+	{
+		$userGroup = new \App\Models\UserGroupModel($this->db);
+
+		$token = $request->getHeader('Authorization')[0];
+		$user = $userGroup->getUserByToken($token);
+		$member = $userGroup->findTwo('user_id', $user['id'], 'group_id', $args['id']);
+		// var_dump($member);die();
+
+		if (!$member[0]) {
+			return $this->responseDetail(403, true, 'Anda belum tergabung ke grup ini');
+		} elseif ($member[0]['status'] == 1) {
+			return $this->responseDetail(200, false, 'Berhasil masuk grup sebagai PIC', [
+				'data'	=> 'PIC'
+			]);
+		} elseif ($member[0]['status'] == 0) {
+			return $this->responseDetail(200, false, 'Berhasil masuk grup sebagai member', [
+				'data'	=> 'member'
+			]);
 		}
 	}
 

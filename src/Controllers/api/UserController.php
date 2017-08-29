@@ -13,8 +13,8 @@ class UserController extends BaseController
         $user = new UserModel($this->db);
 
         $page = !$request->getQueryParam('page') ? 1 : $request->getQueryParam('page');
-        $perPage = $request->getParsedBody()['perpage'];
-        $getUser = $user->getAllUser()->setPaginate($page, 2);
+        $perPage = $request->getQueryParam('perpage');
+        $getUser = $user->getAllUser()->setPaginate($page, $perPage);
 
         if ($getUser) {
             $data = $this->responseDetail(200, false, 'Data tersedia', [
@@ -97,12 +97,47 @@ class UserController extends BaseController
 
                 $activateUrl = '<a href ='.$base ."/activateaccount/".$keyToken.'>
                 <h3>AKTIFKAN AKUN</h3></a>';
-                $content = "Terima kasih telah mendaftar di Reporting App.
-                Untuk mengaktifkan akun Anda, silakan klik link di bawah ini.
-                <br /> <br />" .$activateUrl."<br /> <br />
-                Jika link tidak bekerja, Anda dapat menyalin atau mengetik kembali
-                link di bawah ini. <br /><br /> " .$base ."/activateaccount/".$keyToken.
-                " <br /><br /> Terima kasih, <br /><br /> Admin Reporting App";
+                // $content = "Terima kasih telah mendaftar di Reporting App.
+                // Untuk mengaktifkan akun Anda, silakan klik link di bawah ini.
+                // <br /> <br />" .$activateUrl."<br /> <br />
+                // Jika link tidak bekerja, Anda dapat menyalin atau mengetik kembali
+                // link di bawah ini. <br /><br /> " .$base ."/activateaccount/".$keyToken.
+                // " <br /><br /> Terima kasih, <br /><br /> Admin Reporting App";
+                $content = '<html><head></head>
+                <body style="font-family: Verdana;font-size: 12.0px;">
+                <table border="0" cellpadding="0" cellspacing="0" style="max-width: 600.0px;">
+                <tbody><tr><td><table border="0" cellpadding="0" cellspacing="0" width="100%">
+                <tbody><tr><td align="left">
+                </td></tr></tbody></table></td></tr><tr height="16"></tr><tr><td>
+                <table bgcolor="#337AB7" border="0" cellpadding="0" cellspacing="0"
+                style="min-width: 332.0px;max-width: 600.0px;border: 1.0px solid rgb(224,224,224);
+                border-bottom: 0;" width="100%">
+                <tbody><tr><td colspan="3" height="42px"></td></tr>
+                <tr><td width="32px"></td>
+                <td style="font-family: Roboto-Regular , Helvetica , Arial , sans-serif;font-size: 24.0px;
+                color: rgb(255,255,255);line-height: 1.25;">Aktivasi Akun Reporting App</td>
+                <td width="32px"></td></tr>
+                <tr><td colspan="3" height="18px"></td></tr></tbody></table></td></tr>
+                <tr><td><table bgcolor="#FAFAFA" border="0" cellpadding="0" cellspacing="0"
+                style="min-width: 332.0px;max-width: 600.0px;border: 1.0px solid rgb(240,240,240);
+                border-bottom: 1.0px solid rgb(192,192,192);border-top: 0;" width="100%">
+                <tbody><tr height="16px"><td rowspan="3" width="32px"></td><td></td>
+                <td rowspan="3" width="32px"></td></tr>
+                <tr><td><p>Yang terhormat '.$request->getParsedBody()['username'].',</p>
+                <p>Terima kasih telah mendaftar di Reporting App.
+                Untuk mengaktifkan akun Anda, silakan klik tautan di bawah ini.</p>
+                <div style="text-align: center;"><p>
+                <strong style="text-align: center;font-size: 24.0px;font-weight: bold;">
+                '.$activateUrl.'</strong></p></div>
+                <p>Jika tautan tidak bekerja, Anda dapat menyalin atau mengetik kembali
+                 tautan di bawah ini.</p>
+                '.$base .'/activateaccount/'.$keyToken.'<p><br>
+                <p>Terima kasih, <br /><br /> Admin Reporting App</p></td></tr>
+                <tr height="32px"></tr></tbody></table></td></tr>
+                <tr height="16"></tr>
+                <tr><td style="max-width: 600.0px;font-family: Roboto-Regular , Helvetica , Arial , sans-serif;
+                font-size: 10.0px;color: rgb(188,188,188);line-height: 1.5;"></td>
+                </tr><tr><td></td></tr></tbody></table></body></html>';
 
                 $mail = [
                 'subject'   =>  'Reporting App - Verifikasi Email',
@@ -404,10 +439,7 @@ class UserController extends BaseController
         $mailer = new \App\Extensions\Mailers\Mailer();
         $registers = new \App\Models\RegisterModel($this->db);
 
-        $findUser = $users->find('email', $request->getParsedBody()['email']);
-        // $token = 'rec-'.md5(openssl_random_pseudo_bytes(8));
-        // $tokenId = $registers->setToken($findUser['id'], $token);
-        // $tokenSet = $registers->find('token', $token);
+        $findUser = $users->find('email', $request->getParam('email'));
 
         if (!$findUser) {
             return $this->responseDetail(404, true, 'Email tidak terdaftar');
@@ -416,18 +448,43 @@ class UserController extends BaseController
             $data['new_password'] = substr(md5(microtime()),rand(0,26),7);
             $users->changePassword($data, $findUser['id']);
 
-            $content = "Yang terhormat ".$findUser['name'].",<br /> <br />
-            Baru-baru ini Anda meminta untuk menyetel ulang kata sandi akun Reporting App Anda.
+            $content = '<html><head></head>
+            <body style="font-family: Verdana;font-size: 12.0px;">
+            <table border="0" cellpadding="0" cellspacing="0" style="max-width: 600.0px;">
+            <tbody><tr><td><table border="0" cellpadding="0" cellspacing="0" width="100%">
+            <tbody><tr><td align="left">
+            </td></tr></tbody></table></td></tr><tr height="16"></tr><tr><td>
+            <table bgcolor="#337AB7" border="0" cellpadding="0" cellspacing="0"
+             style="min-width: 332.0px;max-width: 600.0px;border: 1.0px solid rgb(224,224,224);
+             border-bottom: 0;" width="100%">
+            <tbody><tr><td colspan="3" height="42px"></td></tr>
+            <tr><td width="32px"></td>
+            <td style="font-family: Roboto-Regular , Helvetica , Arial , sans-serif;font-size: 24.0px;
+            color: rgb(255,255,255);line-height: 1.25;">Setel Ulang Sandi Reporting App</td>
+            <td width="32px"></td></tr>
+            <tr><td colspan="3" height="18px"></td></tr></tbody></table></td></tr>
+            <tr><td><table bgcolor="#FAFAFA" border="0" cellpadding="0" cellspacing="0"
+             style="min-width: 332.0px;max-width: 600.0px;border: 1.0px solid rgb(240,240,240);
+             border-bottom: 1.0px solid rgb(192,192,192);border-top: 0;" width="100%">
+            <tbody><tr height="16px"><td rowspan="3" width="32px"></td><td></td>
+            <td rowspan="3" width="32px"></td></tr>
+            <tr><td><p>Yang terhormat '.$findUser["name"].',</p>
+            <p>Baru-baru ini Anda meminta untuk menyetel ulang kata sandi akun Reporting App Anda.
             Berikut ini adalah password sementara yang dapat Anda gunakan untuk login
-            ke akun Reporting App.<br /><h3>" .$data['new_password']."</h3> <br />
-            Untuk mengubah kata sandi, silakan login lalu masuk ke menu pengaturan akun
-            kemudian pilih menu \"Ubah Password\".  <br /> <br />
-            Jika Anda tidak seharusnya menerima email ini, mungkin pengguna lain
+            ke akun Reporting App.</p>
+            <p>Jika Anda tidak seharusnya menerima email ini, mungkin pengguna lain
             memasukkan alamat email Anda secara tidak sengaja saat mencoba menyetel
             ulang sandi. Jika Anda tidak memulai permintaan ini, silakan login dengan password
-            di atas lalu ubahlah password Anda untuk keamanan akun.
-            <br /><br />
-            Terima kasih, <br /><br /> Admin Reporting App";
+            berikut ini lalu ubahlah password Anda untuk keamanan akun.</p>
+            <div style="text-align: center;"><p>
+            <strong style="text-align: center;font-size: 24.0px;font-weight: bold;">
+            '.$data["new_password"].'</strong></p></div>
+            <p>Terima kasih, <br /><br /> Admin Reporting App</p></td></tr>
+            <tr height="32px"></tr></tbody></table></td></tr>
+            <tr height="16"></tr>
+            <tr><td style="max-width: 600.0px;font-family: Roboto-Regular , Helvetica , Arial , sans-serif;
+            font-size: 10.0px;color: rgb(188,188,188);line-height: 1.5;"></td>
+            </tr><tr><td></td></tr></tbody></table></body></html>';
 
             $mail = [
             'subject'   =>  'Setel Ulang Sandi',
@@ -512,40 +569,5 @@ class UserController extends BaseController
         }
         return $data;
     }
-
-    // public function changePasswordNew($request, $response, $args)
-    // {
-    //     $users = new UserModel($this->db);
-    //     $token = new \App\Models\Users\UserToken($this->container->db);
-    //
-    //     $findUser = $users->getUser('email', $request->getParsedBody()['email']);
-    //
-    //     $findToken = $token->find('token', 'c8d292e9eddc00935c9a66c38e76418d');
-    //     // var_dump($findToken);die();
-    //
-    //     if ($findUser['id'] == $findToken['user_id']) {
-    //         $this->validator->rule('required', ['email', 'password']);
-    //         $this->validator->rule('equals', 'password2', 'password');
-    //         $this->validator->rule('email', 'email');
-    //         $this->validator->rule('lengthMin', ['password'], 5);
-    //
-    //         if ($this->validator->validate()) {
-    //             $newData = [
-    //             'password'  => password_hash($request->getParsedBody()['password'], PASSWORD_BCRYPT)
-    //             ];
-    //             $users->updateData($newData, $findUser['id']);
-    //             $data['result'] = $findUser;
-    //
-    //             $data = $this->responseDetail(200, false, 'Update Data Succes', [
-    //                 'data'  => $data
-    //                 ]);
-    //         } else {
-    //             $data = $this->responseDetail(400, true, $this->validator->errors());
-    //         }
-    //     } else {
-    //         $data = $this->responseDetail(404, true, 'Data Not Found');
-    //     }
-    //     return $data;
-    // }
 
 }

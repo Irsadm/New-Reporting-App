@@ -28,7 +28,7 @@ $('#create').modal('show');
                         </div>
                     <span style="float:right; margin-top:5px;">
                         <!-- <div class="btn-group span4"> -->
-                            <a  data-toggle="modal" data-target="#create"><i class="icon-collapse"></i> <button type="button" class="btn btn-info"><span class="glyphicon glyphicon-plus"></span> Tambahkan Tugas</button> </a>
+                            <a  data-toggle="modal" data-target="#create"><i class="icon-collapse"></i> <button type="button" class="btn btn-primary"><span class="glyphicon glyphicon-plus"></span> Tambahkan Tugas</button> </a>
                         <!-- </div> -->
                     </span>
                     <!-- </div> -->
@@ -185,8 +185,8 @@ $('#create').modal('show');
                 <div class="col-xs-12 col-sm-6 col-md-7">
                     <div class="form-group {{ errors.user_id ? 'has-error' : '' }}">
                         <label for="recurrent">Ditugaskan untuk :</label>
-                        <select class="form-control" name="user_id" value="">
-                            <option value="null">Semua Anggota</option>
+                        <select class="form-control" name="user_id" >
+                            <option value="{{ null }}">Semua Anggota</option>
                             {% for member in member %}
                             <option value="{{ member.id}}">{{ member.name}}</option>
                             {% endfor %}

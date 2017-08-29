@@ -104,13 +104,6 @@ class GroupController extends BaseController
 	//Post create group
 	public function add($request, $response)
 	{
-		$query = $request->getQueryParams();
-
-		$data = [
-			'name' 			=>	$request->getParams()['name'],
-			'description'	=>	$request->getParams()['description'],
-			// 'image'			=>	$request->getParams()['image'],
-		];
 		try {
             $result = $this->client->request('POST', 'group/create',
                 ['form_params' => [
@@ -123,12 +116,17 @@ class GroupController extends BaseController
 		}
 
 		$content = $result->getBody()->getContents();
-        $content = json_decode($content, true);
+        $data = json_decode($content, true);
 
-		return $this->view->render($response, 'users/group-list.twig', [
-			'data'	=>	$content
-		]);
+		if ($data['error'] == false) {
+			$this->flash->addMessage('success', $data['message']);
+			return $response->withRedirect($this->router->pathFor('group.user'));
+		} else {
+			$this->flash->addMessage('error', $data['message']);
+			return $response->withRedirect($this->router->pathFor('group.user'));
+		}
 	}
+
 	//Get edit group
 	public function getUpdate($request, $response, $args)
 	{
@@ -159,7 +157,7 @@ class GroupController extends BaseController
 			$content = json_decode($e->getResponse()->getBody()->getContents());
             $this->flash->addMessage('errors', 'Data tidak ditemukan');
 		}
-		return $response->withRedirect($this->router->pathFor('group.list'));
+		return $response->withRedirect($this->router->pathFor('group.user'));
 	}
 	//restore
 	public function restore($request, $response, $args)
@@ -172,7 +170,7 @@ class GroupController extends BaseController
 			$content = json_decode($e->getResponse()->getBody()->getContents());
             $this->flash->addMessage('errors', 'Data tidak ditemukan');
 		}
-		return $response->withRedirect($this->router->pathFor('group.list'));
+		return $response->withRedirect($this->router->pathFor('group.user'));
 	}
 	//Set user as member or PIC of group
 	public function setUserGroup($request, $response)
@@ -317,7 +315,7 @@ class GroupController extends BaseController
 		// var_dump($content); die();
 
 		if ($content['code'] == 201) {
-			$this->flash->addMessage('succes', $content['message']);
+			$this->flash->addMessage('success', $content['message']);
 			return $response->withRedirect($this->router->pathFor('pic.group.member', ['id' => $groupId]));
 		} else  {
 			$this->flash->addMessage('warning', $content['message']);
@@ -373,7 +371,7 @@ class GroupController extends BaseController
                     'image'			=> $request->getParam('description')
                 ]
             ]);
-			$this->flash->addMessage('succes', 'Berhasil menambah group');
+			$this->flash->addMessage('success', 'Berhasil menambah group');
 		} catch (GuzzleException $e) {
 			$result = $e->getResponse();
 			$this->flash->addMessage('error', 'Gagal menambahkan group');
@@ -419,7 +417,7 @@ class GroupController extends BaseController
     	try {
     		$result = $this->client->request('GET', 'group/'.$args['id'].'/leave'.
     			$request->getUri()->getQuery());
-            $this->flash->addMessage('succes', 'Berhasil meninggalkan group');
+            $this->flash->addMessage('success', 'Berhasil meninggalkan group');
     	} catch (GuzzleException $e) {
     		$result = $e->getResponse();
             $this->flash->addMessage('error', 'Ada kesalahan saat meninggalkan group');
@@ -491,7 +489,7 @@ class GroupController extends BaseController
 		// var_dump($content); die();
 
 		if ($content['code'] == 200 ){
-			$this->flash->addMessage('succes', $content['message']);
+			$this->flash->addMessage('success', $content['message']);
 			return $response->withRedirect($this->router->pathFor('pic.group.member', ['id'=> $group]));
 		} else {
 			$this->flash->addMessage('warning', $content['message']);
@@ -537,10 +535,10 @@ class GroupController extends BaseController
 		// var_dump($findUser); die();
 
 		if ($content['code'] == 200) {
-			$this->flash->addMessage('succes', $content['message']);
+			$this->flash->addMessage('success', $content['message']);
 			return $response->withRedirect($this->router->pathFor('pic.group.member', ['id'=> $group]));
 		} else {
-			$this->flash->addMessage('danger', $content['message']);
+			$this->flash->addMessage('warning', $content['message']);
 			return $response->withRedirect($this->router->pathFor('pic.group.member', ['id'=> $group]));
 
 		}
@@ -571,7 +569,7 @@ class GroupController extends BaseController
 		// var_dump($content); die();
 		if ($findUser[0]['status'] == 0) {
 			if ($content['code'] == 200) {
-				$this->flash->addMessage('succes', $content['message']);
+				$this->flash->addMessage('success', $content['message']);
 				return $response->withRedirect($this->router->pathFor('pic.group.member', ['id'=> $group]));
 			} else {
 				$this->flash->addMessage('warning', $content['message']);
@@ -599,6 +597,34 @@ class GroupController extends BaseController
 			$content = json_decode($client);
 		}
 		return $this->view->render($response, '', $content->reporting);
+	}
+
+	public function enterGroup($request, $response, $args)
+	{
+		try {
+			$result = $this->client->request('GET', 'group/enter/'.$args['id']);
+		} catch (GuzzleException $e) {
+			$result = $e->getResponse();
+		}
+
+		$content = $result->getBody()->getContents();
+		$data = json_decode($content, true);
+
+		if ($data['error'] == true) {
+			$this->flash->addMessage('error', $data['message']);
+			return $response->withRedirect($this->router->pathFor('group.user'));
+		} elseif ($data['data'] == 'PIC') {
+			$this->flash->addMessage('success', $data['message']);
+			return $response->withRedirect($this->router->pathFor('pic.group.member', [
+				'id'	=> 	$args['id']
+			]));
+		} elseif ($data['data'] == 'member') {
+			$this->flash->addMessage('success', $data['message']);
+			return $response->withRedirect($this->router->pathFor('unreported.item.user.group', [
+				'user'	=> $_SESSION['login']['id'],
+				'group'	=> $args['id']
+			]));
+		}
 	}
 }
 

@@ -41,11 +41,14 @@ class UserController extends BaseController
         $data = json_decode($result->getBody()->getContents(), true);
 
         if ($data['code'] == 200) {
-            $_SESSION['login'] = $data['data'];
             $_SESSION['key'] = $data['key'];
+            $_SESSION['login'] = $data['data'];
+            if (!empty($request->getParams()['guard'])) {
+                $_SESSION['guard'] = $_SESSION['login']['id'];
+            }
             if ($_SESSION['login']['status'] == 2) {
                 $_SESSION['user_group'] = $groups;
-                $this->flash->addMessage('succes', 'Selamat datang, '. $login['username']);
+                $this->flash->addMessage('success', 'Selamat datang, '. $login['username']);
                 return $response->withRedirect($this->router->pathFor('home'));
             } else {
                 $this->flash->addMessage('warning',
@@ -115,7 +118,7 @@ class UserController extends BaseController
             // var_dump($data);die();
 
             if ($data['code'] == 201) {
-                $this->flash->addMessage('succes', 'Pendaftaran berhasil,
+                $this->flash->addMessage('success', 'Pendaftaran berhasil,
                 silakan cek email anda untuk mengaktifkan akun');
                 return $response->withRedirect($this->router->pathFor('signup'));
             } else {
@@ -156,7 +159,6 @@ class UserController extends BaseController
         $data['search'] = $search;
         // var_dump($data['users']); die();
         if (!empty($data['group'])) {
-
             return $this->view->render($response, 'pic/search-result.twig', $data);
         }
 
@@ -219,7 +221,7 @@ class UserController extends BaseController
         $data = json_decode($result->getBody()->getContents(), true);
         // var_dump($data);die();
         if ($data['error'] == false) {
-            $this->flash->addMessage('succes', 'Info akun berhasil dipebarui');
+            $this->flash->addMessage('success', 'Info akun berhasil dipebarui');
             return $response->withRedirect($this->router->pathFor('user.setting.profile'));
             $_SESSION['login'] = $data['data'];
         } else {
@@ -263,7 +265,7 @@ class UserController extends BaseController
 
         // var_dump($newUser);die();
         if ($data['error'] == false) {
-            $this->flash->addMessage('succes', 'Foto profil berhasil diubah');
+            $this->flash->addMessage('success', 'Foto profil berhasil diubah');
             return $response->withRedirect($this->router->pathFor('user.view.profile'));
             $_SESSION['login'] = $newUser['data'];
         } else {
@@ -301,11 +303,34 @@ class UserController extends BaseController
         $data = json_decode($result->getBody()->getContents(), true);
 // var_dump($data);die;
         if ($data['error'] == false) {
-            $this->flash->addMessage('succes', $data['message']);
+            $this->flash->addMessage('success', $data['message']);
             return $response->withRedirect($this->router->pathFor('change.password'));
         } else {
             $this->flash->addMessage('error', $data['message']);
             return $response->withRedirect($this->router->pathFor('change.password'));
+        }
+    }
+
+    public function forgotPassword($request, $response, $args)
+    {
+        try {
+            $result = $this->client->request('POST', 'reset',
+                ['form_params' => [
+                    'email' => $request->getParam('email')
+                ]
+            ]);
+        } catch (GuzzleException $e) {
+            $result = $e->getResponse();
+        }
+
+        $data = json_decode($result->getBody()->getContents(), true);
+        // var_dump($data);die;
+        if ($data['error'] == false) {
+            $this->flash->addMessage('success', $data['message']);
+            return $response->withRedirect($this->router->pathFor('login'));
+        } else {
+            $this->flash->addMessage('error', $data['message']);
+            return $response->withRedirect($this->router->pathFor('login'));
         }
     }
 }

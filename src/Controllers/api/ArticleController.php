@@ -27,7 +27,7 @@ class ArticleController extends BaseController
 	// 			$data = $this->responseDetail(404, 'Error', 'Data Not Found');
 	// 		}
 	// 	} else {
-	// 		$data = $this->responseDetail(204, 'Succes', 'No Content');
+	// 		$data = $this->responseDetail(204, 'success', 'No Content');
 	// 	}
 
 	// 	return $data;

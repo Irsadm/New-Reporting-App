@@ -14,8 +14,8 @@
 
     </head>
     <body>
-        {% include 'templates/partials/flash.twig' %}
         <div id="loginbox">
+            {% include 'templates/partials/flash.twig' %}
             <form id="loginform" class="form-vertical" action="{{path_for('post.signup')}}"
              method="post">
 				 <div class="control-group normal_text">
@@ -50,7 +50,7 @@
                         <div class="main_input_box">
                             <span class="add-on bg_ly"><i class="icon-lock"></i></span>
                             <input name="password" type="password"
-                            value="{{ old.password}}" placeholder="Password" />
+                            value="" placeholder="Password" />
                             {% if errors.password %}
                             <span style="color:red;" class="help-inline">{{errors.password | first}}</span>
                         </div>
@@ -63,7 +63,7 @@
                             <i class="fa fa-login"></i>Buat akun</button></span>
                     <span style="color:#fff;"class="pull-right">
                         Sudah punya akun? &nbsp&nbsp
-                        <a href="{{path_for('login')}}" class="flip-link btn btn-info" id="to-recover">
+                        <a href="{{path_for('login')}}" class="flip-link btn btn-primary" id="to-recover">
                             Login</a></span>
 
                 </div>

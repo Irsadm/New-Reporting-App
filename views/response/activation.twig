@@ -7,52 +7,24 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <link rel="stylesheet" href="css/matrix-style.css" />
 <link href="font-awesome/css/font-awesome.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap-theme.min.css">
+<script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+<script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
+</script>
 </head>
-<body>
-    <div class="container-fluid">
-        <div align="center" class="row-fluid">
-            <div class="span12">
-                <div class="widget-box">
-                    <div class="widget-content">
-                        <div class="error_ex">
-                            <h1><i class="icon-ok"></i></h1>
-                            <h3>{{ message }}</h3>
-                        </div>
-                    </div>
+<body onLoad="$('#my-modal').modal('show');">
+    <div id="my-modal" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div style="background:#035241; color:#d9fff8" class="modal-header">
+                    <button style="color:red;" type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                        &times;</button>
+                <h5 class="modal-title">Aktivasi akun</h5>
                 </div>
-            </div>
-        </div>
-    </div>
-    <div id="MyModal" class="modal-demo">
-        <a type="button" class="closes" onclick="Custombox.close();">
-            <span>×</span><span class="sr-only">Close</span>
-        </a>
-        <div class="modal-dialog">
-            <h5 class="title">Akun Belum Aktif</h5>
-            <div class="text">
-                <p>Silahkan lakukan aktivasi akun melalui link yang telah kami kirim ke email Anda.</p>
-            </div>
-        </div>
-    </div>
-    <div id="modallogin" class="modal-demo">
-        <a type="button" class="closes" onclick="Custombox.close();">
-            <span>×</span><span class="sr-only">Close</span>
-        </a>
-        <div class="modal-dialog">
-            <h5 class="title">Aktivasi Akun Berhasil</h5>
-            <div class="text">
-                <p>Akun Anda telah diaktifkan, Anda dapat sign in menggunakan akun Anda.</p>
-            </div>
-        </div>
-    </div>
-    <div id="modalActive" class="modal-demo">
-        <a type="button" class="closes" onclick="Custombox.close();">
-            <span>×</span><span class="sr-only">Close</span>
-        </a>
-        <div class="modal-dialog">
-            <h5 class="title">Selamat Akun Anda Telah Aktif</h5>
-            <div class="text">
-                <p>Silahkan Login menggunakan Akun Anda yang telah kami kirimkan ke email</p>
+                <div class="modal-body">
+                <h4>{{ message }}</h4>
+                </div>
             </div>
         </div>
     </div>
