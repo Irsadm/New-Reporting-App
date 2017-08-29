@@ -102,9 +102,9 @@
                                         <tbody>
                                             {% for key, item in data %}
                                             <tr>
-                                                <td class="taskDesc"><i class="icon-info-sign"></i>
+                                                <td class="taskDesc">
                                                 {{ (pagination.current - 1) * pagination.perpage + (key + 1) }}</td>
-                                                <td class="taskDesc"><i class="icon-info-sign"></i> {{ item.name }}</td>
+                                                <td class="taskDesc">{{ item.name }}</td>
                                                 <td class="taskStatus">{{ item.recurrent }}</td>
                                                 <td class="taskStatus"><span class="in-progress">{{ item.reported_at }}
                                                 </span></td>

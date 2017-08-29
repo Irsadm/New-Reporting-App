@@ -9,6 +9,9 @@ $app->post('/admin', 'App\Controllers\web\UserController:loginAsAdmin');
 $app->get('/user', 'App\Controllers\web\UserController:getAllUser');
 $app->get('/', 'App\Controllers\web\UserController:getLogin')->setName('login');
 $app->post('/', 'App\Controllers\web\UserController:login')->setName('post.login');
+$app->get('/password/reset/{token}', 'App\Controllers\web\UserController:getResetPassword')->setName('get.reset');
+$app->post('/password/reset', 'App\Controllers\web\UserController:resetPassword')->setName('post.reset');
+$app->get('/recovery', 'App\Controllers\web\UserController:getRecoveryPage')->setName('recovery.password');
 //
 // $app->get('/guard/show', 'App\Controllers\web\GuardController:showGuardByUser');
 // $app->get('/guard/show/{id}', 'App\Controllers\web\GuardController:showUserByGuard');

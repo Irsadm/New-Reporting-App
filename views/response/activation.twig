@@ -5,8 +5,8 @@
 <title>Verifikasi Email</title>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<link rel="stylesheet" href="css/matrix-style.css" />
-<link href="font-awesome/css/font-awesome.css" rel="stylesheet" />
+<link rel="stylesheet" href="{{ base_url() }}/css/matrix-style.css" />
+<link href="{{ base_url() }}/font-awesome/css/font-awesome.css" rel="stylesheet" />
 <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css">
 <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap-theme.min.css">
 <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
@@ -23,7 +23,9 @@
                 <h5 class="modal-title">Aktivasi akun</h5>
                 </div>
                 <div class="modal-body">
-                <h4>{{ message }}</h4>
+                <h4>{{ message }}</h4><br>
+                <p><a href="{{path_for('login')}}" class="flip-link btn btn-primary" id="to-recover">
+                    ke halaman Login</a></span></p>
                 </div>
             </div>
         </div>

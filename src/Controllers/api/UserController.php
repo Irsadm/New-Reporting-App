@@ -440,14 +440,19 @@ class UserController extends BaseController
         $registers = new \App\Models\RegisterModel($this->db);
 
         $findUser = $users->find('email', $request->getParam('email'));
+        $base = $request->getUri()->getBaseUrl();
 
         if (!$findUser) {
             return $this->responseDetail(404, true, 'Email tidak terdaftar');
 
         } elseif ($findUser) {
-            $data['new_password'] = substr(md5(microtime()),rand(0,26),7);
-            $users->changePassword($data, $findUser['id']);
+            $token = str_shuffle('r3c0Ve12y').substr(md5(microtime()),rand(0,26),37);
+            $tokenId = $registers->setToken($findUser['id'], $token);
+            // $data['new_password'] = substr(md5(microtime()),rand(0,26),17);
+            // $users->changePassword($data, $findUser['id']);
 
+            $resetUrl = '<a href ='.$base ."/password/reset/".$token.'>
+            <h3>RESET PASSWORD</h3></a>';
             $content = '<html><head></head>
             <body style="font-family: Verdana;font-size: 12.0px;">
             <table border="0" cellpadding="0" cellspacing="0" style="max-width: 600.0px;">
@@ -470,16 +475,16 @@ class UserController extends BaseController
             <td rowspan="3" width="32px"></td></tr>
             <tr><td><p>Yang terhormat '.$findUser["name"].',</p>
             <p>Baru-baru ini Anda meminta untuk menyetel ulang kata sandi akun Reporting App Anda.
-            Berikut ini adalah password sementara yang dapat Anda gunakan untuk login
-            ke akun Reporting App.</p>
+              Untuk mengubah kata sandi akun Anda, silakan ikuti tautan di bawah ini.</p>
+              <div style="text-align: center;"><p>'.$resetUrl.'</p></div>
+             <p>Jika tautan tidak bekerja, Anda dapat menyalin atau mengetik kembali
+            tautan berikut.</p>
+            <p>'.$base."/password/reset/".$token.'</p>
             <p>Jika Anda tidak seharusnya menerima email ini, mungkin pengguna lain
             memasukkan alamat email Anda secara tidak sengaja saat mencoba menyetel
-            ulang sandi. Jika Anda tidak memulai permintaan ini, silakan login dengan password
-            berikut ini lalu ubahlah password Anda untuk keamanan akun.</p>
-            <div style="text-align: center;"><p>
-            <strong style="text-align: center;font-size: 24.0px;font-weight: bold;">
-            '.$data["new_password"].'</strong></p></div>
-            <p>Terima kasih, <br /><br /> Admin Reporting App</p></td></tr>
+            ulang sandi. Jika Anda tidak memulai permintaan ini, Anda tidak perlu
+            melakukan tindakan lebih lanjut dan dapat mengabaikan email ini dengan aman.</p>
+            <p> <br />Terima kasih, <br /><br /> Admin Reporting App</p></td></tr>
             <tr height="32px"></tr></tbody></table></td></tr>
             <tr height="16"></tr>
             <tr><td style="max-width: 600.0px;font-family: Roboto-Regular , Helvetica , Arial , sans-serif;
@@ -568,6 +573,62 @@ class UserController extends BaseController
             $data = $this->responseDetail(400, true, 'Data tidak ditemukan');
         }
         return $data;
+    }
+
+    public function getResetPassword($request, $response, $args)
+    {
+        $users = new UserModel($this->db);
+        $registers = new \App\Models\RegisterModel($this->db);
+
+        $findToken = $registers->find('token', $args['token']);
+        // var_dump($user);die();
+        if ($findToken) {
+            return $this->responseDetail(200, false, 'Token diterima', [
+                'data'  => [
+                    'token' => $request->getParam('token')
+                ]
+            ]);
+        } else {
+            return $this->responseDetail(404, true, 'Token salah');
+        }
+    }
+
+    //Change password
+    public function resetPassword($request, $response, $args)
+    {
+        $users = new UserModel($this->db);
+        $registers = new \App\Models\RegisterModel($this->db);
+
+        $this->validator->rule('required', ['email', 'password']);
+        $this->validator->rule('equals', 'password2', 'password');
+        $this->validator->rule('email', 'email');
+        $this->validator->rule('lengthMin', ['password'], 5);
+
+        if ($this->validator->validate()) {
+            $findUser = $users->getUser('email', $request->getParam('email'));
+            $findToken = $registers->find('token', $request->getParam('token'));
+            // var_dump($findToken);die();
+            if ($findUser['id'] == $findToken['user_id']) {
+                $data['new_password'] = $request->getParam('password');
+                $users->changePassword($data, $findUser['id']);
+                $registers->hardDelete($findToken['id']);
+                return $this->responseDetail(200, false, 'Password berhasil diperbarui', [
+                    'data'  => $findUser
+                ]);
+            } else {
+                return $this->responseDetail(404, true, 'Data tidak ditemukan', [
+                    'data'  => [
+                        'token' => $request->getParam('token')
+                    ]
+                ]);
+            }
+        } else {
+            return $this->responseDetail(400, true, $this->validator->errors(), [
+                'data'  => [
+                    'token' => $request->getParam('token')
+                ]
+            ]);
+        }
     }
 
 }

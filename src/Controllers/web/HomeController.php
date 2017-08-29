@@ -136,8 +136,6 @@ class HomeController extends BaseController
 
     public function test($request, $response)
     {
-
-
             $id = $_SESSION['login']['id'];
             if (!empty($_SESSION['guard'])) {
                 try {

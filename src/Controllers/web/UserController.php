@@ -333,4 +333,57 @@ class UserController extends BaseController
             return $response->withRedirect($this->router->pathFor('login'));
         }
     }
+
+    public function resetPassword($request, $response, $args)
+    {
+        try {
+            $result = $this->client->request('POST', 'password/reset',
+                ['form_params' => [
+                    'token' => $request->getParam('token'),
+                    'email' => $request->getParam('email'),
+                    'password' => $request->getParam('password'),
+                    'password2' => $request->getParam('password2')
+                ]
+            ]);
+        } catch (GuzzleException $e) {
+            $result = $e->getResponse();
+        }
+
+        $data = json_decode($result->getBody()->getContents(), true);
+        // var_dump($data);die;
+        if ($data['error'] == false) {
+            $this->flash->addMessage('success', $data['message']);
+            return $response->withRedirect($this->router->pathFor('login'));
+        } else {
+            $_SESSION['errors'] = $data['message'];
+            $_SESSION['old'] = $request->getParams();
+            return  $this->view->render($response, 'auth/reset-password.twig', [
+                'token' =>  $request->getParam('token')
+            ]);
+
+        }
+    }
+
+    public function getResetPassword($request, $response, $args)
+    {
+        try {
+            $result = $this->client->request('GET', 'password/reset/'.$args['token']);
+        } catch (GuzzleException $e) {
+            $result = $e->getResponse();
+        }
+
+        $data = json_decode($result->getBody()->getContents(), true);
+        // var_dump($data);die;
+        if ($data['error'] == false) {
+            $this->flash->addMessage('success', $data['message']);
+            return  $this->view->render($response, 'auth/reset-password.twig',[
+                'token' => $args['token']
+            ]);
+        } else {
+            $this->flash->addMessage('error', $data['message']);
+            return $response->withRedirect($this->router->pathFor('login'));
+        }
+    }
+
+
 }

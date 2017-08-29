@@ -4,33 +4,10 @@
 <head>
     <title>Login</title><meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="css/bootstrap.min.css" />
-    <link rel="stylesheet" href="css/bootstrap-responsive.min.css" />
-    <link rel="stylesheet" href="css/matrix-login.css" />
-    <link href="font-awesome/css/font-awesome.css" rel="stylesheet" />
-    <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/2.3.11/css/AdminLTE.min.css"> -->
-    <!-- <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,700,800' -->
-    <!-- rel='stylesheet' type='text/css'> -->
-
-    <style media="screen">
-    .badgebox
-    {
-        opacity: 0;
-    }
-    .badgebox + .badge
-    {
-        text-indent: -999999px;
-        width: 27px;
-    }
-    .badgebox:focus + .badge
-    {
-        box-shadow: inset 0px 0px 5px;
-    }
-    .badgebox:checked + .badge
-    {
-        text-indent: 0;
-    }
-    </style>
+    <link rel="stylesheet" href="{{ base_url() }}/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="{{ base_url() }}/css/bootstrap-responsive.min.css" />
+    <link rel="stylesheet" href="{{ base_url() }}/css/matrix-login.css" />
+    <link href="{{ base_url() }}/font-awesome/css/font-awesome.css" rel="stylesheet" />
 </head>
 <body>
     <div id="loginbox">
@@ -58,12 +35,9 @@
             </div>
         </div>
         <div style="color:#fff; margin:0px 40px 10px 18px;" class="checkbox">
-            <!-- <label style="width:93%;" for="danger" class="btn btn-danger">Login Sebagai Wali?
-                <input type="checkbox" name="guard" value="1" id="danger" class="badgebox">
-                <span style="color:#fff; background:#869e9b;"class="badge"><b>&check;</b></span></label><br/><br/> -->
-                <span class="">
-                    <button style="width:100%;" type="submit" class="btn btn-success">
-                        <i class="fa fa-login"></i>Login</button></span>
+            <span class="">
+                <button style="width:100%;" type="submit" class="btn btn-success">
+                    <i class="fa fa-login"></i>Login</button></span>
         </div>
         <div style="color:#fff;"class="form-actions">
             <span class="pull-left">

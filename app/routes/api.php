@@ -7,7 +7,8 @@ $app->group('/api', function() use ($app, $container) {
     $app->post('/register', 'App\Controllers\api\UserController:register')->setname('api.register');
     $app->post('/forgot-password', 'App\Controllers\api\UserController:recovery')->setName('api.recovery');
     $app->post('/reset', 'App\Controllers\api\UserController:forgotPassword')->setName('api.reset');
-    $app->post('/reset/{token}', 'App\Controllers\api\UserController:reset')->setName('api.recovery');
+    $app->get('/password/reset/{token}', 'App\Controllers\api\UserController:getResetPassword')->setName('api.get.reset');
+    $app->post('/password/reset', 'App\Controllers\api\UserController:resetPassword')->setName('api.post.reset');
     $app->post('/test', 'App\Controllers\api\UserController:changePassword')->setName('api.reset.password');
     $app->group('/item', function() use ($app, $container) {
         $app->get('', 'App\Controllers\api\ItemController:all')->setname('api.item.all');
