@@ -66,7 +66,13 @@ $app->group('', function() use ($app, $container) {
         // $app->get('/show/user', 'App\Controllers\web\GuardController:showGuardByUser');
         $app->get('/user', 'App\Controllers\web\GuardController:getUser');
         $app->get('/show/user', 'App\Controllers\web\GuardController:getUserByGuard')->setName('guard.show.user');
+        $app->get('/show/guard', 'App\Controllers\web\GuardController:getUserGuard')->setName('guard.show');
         $app->delete('/delete/{id}', 'App\Controllers\web\GuardController:deleteGuardian');
+        $app->get('/search', 'App\Controllers\web\GuardController:getSearch')->setName('guard.search');
+        $app->get('/search/user', 'App\Controllers\web\GuardController:searchUser')->setName('guard.search.user');
+        $app->get('/request/guardian/{user}', 'App\Controllers\web\GuardController:requestToBeGuard')->setName('web.guard.request');
+        $app->get('/request/fellow/{guard}', 'App\Controllers\web\GuardController:requestToBeFellow')->setName('web.fellow.request');
+
     });
     $app->group('/pic', function() use ($app, $container){
         $app->get('/items/group/{id}', 'App\Controllers\web\PicController:getUnreportedItem')->setName('pic.item.group');

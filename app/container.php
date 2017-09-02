@@ -43,10 +43,13 @@ $container['view'] = function ($container) {
 	if (@$_SESSION['guard']) {
 		$view->getEnvironment()->addGlobal('guard', $_SESSION['guard']);
 	}
+	if (@$_SESSION['search_param']) {
+		$view->getEnvironment()->addGlobal('search_param', $_SESSION['search_param']);
+	}
 
 	if (@$_SESSION['search']) {
 		$view->getEnvironment()->addGlobal('search', $_SESSION['search']);
-		unset($_SESSION['search']);
+		// unset($_SESSION['search']);
 	}
 
 	// if (@$_SESSION['guard']) {

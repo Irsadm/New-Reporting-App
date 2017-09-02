@@ -113,4 +113,16 @@ class GuardModel extends BaseModel
             ->where('guard_id = ' . $guardId)
             ->execute();
     }
+
+	public function findAllGuard($userId)
+	{
+		$qb = $this->db->createQueryBuilder();
+		$this->query = $qb->select('users.*')
+			 ->from('users', 'users')
+			 ->join('users', $this->table, 'guard', 'users.id = guard.guard_id')
+			 ->where('guard.user_id = :id')
+			 ->setParameter(':id', $userId);
+			 // $result = $qb->execute();
+			return $this;
+	}
 }

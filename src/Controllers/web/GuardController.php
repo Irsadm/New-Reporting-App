@@ -22,11 +22,13 @@ class GuardController extends BaseController
                      'page' => $request->getQueryParam('page'),
                      'id' => $_SESSION['login']['id']
  			]]);
-            // $content = json_decode($result->getBody()->getContents());
+            $_SESSION['search'] = 1;
+             // $content = json_decode($result->getBody()->getContents());
         } catch (GuzzleException $e) {
             $result = $e->getResponse();
         }
         $data = json_decode($result->getBody()->getContents(), true);
+        // var_dump($_SESSION['search']);die();
         // var_dump($data);die();
         return $this->view->render($response, 'users/guard/all-user.twig', [
             'data'          =>  $data['data'] ,
@@ -122,5 +124,110 @@ class GuardController extends BaseController
             'data'          =>  $data['data'] ,
             'pagination'    =>  $data['pagination']
         ]);
+    }
+
+    public function getSearch($request, $response)
+    {
+        if ($_SESSION['search'] == 1){
+            return $this->view->render($response,'users/guard/search-user.twig');
+
+        } else {
+            return $this->view->render($response,'users/fellow/search-guard.twig');
+        }
+    }
+
+    public function searchUser($request, $response, $args)
+    {
+        $user = new \App\Models\Users\UserModel($this->db);
+
+        $searchParam = $request->getParam('search');
+        $_SESSION['search_param'] = $searchParam;
+        $search = $_SESSION['search'];
+        $userId = $_SESSION['login']['id'];
+        $page = !$request->getQueryParam('page') ? 1 : $request->getQueryParam('page');
+        $perpage = $request->getQueryParam('perpage');
+        $result = $user->search($searchParam, $userId)->setPaginate($page, 8);
+        // var_dump($result); die();
+
+
+        $data['users'] = $result['data'];
+        $data['count']    = count($data['users']);
+        $data['pagination'] = $result['pagination'];
+        $data['search'] = $_SESSION['search_param'];
+        // var_dump($data['users']); die();
+        if ($search == 1) {
+            $data['guard'] = $_SESSION['guard'];
+            return $this->view->render($response, 'users/guard/search-user.twig', $data);
+        }else {
+            $data['guard'] = $_SESSION['login']['id'];
+            return $this->view->render($response, 'users/fellow/search-guard.twig', $data);
+        }
+    }
+
+    public function requestToBeFellow($request, $response, $args)
+    {
+        $guard  = $args['guard'];
+        $search = $_SESSION['search_param'];
+        try {
+            $result = $this->client->request('POST','guard/request/guardian/'.$guard);
+        } catch (GuzzleException $e) {
+            $result = $e->getResponse();
+        }
+        $data = json_decode($result->getBody()->getContents(), true);
+            // var_dump($data);die();
+
+        if ($data['code'] == 201) {
+            $this->flash->addMessage('success', $data['message']);
+            return $response->withRedirect('/Reporting-App/public/guard/search/user?search='.$search);
+        }else {
+            $this->flash->addMessage('warning', $data['message']);
+            return $response->withRedirect('/Reporting-App/public/guard/search/user?search='.$search);
+        }
+    }
+
+    public function requestToBeGuard($request, $response, $args)
+    {
+        $fellow= $args['user'];
+        $search = $_SESSION['search_param'];
+
+        try {
+            $result = $this->client->request('POST','guard/request/fellow/'.$fellow);
+        } catch (GuzzleException $e) {
+            $result = $e->getResponse();
+        }
+        $data = json_decode($result->getBody()->getContents(), true);
+            // var_dump($data);die();
+
+        if ($data['code'] == 201) {
+            $this->flash->addMessage('success', $data['message']);
+            return $response->withRedirect('/Reporting-App/public/guard/search/user?search='.$search);
+        }else {
+            $this->flash->addMessage('warning', $data['message']);
+            return $response->withRedirect('/Reporting-App/public/guard/search/user?search='.$search);
+        }
+    }
+
+    // Function show guardian by user_id
+    public function getUserGuard(Request $request, Response $response)
+    {
+        try {
+            $result = $this->client->request('GET',
+            $this->router->pathFor('api.guard.show'), [
+                 'query' => [
+                     'perpage' => 10,
+                     'page' => $request->getQueryParam('page'),
+                    //  'id' => $_SESSION['login']['id']
+ 			]]);
+            $_SESSION['search'] = 2;
+            // $content = json_decode($result->getBody()->getContents());
+        } catch (GuzzleException $e) {
+            $result = $e->getResponse();
+        }
+        $data = json_decode($result->getBody()->getContents(), true);
+        // var_dump($_SESSION['search']);die();
+        return $this->view->render($response, 'users/fellow/all-guard.twig', [
+            'data'          =>  $data['data'] ,
+            'pagination'    =>  $data['pagination']
+        ]);    // return $this->view->render($response, 'guard/show-user.twig', $content->reporting);
     }
 }
