@@ -5,7 +5,6 @@ namespace App\Controllers\web;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 use GuzzleHttp\Exception\BadResponseException as GuzzleException;
-use App\Models\GuardModel;
 use GuzzleHttp;
 use GuzzleHttp\Subscriber\Oauth\Oauth1;
 
@@ -14,6 +13,8 @@ class GuardController extends BaseController
     // Function show user by guard_id
     public function getUserByGuard(Request $request, Response $response)
     {
+
+        $_SESSION['search'] = 1;
         try {
             $result = $this->client->request('GET',
             $this->router->pathFor('api.guard.show.user'), [
@@ -22,7 +23,6 @@ class GuardController extends BaseController
                      'page' => $request->getQueryParam('page'),
                      'id' => $_SESSION['login']['id']
  			]]);
-            $_SESSION['search'] = 1;
              // $content = json_decode($result->getBody()->getContents());
         } catch (GuzzleException $e) {
             $result = $e->getResponse();
@@ -128,6 +128,7 @@ class GuardController extends BaseController
 
     public function getSearch($request, $response)
     {
+        // var_dump($_SESSION['search']); die();
         if ($_SESSION['search'] == 1){
             return $this->view->render($response,'users/guard/search-user.twig');
 
@@ -154,7 +155,7 @@ class GuardController extends BaseController
         $data['count']    = count($data['users']);
         $data['pagination'] = $result['pagination'];
         $data['search'] = $_SESSION['search_param'];
-        // var_dump($data['users']); die();
+        // var_dump($search); die();
         if ($search == 1) {
             $data['guard'] = $_SESSION['guard'];
             return $this->view->render($response, 'users/guard/search-user.twig', $data);
@@ -164,52 +165,10 @@ class GuardController extends BaseController
         }
     }
 
-    public function requestToBeFellow($request, $response, $args)
-    {
-        $guard  = $args['guard'];
-        $search = $_SESSION['search_param'];
-        try {
-            $result = $this->client->request('POST','guard/request/guardian/'.$guard);
-        } catch (GuzzleException $e) {
-            $result = $e->getResponse();
-        }
-        $data = json_decode($result->getBody()->getContents(), true);
-            // var_dump($data);die();
-
-        if ($data['code'] == 201) {
-            $this->flash->addMessage('success', $data['message']);
-            return $response->withRedirect('/Reporting-App/public/guard/search/user?search='.$search);
-        }else {
-            $this->flash->addMessage('warning', $data['message']);
-            return $response->withRedirect('/Reporting-App/public/guard/search/user?search='.$search);
-        }
-    }
-
-    public function requestToBeGuard($request, $response, $args)
-    {
-        $fellow= $args['user'];
-        $search = $_SESSION['search_param'];
-
-        try {
-            $result = $this->client->request('POST','guard/request/fellow/'.$fellow);
-        } catch (GuzzleException $e) {
-            $result = $e->getResponse();
-        }
-        $data = json_decode($result->getBody()->getContents(), true);
-            // var_dump($data);die();
-
-        if ($data['code'] == 201) {
-            $this->flash->addMessage('success', $data['message']);
-            return $response->withRedirect('/Reporting-App/public/guard/search/user?search='.$search);
-        }else {
-            $this->flash->addMessage('warning', $data['message']);
-            return $response->withRedirect('/Reporting-App/public/guard/search/user?search='.$search);
-        }
-    }
-
     // Function show guardian by user_id
     public function getUserGuard(Request $request, Response $response)
     {
+        $_SESSION['search'] = 2;
         try {
             $result = $this->client->request('GET',
             $this->router->pathFor('api.guard.show'), [
@@ -218,7 +177,6 @@ class GuardController extends BaseController
                      'page' => $request->getQueryParam('page'),
                     //  'id' => $_SESSION['login']['id']
  			]]);
-            $_SESSION['search'] = 2;
             // $content = json_decode($result->getBody()->getContents());
         } catch (GuzzleException $e) {
             $result = $e->getResponse();

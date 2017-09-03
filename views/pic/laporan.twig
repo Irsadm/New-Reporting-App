@@ -104,7 +104,6 @@
                                 {% endfor %}
                                 {% if items != null %}
                                 <nav aria-label="...">
-
                                     <ul class="pager">
                                         <div class="pagination alternate">
                                             <ul>
@@ -137,7 +136,7 @@
     <div class="modal-content">
         <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal">
-                <span aria-hidden="true">×</span><span class="sr-only">Close</span></button>
+                <span aria-hidden="true">×</span><span class="sr-only">Tutup</span></button>
             <h3 class="modal-title" id="lineModalLabel">Form Tambah tugas</h3>
         </div>
         <div class="modal-body">
@@ -154,7 +153,7 @@
             <div class="row">
                 <div class="col-xs-12 col-sm-4 col-md-5">
                     <div class="form-group {{ errors.name ? 'has-error' : '' }}">
-                        <label for="name">Name :</label>
+                        <label for="name">Nama :</label>
                         <input type="text" name="name" class="form-control">
                         {% if errors.name %}
                         <span class="help-block">{{ errors.name | first }}</span>
@@ -163,7 +162,7 @@
                 </div>
                 <div class="col-xs-12 col-sm-6 col-md-7">
                     <div class="form-group {{ errors.description ? 'has-error' : '' }}">
-                        <label for="description">Description :</label>
+                        <label for="description">Deskripsi :</label>
                         <input type="text" name="description" class="form-control">
                         {% if errors.description %}
                         <span class="help-block">{{ errors.description | first }}</span>
@@ -174,11 +173,11 @@
             <div class="row">
                 <div class="col-xs-12 col-sm-5 col-md-5">
                     <div class="form-group {{ errors.public ? 'has-error' : '' }}">
-                        <label for="public">Item to :</label>
+                        <label for="public">Privasi :</label>
                         <select class="form-control" name="public" >
-                            <option value="">Select Group</option>
-                            <option value="0">Public</option>
-                            <option value="1">Private</option>
+                            <option value="">Pilih privasi</option>
+                            <option value="0">Publik</option>
+                            <option value="1">Privat</option>
                         </select>
                         {% if errors.public %}
                         <span class="help-block">{{ errors.public | first }}</span>
@@ -187,13 +186,13 @@
                 </div>
                 <div class="col-xs-12 col-sm-6 col-md-7">
                     <div class="form-group {{ errors.recurrent ? 'has-error' : '' }}">
-                        <label for="recurrent">Recurring :</label>
+                        <label for="recurrent">Pengulangan :</label>
                         <select class="form-control" name="recurrent" value="">
-                            <option value="">No Recurring</option>
-                            <option value="daily">Daily</option>
-                            <option value="weekly">Weekly</option>
-                            <option value="monhtly">Monthly</option>
-                            <option value="yearly">Yearly</option>
+                            <option value="">Tanpa pengulangan</option>
+                            <option value="harian">Harian</option>
+                            <option value="mingguan">Mingguan</option>
+                            <option value="bulanan">Bulanan</option>
+                            <option value="tahunan">Tahunan</option>
                         </select>
                         {% if errors.recurrent %}
                         <span class="help-block">{{ errors.recurrent | first }}</span>
@@ -203,7 +202,7 @@
             </div>
                 <div class="col-xs-12 col-sm-12 col-md-12">
                     <div class="form-group {{ errors.start_date ? 'has-error' : '' }}">
-                        <label for="start_date">Start date :</label>
+                        <label for="start_date">Tanggal mulai :</label>
                         <input type="date" name="start_date" class="form-control">
                         {% if errors.start_date %}
                         <span class="help-block">{{ errors.start_date | first }}</span>
@@ -215,10 +214,10 @@
                 <div class="btn-group btn-group-justified" role="group" aria-label="group button">
                     <div class="btn-group" role="group">
                         <button type="button" class="btn btn-danger"
-                         data-dismiss="modal" role="button">Close</button>
+                         data-dismiss="modal" role="button">Tutup</button>
                     </div>
                     <div class="btn-group" role="group">
-                        <button type="submit" class="btn btn-primary btn-hover-green">Save</button>
+                        <button type="submit" class="btn btn-primary btn-hover-green">Simpan</button>
                     </div>
                 </div>
             </div>
@@ -234,7 +233,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal">
-                    <span aria-hidden="true">×</span><span class="sr-only">Close</span></button>
+                    <span aria-hidden="true">×</span><span class="sr-only">Tutup</span></button>
                 <h3 class="modal-title" id="lineModalLabel">Form laporan tugas</h3>
             </div>
             <div class="modal-body">
@@ -302,7 +301,7 @@
                     <div class="btn-group btn-group-justified" role="group" aria-label="group button">
                         <div class="btn-group" role="group">
                             <button type="button" class="btn btn-danger"
-                             data-dismiss="modal"  role="button"><b>Close</b></button>
+                             data-dismiss="modal"  role="button"><b>Tutup</b></button>
                         </div>
                         <div class="btn-group" role="group">
                             <button type="submit" class="btn btn-success btn-hover-green">

@@ -1,23 +1,29 @@
 {% extends 'templates/default.twig' %}
 
-{% block title %} List Group {% endblock %}
+{% block title %} Daftar grup {% endblock %}
 
-{% block current %} List Group {% endblock %}
+{% block current %} Daftar grup {% endblock %}
 
 {% block content %}
+<div class="widget-box" style="margin-top:0px; background:#fff;">
 <a class="list-group-item active main-color-bg">
-    <span class="" aria-hidden="true">Daftar grup</span>
+    <span class="" aria-hidden="true">Daftar Grup Anda</span>
 </a>
-<div style="padding:10px; background:#fff;"class="span12">
+<!-- <div style="padding:10px; background:#fff;"class="span12"> -->
+<div class="widget-content" style="padding:20px;">
     <span style="float:right;">
         <div class="btn-group">
-            <a class="btn btn-primary" href="#"><i class="icon-collapse"></i> Lainnya</a>
+            <a class="btn btn-primary dropdown-toggle" data-toggle="dropdown" href="#">
+                <i class="icon-collapse"></i> Lainnya</a>
             <a class="btn btn-primary dropdown-toggle" data-toggle="dropdown" href="#">
                 <i class="fa fa-caret-down"></i>
             </a>
-            <ul class="dropdown-menu">
-                <li><a href="" data-toggle="modal" data-target="#squarespaceModal">
-                    <i class="icon-fixed-width icon-pencil"></i> Buat group</a>
+            <ul style="font-size: larger" class="dropdown-menu">
+                <li><a style="font-size: medium" href="" data-toggle="modal" data-target="#squarespaceModal">
+                    <i class="icon-fixed-width icon-pencil"> Buat grup</i></a>
+                </li>
+                <li><a style="font-size: medium" href="" data-toggle="modal" data-target="#squarespaceModal2">
+                    <i class="icon-fixed-width icon-search"> Cari grup</i></a>
                 </li>
             </ul>
         </div>
@@ -28,97 +34,114 @@
         <!-- <form action="" method="POST"> -->
 
             <div class="row">
-                <div class="col-md-3" style="padding-right:0px;">
-                    <div  style="line-height:4em;" class="panel box-body" >
+                <div class="col-md-3" style="">
+                    <div  style="line-height:3em;" class="" >
                         <a href="{{ path_for('enter.group', {'id': data.id})}}"
                          title="Masuk ke grup {{ data.name }}"><center>
-                        <h1><img src="{{ base_url() }}/assets/images/{{ data.image }}"
+                        <h1 style="color:#0c27de; font-weight: bold; font-size:40px; vertical-align: middle;">
+                            <img src="{{ base_url() }}/assets/images/{{ data.image }}"
                             align="center" alt="{{ data.name }}" width="234" height="234">
                         </h1></center></a>
                     </div>
                 </div>
-            <div class="col-md-8" style="padding-right:20px; left:60px;">
+            <div class="col-md-8" style="padding-right:20px; left:40px;">
                 <div class="panel box-body">
                     <div class="row">
-                        <div class="col-sm-2 col-md-10" style="padding:20px;">
+                        <div class="col-sm-2 col-md-10" style="font-size: 15px; padding:20px;margin-top:20px;">
                             <div class="form-group row">
-                                Nama : {{ data.name }}
+                                <b>Nama</b> : {{ data.name }}
                             </div>
                             <div class="form-group row">
-                                Deskripsi : {{ data.description }}
+                                <b>Deskripsi</b> : {{ data.description }}
                             </div>
-                            <div class="form-group row">
-                                Member : {{ counts.user }}
-                            </div>
+                            <!-- <div class="form-group row">
+                                Anggota : {{ counts.user }}
+                            </div> -->
                         </div>
-                    </div>
-                    <div class="caption" style="padding:20px;">
-                        {% if login.status == 1 %}
-                        <a href="{{ base_url() }}/admin/group/{{ group.id }}/allusers"
-                        class="btn btn-primary btn btn-primary btn-md" style="margin-bottom:7px">
-                        <b>Add member to group</b></a>
-
-                        <a href="{{ base_url() }}/admin/group/{{ group.id }}/users"
-                        class="btn btn-primary btn btn-primary btn-md" style="margin-bottom:7px">
-                        <b>{{ group.name }} Members</b></a>
-
-                        {% elseif login.status == 0 %}
-                        <a href="{{ base_url() }}/pic/{{ group.id }}/allusers"
-                        class="btn btn-primary btn btn-primary btn-md" style="margin-bottom:7px">
-                        <b>Add member to group</b></a>
-
-                        <a href="{{ base_url() }}/pic/{{ group.id }}/users"
-                        class="btn btn-primary btn btn-primary btn-md" style="margin-bottom:7px">
-                        <b>{{ group.name }} Members</b></a>
-
-                        <span class="pull-right">
-                            <a href="{{ path_for('pic.item.group', {id: group.id}) }}" style="margin-bottom:7px">
-                                <button type="submit" name="pic" value="3" class="btn btn-primary"> My item</button>
-                            </a>
-                        </span>
-                        <hr>
-                        {% endif %}
+                        <div class="col-lg-8">
+                            <p class="text-left">
+                            <b><span class="col1">Nama </span>:  </b> {{data.name}}<br><br>
+                            <b><span class="col1">Deskripsi </span>:  </b> {{data.description}}<br><br>
+                            <b><span class="col1">Member </span>:  </b> {{counts.user}}<br><br>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
 
-            {% endfor %}
-            {% if data != null %}
-            <nav aria-label="...">
-                <ul class="pager">
-                    <div class="pagination alternate">
-                        <ul>
-                            {% if pagination.current > 1 %}
-                            <li><a href="{{ base_url() }}/home/?page={{ pagination.current - 1 }}">
-                                    Sebelumnya</a></li>
-                            {% endif %}
-                            <li class="active"> <a>{{ pagination.current }}</a></li>
-                            {% if pagination.current < pagination.total_page %}
-                            <li><a href="{{ base_url() }}/home/?page={{ pagination.current + 1 }}">
-                                    Selanjutnya</a></li>
+    {% endfor %}
+    {% if data != null %}
+    <nav aria-label="...">
+        <ul class="pager">
+            <div class="pagination alternate">
+                <ul>
+                    {% if pagination.current > 1 %}
+                    <li><a href="{{ base_url() }}/home/?page={{ pagination.current - 1 }}">
+                        Sebelumnya</a></li>
+                        {% endif %}
+                        <li class="active"> <a>{{ pagination.current }}</a></li>
+                        {% if pagination.current < pagination.total_page %}
+                        <li><a href="{{ base_url() }}/home/?page={{ pagination.current + 1 }}">
+                            Selanjutnya</a></li>
                             {% endif %}
                         </ul>
                     </div>
                 </ul>
             </nav>
-                {% else %}
-                <center>Tidak ada Grup</center>
-                {% endif %}
-                <hr style="margin-top:10px;margin-bottom:10px;" >
-            </form>
-        </div>
+            {% else %}
+            <center>Tidak ada Grup</center>
+            {% endif %}
+            <hr style="margin-top:10px;margin-bottom:10px;" >
+        </form>
     </div>
+</div>
 
 <!-- Modal -->
-<!-- line modal -->
-<div class="modal fade" id="squarespaceModal" tabindex="-1" role="dialog"
+<!-- line modal search-->
+<div class="modal fade" id="squarespaceModal2" tabindex="-1" role="dialog"
  aria-labelledby="modalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal">
-                    <span aria-hidden="true">×</span><span class="sr-only">Close</span></button>
+                    <span aria-hidden="true">×</span><span class="sr-only">Tutup</span></button>
+                <h3 class="modal-title" id="lineModalLabel">Cari Grup</h3>
+            </div>
+            <div class="modal-body">
+
+                <!-- modal content -->
+                <form action="{{ path_for('web.search.group') }}" method="POST">
+                    <div class="form-group">
+                        <input type="text" name="search" class="form-control" placeholder="Search group ..">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="btn-group btn-group-justified" role="group" aria-label="group button">
+                        <div class="btn-group" role="group">
+                            <button type="button" class="btn btn-danger"
+                            data-dismiss="modal" role="button">Tutup</button>
+                        </div>
+                        <div class="btn-group" role="group">
+                            <button type="submit" class="btn btn-success btn-hover-green" >Cari</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- line modal -->
+<!-- <div class="modal fade" id="squarespaceModal" tabindex="-1" role="dialog"
+ aria-labelledby="modalLabel" aria-hidden="true"> -->
+<div class="modal fade" id="squarespaceModal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <span aria-hidden="true">×</span><span class="sr-only">Tutup</span></button>
                 <h3 class="modal-title" id="lineModalLabel">Buat Group</h3>
             </div>
             <div class="modal-body">
@@ -138,15 +161,18 @@
                     <div class="btn-group btn-group-justified" role="group" aria-label="group button">
                         <div class="btn-group" role="group">
                             <button type="button" class="btn btn-danger"
-                            data-dismiss="modal" role="button">Close</button>
+                            data-dismiss="modal" role="button">Batalkan</button>
                         </div>
                         <div class="btn-group" role="group">
-                            <button type="submit" class="btn btn-success btn-hover-green" >Save</button>
+                            <button type="submit" class="btn btn-success btn-hover-green" >Simpan</button>
                         </div>
                     </div>
                 </div>
             </form>
         </div>
+        </div>
     </div>
 </div>
+<!-- </div> -->
+
 {% endblock %}

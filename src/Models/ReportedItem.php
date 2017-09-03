@@ -5,7 +5,7 @@ namespace App\Models;
 class ReportedItem extends BaseModel
 {
     protected $table = 'reported_item';
-    protected $column = ['id', 'name'];
+    protected $column = ['id', 'item_id', 'user_id'];
     protected $joinTable = 'groups';
 
     public function create($data)

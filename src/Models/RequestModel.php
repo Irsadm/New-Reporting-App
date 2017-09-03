@@ -1,36 +1,43 @@
 <?php
-
 namespace App\Models;
-
+/**
+ *
+ */
 class RequestModel extends BaseModel
 {
     protected $table = 'requests';
-
-    public function create(array $data)
+    protected $column = ['user_id', 'guard_id', 'group_id', 'category'];
+    public function requestUserToGroup(array $data)
     {
-        $datas =
-        [
-            "user_id"   => $data['user_id'],
-            "group_id"  => $data['group_id'],
-            "guard_id"  => $data['guard_id'],
-            "category"  => $data['category'],
-            "status"    => $data['status'],
+        $data = [
+            'user_id'   =>  $data['user_id'],
+            'group_id'  =>  $data['group_id'],
+            'category'  =>  0,
         ];
-
-        $this->createData($datas);
+        $this->createData($data);
+        return $this->db->lastInsertId();
     }
-
-    public function setStatusItem($id)
+    public function requestGuardToUser(array $data)
     {
-        $qb = $this->db->createQueryBuilder();
-
-        $qb->update($this->table)
-            ->set('status', 1)
-            ->where('id = ' . $id)
-            ->execute();
+        $data = [
+            'user_id'   =>  $data['user_id'],
+            'guard_id'  =>  $data['guard_id'],
+            'category'  =>  1,
+        ];
+        $this->createData($data);
+        return $this->db->lastInsertId();
     }
-
-    public function findUser($column1, $val1, $column2, $val2)
+    public function requestUserToGuard(array $data)
+    {
+        $data = [
+            'user_id'   =>  $data['user_id'],
+            'guard_id'  =>  $data['guard_id'],
+            'category'  =>  2,
+        ];
+        $this->createData($data);
+        return $this->db->lastInsertId();
+    }
+    public function findRequest($column1, $val1, $column2, $val2)
     {
         $param1 = ':'.$column1;
         $param2 = ':'.$column2;
@@ -39,139 +46,104 @@ class RequestModel extends BaseModel
             ->from($this->table)
             ->setParameter($param1, $val1)
             ->setParameter($param2, $val2)
-            ->where($column1 . ' = '. $param1 . '&&' . $column2 . '=' . $param2);
+            ->where($column1 . ' = '. $param1 .'&&'. $column2 . ' = '. $param2);
         $result = $qb->execute();
         return $result->fetch();
     }
-
-    public function findAll($column1, $val1)
-    {
-        $param1 = ':'.$column1;
-        $qb = $this->db->createQueryBuilder();
-        $qb->select('*')
-            ->from($this->table)
-            ->setParameter($param1, $val1)
-            ->where($column1 . ' = '. $param1);
-        $result = $qb->execute();
-        return $result->fetchAll();
-    }
-
-    public function getItemGroup($userGroupId)
+    public function findUserRequest($guardId)
     {
         $qb = $this->db->createQueryBuilder();
-
-
-        $this->query = $qb->select('it.name', 'it.description', 'it.recurrent',
-                                    'it.start_date', 'it.end_date')
-        ->from($this->jointTable, 'it')
-        ->join('it', $this->table, 'ui', 'ui.item_id = it.id')
-        ->where('ui.user_id = :user_id')
-        ->andWhere('ui.user_group_id = :user_group_id')
-        ->setParameter(':user_group_id', $userGroupId);
-
+        $this->query = $qb->select('u.username as user', 'req.*')
+        ->from($this->table, 'req')
+        ->join('req', 'users', 'u', 'u.id = req.user_id')
+        ->where('req.guard_id = :id')
+        ->andWhere('req.status = 0')
+        ->andWhere('req.category = 1')
+        ->setParameter(':id', $guardId);
         return $this;
     }
-
-
-    public function getItem($id)
-    {
+    public function findGuardRequest($userId)
+	{
+		$qb = $this->db->createQueryBuilder();
+		$this->query = $qb->select('u.username as guard', 'req.*')
+			 ->from($this->table, 'req')
+			 ->join('req', 'users', 'u', 'u.id = req.guard_id')
+             ->where('req.user_id = :id')
+             ->andWhere('req.status = 0')
+			 ->andWhere('req.category = 2')
+			 ->setParameter(':id', $userId);
+		return $this;
+	}
+    public function findGroupRequest($groupId)
+	{
+		$qb = $this->db->createQueryBuilder();
+		$this->query = $qb->select('g.name as grup', 'u.username as user', 'req.*')
+			 ->from($this->table, 'req')
+             ->join('req', 'groups', 'g', 'g.id = req.group_id')
+             ->leftJoin('req', 'users', 'u', 'u.id = req.user_id')
+             ->where('req.group_id = :group_id')
+			 ->andWhere('req.category = 0')
+             ->setParameter(':group_id', $groupId);
+		return $this;
+	}
+    public function findAllGroupRequest($userId)
+	{
         $qb = $this->db->createQueryBuilder();
+        $query1 = $qb->select('group_id')
+        ->from('user_group')
+        ->where('user_id =' . $userId)
+        ->andWhere('status = 1')
+        ->execute();
+		$qb1 = $this->db->createQueryBuilder();
+		$this->query = $qb1->select('g.name as group_name', 'u.username as user', 'req.*')
+			 ->from($this->table, 'req')
+             ->join('req', 'user_group', 'ug', $qb1->expr()->in('req.group_id',$query1))
+             ->leftJoin('req', 'groups', 'g', 'g.id = req.group_id')
+             ->leftJoin('req', 'users', 'u', 'u.id = req.user_id')
+            //  ->where('req.group_id = :group_id')
+			 ->andWhere('req.category = 0');
+            //  ->setParameter(':group_id', $groupId);
+            // var_dump($result);die;
+		return $this;
+	}
 
-        $query1 = $qb->select('item_id')
-                    ->from($this->table, 'ui')
-                    ->join('ui', 'user_group', 'ug', 'ug.id = ui.user_group_id')
-                    ->where('ug.user_id = '.  $id)
-                    ->execute();
-
-        $qb1 = $this->db->createQueryBuilder();
-
-		$qb1->select('items.*', 'user_item.status')
-			 ->from($this->table, 'user_item')
-	 		 ->join('user_item', $jointTable, 'items', $qb1->expr()->in('items.id', $query1))
-			 ->where('deleted = 0')
-			 ->groupBy('items.id');
-
-             $result = $qb1->execute();
-             return $result->fetchAll();
-    }
-
-    public function getItemInGroup($userGroupId)
+    public function create(array $data)
     {
-        $qb = $this->db->createQueryBuilder();
-
-
-        $qb->select('it.name', 'ui.id', 'ui.reported_at', 'it.description',
-            'it.recurrent', 'it.start_date', 'it.end_date')
-            ->from($this->jointTable, 'it')
-            ->join('it', $this->table, 'ui', 'ui.item_id = it.id')
-            ->andWhere('ui.user_group_id = :user_group_id')
-            ->andWhere('ui.status = 0')
-            ->setParameter(':user_group_id', $userGroupId);
-
-        $result = $qb->execute();
-        return $result->fetchAll();
-    }
-
-    public function getDoneItemInGroup($userGroupId)
-    {
-        $qb = $this->db->createQueryBuilder();
-
-
-     $qb->select('it.name', 'ui.id', 'ui.reported_at', 'it.description',
-            'it.recurrent', 'it.start_date', 'it.end_date')
-        ->from($this->jointTable, 'it')
-        ->join('it', $this->table, 'ui', 'ui.item_id = it.id')
-        ->andWhere('ui.user_group_id = :user_group_id')
-        ->andWhere('ui.status = 1')
-        ->setParameter(':user_group_id', $userGroupId);
-
-        $result = $qb->execute();
-
-        return $result->fetchAll();
-    }
-
-    public function setStatusItems($id)
-    {
-        $date = date('Y-m-d H:i:s');
         $data = [
-            'status'        => 1,
-            'reported_at'   => $date
+            'user_id'   =>  $data['user_id'],
+            'guard_id'  =>  $data['guard_id'],
+            'group_id'  =>  $data['group_id'],
+            'category'  =>  $data['category'],
+            'status'    =>  $data['status'],
         ];
-
-        $this->updateData($data, $id);
+        $this->createData($data);
+        return $this->db->lastInsertId();
     }
 
-    public function resetStatusItems($id)
-    {
-        $date = date('Y-m-d H:i:s');
-        $data = [
-            'status'        => 0,
-            'reported_at'   => null
-        ];
-
-        $this->updateData($data, $id);
-    }
-
-    public function unselectedItem($userId, $groupId)
+    public function checkRequest($loginId)
     {
         $qb = $this->db->createQueryBuilder();
+        $qb->select('*')
+           ->from($this->table)
+           ->where('guard_id = :id')
+           ->orWhere('user_id = :id')
+           ->setParameter(':id', $loginId)
+           ->andWhere('status = 0');
+        //    ->execute();
+           $result = $qb->execute();
 
-        $query1 = $qb->select('item_id')
-                     ->from($this->table)
-                     ->where('user_group_id ='. $userId)
-                     ->execute();
+           return $result->fetchAll();
 
-        $qb1 = $this->db->createQueryBuilder();
+    }
 
-        $this->query = $qb1->select('it.*')
-             ->from($this->table, 'ui')
-             ->join('ui', $this->jointTable, 'it', $qb1->expr()->notIn('it.id', $query1))
-             ->where('it.group_id = :group_id')
-             ->andWhere('it.deleted = 0')
-             ->setParameter(':group_id', $groupId)
-             ->groupBy('it.id');
+    public function update($id)
+    {
+        $qb = $this->db->createQueryBuilder();
+        $qb->update($this->table)
+           ->set('status', 1)
+           ->where('id = :id')
+           ->setParameter(':id', $id)
+           ->execute();
 
-            $result = $this->query->execute();
-            return $result->fetchAll();
     }
 }

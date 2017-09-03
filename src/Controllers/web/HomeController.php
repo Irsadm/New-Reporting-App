@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Controllers\web;
+use App\Models\Item as Item;
 
 use GuzzleHttp\Exception\BadResponseException as GuzzleException;
 
@@ -10,36 +11,45 @@ class HomeController extends BaseController
     public function index($request, $response)
     {
         $id = $_SESSION['login']['id'];
-        if (!empty($_SESSION['guard'])) {
-            try {
-                $result = $this->client->request('GET', 'guard/timeline/'.$id.'?',[
-                     'query' => [
-                         'perpage' => 5,
-                         'page' => $request->getQueryParam('page')
-     			]]);
-            } catch (GuzzleException $e) {
-                $result = $e->getResponse();
-            }
 
-        } else {
-            try {
-                $result = $this->client->request('GET', 'user/timeline/'.$id.'?',[
-                    'query' => [
-                        'perpage' => 5,
-                        'page' => $request->getQueryParam('page')
-                        ]]);
+        try {
+            $result1 = $this->client->request('GET', 'request/all',
+            ['query' => [
+                'user_id'  => $_SESSION['login']['id'],
+                'page'     => $request->getQueryParam('page'),
+                'perpage'  => 10
+                ]
+            ]);
+        } catch (GuzzleException $e) {
+            $result1 = $e->getResponse();
+        }
+        $notif = json_decode($result1->getBody()->getContents(), true);
+
+        if ($notif['message'] == 'Data ditemukan') {
+            $_SESSION['notif'] = $notif['data'];
+        }
+        // foreach ($_SESSION['notif']['guard'] as $key => $value) {
+        //     $key = $value;
+        // }
+        // var_dump($key); die();
+
+        try {
+            $result = $this->client->request('GET', 'user/timeline/'.$id.'?',[
+                'query' => [
+                    'perpage' => 5,
+                    'page' => $request->getQueryParam('page')
+                    ]]);
                 } catch (GuzzleException $e) {
                     $result = $e->getResponse();
                 }
-        }
 
         $data = json_decode($result->getBody()->getContents(), true);
-        // var_dump($data['pagination']);die();
         if (!isset($data['pagination'])) {
         $data['pagination'] = null;
         }
+        // var_dump($data);die();
         if ($_SESSION['login']['status'] == 2) {
-            $data = $this->view->render($response, 'users/home.twig', [
+            return $this->view->render($response, 'users/home.twig', [
                 'data'       =>	$data['data'],
                 'pagination' =>	$data['pagination']
     		]);
@@ -55,12 +65,10 @@ class HomeController extends BaseController
             } else {
                 $findAll = $article->getArticle()->setPaginate($page, 3);
             }
-// var_dump($findAll);die();
-            $data = $this->view->render($response, 'users/home.twig', [
+            return $this->view->render($response, 'users/home.twig', [
                 'items' => $item->getAll()]);
         }
 
-        return $data;
     }
 
     public function showItem($request, $response, $args)
@@ -136,82 +144,6 @@ class HomeController extends BaseController
 
     public function test($request, $response)
     {
-            $id = $_SESSION['login']['id'];
-            if (!empty($_SESSION['guard'])) {
-                try {
-                    $result = $this->client->request('GET', 'guard/timeline/'.$id.'?',[
-                         'query' => [
-                             'perpage' => 5,
-                             'page' => $request->getQueryParam('page')
-         			]]);
-                } catch (GuzzleException $e) {
-                    $result = $e->getResponse();
-                }
-
-            } else {
-                try {
-                    $result = $this->client->request('GET', 'user/timeline/'.$id.'?',[
-                        'query' => [
-                            'perpage' => 5,
-                            'page' => $request->getQueryParam('page')
-                            ]]);
-                    } catch (GuzzleException $e) {
-                        $result = $e->getResponse();
-                    }
-            }
-
-            $data = json_decode($result->getBody()->getContents(), true);
-            // var_dump($data['pagination']);die();
-            if (!isset($data['pagination'])) {
-            $data['pagination'] = null;
-            }
-            if ($_SESSION['login']['status'] == 2) {
-                $data = $this->view->render($response, 'users/test.twig', [
-                    'data'       =>	$data['data'],
-                    'pagination' =>	$data['pagination']
-        		]);
-
-            } elseif ($_SESSION['login']['status'] == 1) {
-                $allArticle = count($article->getAll());
-                $search = $request->getQueryParam('search');
-
-                $page = !$request->getQueryParam('page') ? 1 : $request->getQueryParam('page');
-
-                if (!empty($search)) {
-                    $findAll = $article->search($request->getQueryParam('search'));
-                } else {
-                    $findAll = $article->getArticle()->setPaginate($page, 3);
-                }
-    // var_dump($findAll);die();
-                $data = $this->view->render($response, 'users/test.twig', [
-                    'items' => $item->getAll()]);
-            }
-
-            return $data;
-
-        return $this->view->render($response, 'users/test.twig');
+        return  $this->view->render($response, 'response/test.twig');
     }
 }
-//
-// public function timeline($request, $response, $args)
-// {
-//     $items = new \App\Models\Item($this->db);
-//
-//     $findItem = $items->getAllGroupItem($args['id']);
-//     $page = !$request->getQueryParam('page') ? 1 : $request->getQueryParam('page');
-//
-//     $newItem = array();
-//     foreach ($findItem as $item) {
-//         if (!empty($newItem[$item['id']])) {
-//             // $currentValue = (array) $newItem[$item['id']]['comment'];
-//             $currentValue1 = (array) $newItem[$item['id']]['image'];
-//             // $newItem[$item['id']]['comment'] = array_unique(array_merge($currentValue, (array) $item['comment']));
-//             $newItem[$item['id']]['image'] =  array_unique(array_merge($currentValue1, (array) $item['image']));
-//         } else {
-//             $newItem[$item['id']] = $item;
-//         }
-//     }
-//     $result = $this->paginateArray(array_values($newItem), $page, 2);
-//     var_dump($result);die();
-//     return $this->view->render($response, 'users/show-item.twig', ['items' => $findItem]);
-// }

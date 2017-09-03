@@ -28,7 +28,7 @@ class UsersSeed extends AbstractSeed
 
         $data[] = [
             'name'     =>  'Budiman',
-            'email'    =>  'nurud@gmx.com',
+            'email'    =>  'budiman@reporting.net23.net',
             'username' =>  'budiman',
             'password' =>  password_hash('budi123', PASSWORD_DEFAULT),
             'gender'   =>  'Laki-laki',
@@ -39,7 +39,7 @@ class UsersSeed extends AbstractSeed
 
         $data[] = [
             'name'      =>  'Caca Larasati',
-            'email'     =>  'caca@null.net',
+            'email'     =>  'caca@null.net23.net',
             'username'  =>  'laras',
             'password'  =>  password_hash('laras123', PASSWORD_DEFAULT),
             'gender'    =>  'Perempuan',
@@ -50,7 +50,7 @@ class UsersSeed extends AbstractSeed
 
         $data[] = [
             'name'      =>  'Dede Nurdandi',
-            'email'     =>  'nurud13@gmail.com',
+            'email'     =>  'dandi@reporting.net23.net',
             'username'  =>  'dandi',
             'password'  =>  password_hash('dandi123', PASSWORD_DEFAULT),
             'gender'    =>  'Laki-laki',
@@ -61,7 +61,7 @@ class UsersSeed extends AbstractSeed
 
         $data[] = [
             'name'      =>  'Ekawati',
-            'email'     =>  'eka@null.net',
+            'email'     =>  'eka@null.net23.net',
             'username'  =>  'ekawati',
             'password'  =>  password_hash('eka123', PASSWORD_DEFAULT),
             'gender'    =>  'Perempuan',
@@ -72,7 +72,7 @@ class UsersSeed extends AbstractSeed
 
         $data[] = [
             'name'      =>  'Fahmi',
-            'email'     =>  'fahmi@null.net',
+            'email'     =>  'fahmi@null.net23.net',
             'username'  =>  'fahmi',
             'password'  =>  password_hash('fahmi123', PASSWORD_DEFAULT),
             'gender'    =>  'Laki-laki',

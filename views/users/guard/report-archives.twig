@@ -30,7 +30,7 @@
                     <div class="widget-content tab-content">
                         <div id="tab1" class="tab-pane active">
                             <div class="widget-box">
-                                <h4><i class="fa fa-list-alt" aria-hidden="true">
+                                <h4 style="margin-left:5px;"><i class="fa fa-list-alt" aria-hidden="true">
                                     {% if query.month != null %}
                                     {% if query.month == 'all' %}
                                     Daftar Laporan Tahunan {{user.username}}
@@ -41,8 +41,8 @@
                                 </i></h4>
                                     <form name="archive" action="{{path_for('search.item.archive',{'id': user_id })}}"
                                     method="POST" enctype="multipart/form-data">
-                                <div class="input-group">
-                                    <span style="background:#99a199; color:#fff;" class="input-group-addon">Bulan</span>
+                                <div style="margin:0px 5px 0px 5px;" class="input-group">
+                                    <span style="background:#8e9b9d; color:#fff;" class="input-group-addon">Bulan&nbsp</span>
                                     <select class="form-control" name="month" >
                                         {% if query.year == null %}
                                         <option value="{{"now"|date("m")}}"
@@ -76,8 +76,9 @@
                                         <option value="12" {% if query.month == 12 %}
                                          selected="selected"{% endif %}>Desember</option>
                                     </select>
-                                <!-- </div><div> -->
-                                    <span style="background:#99a199; color:#fff;"
+                                </div>
+                                <div style="margin:0px 5px 0px 5px;" class="input-group">
+                                    <span style="background:#8e9b9d; color:#fff;"
                                      class="input-group-addon">Tahun</span>
                                     <span class="input-group-addon" style="width:0px;
                                      padding-left:0px; padding-right:0px; border:none;"></span>
@@ -93,7 +94,7 @@
                                     <table id="example2" class="table table-bordered table-striped ">
                                         <thead>
                                             <tr>
-                                                <th>No</th>
+                                                <!-- <th>No</th> -->
                                                 <th>Nama</th>
                                                 <th>Pengulangan</th>
                                                 <th>Waktu lapor</th>
@@ -102,8 +103,6 @@
                                         <tbody>
                                             {% for key, item in data %}
                                             <tr>
-                                                <td class="taskDesc">
-                                                {{ (pagination.current - 1) * pagination.perpage + (key + 1) }}</td>
                                                 <td class="taskDesc">{{ item.name }}</td>
                                                 <td class="taskStatus">{{ item.recurrent }}</td>
                                                 <td class="taskStatus"><span class="in-progress">{{ item.reported_at }}

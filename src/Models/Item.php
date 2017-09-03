@@ -9,6 +9,22 @@ class Item extends BaseModel
 
     public function create($data)
     {
+        switch ($data['recurrent']) {
+            case "harian":
+            $endDate = date('Y-m-d', strtotime($data['start_date']. '+1 day'));
+            break;
+            case "mingguan":
+            $endDate = date('Y-m-d', strtotime($data['start_date']. '+1 week'));
+            break;
+            case "bulanan":
+            $endDate = date('Y-m-d', strtotime($data['start_date']. '+1 month'));
+            break;
+            case "tahunan":
+            $endDate = date('Y-m-d', strtotime($data['start_date']. '+1 year'));
+            break;
+            default:
+            $endDate = '';
+        }
         $date = date('Y-m-d H:i:s');
         $data = [
             'name'        => $data['name'],
@@ -21,6 +37,7 @@ class Item extends BaseModel
             'privacy'     => $data['privacy'],
             'status'      => $data['status'],
             'reported_at' => $data['reported_at'],
+            'end_date'    => $endDate,
             'updated_at'  => $date
         ];
         $this->createData($data);
@@ -252,9 +269,7 @@ class Item extends BaseModel
 
         $qb = $this->db->createQueryBuilder();
 
-        $qb->select('it.*',
-        // 'it.created_at as created', 'it.reported_at as reported', 'it.description', 'it.name as item',
-         'u.username as user', 'img.image',
+        $qb->select('it.*', 'u.username as user', 'img.image',
           'c.comment', 'u.image as user_image', 'us.image as creator_image',
            'us.username as creator', 'g.name as group_name', 'g.id as group_id')
         ->from($this->table, 'it')
@@ -264,8 +279,7 @@ class Item extends BaseModel
         ->leftJoin('it', 'comments', 'c', 'it.id = c.item_id')
         ->leftJoin('it', 'groups', 'g', 'g.id = it.group_id')
         ->where('it.id = :id')
-        // ->andWhere('it.privacy = 0')
-        ->andWhere('it.user_id is null')
+        // ->andWhere('it.user_id is null')
         ->setParameter(':id', $id);
 
         $result = $qb->execute();
@@ -295,9 +309,10 @@ class Item extends BaseModel
     {
         $qb = $this->db->createQueryBuilder();
         $qb->select('*')
-            ->from($this->table)
-            ->where('YEAR(reported_at) = :year')
-            ->andWhere('user_id = :id')
+            ->from($this->table, 'it')
+            ->where('it.YEAR(reported_at) = :year')
+            ->andWhere('it.user_id = :id')
+            ->join('it', 'groups', 'g', 'g.id = it.group_id')
             ->andWhere('status = 1');
 
         $qb->setParameter('year', $year)
@@ -338,11 +353,9 @@ class Item extends BaseModel
     {
         $qb = $this->db->createQueryBuilder();
 
-        $qb->select('it.*',
-        //  'it.created_at as created', 'it.reported_at as reported','it.description', 'it.name as item',
-         'u.username as user', 'img.image',
-          'c.comment', 'u.image as user_image', 'us.image as creator_image',
-           'us.username as creator', 'g.name as group_name', 'g.id as group_id')
+        $qb->select('it.*', 'u.username as user', 'img.image', 'c.comment',
+         'u.image as user_image', 'us.image as creator_image', 'us.username as creator',
+         'g.name as group_name', 'g.id as group_id')
         ->from($this->table, 'it')
         ->join('it', 'users', 'u', 'u.id = it.user_id')
         ->leftJoin('it', 'users', 'us', 'it.creator = us.id')
@@ -359,5 +372,70 @@ class Item extends BaseModel
 
     }
 
+    public function expired()
+    {
+        $now = date('Y-m-d');
+        $qb = $this->db->createQueryBuilder();
+        $qb->select('*')
+        ->from($this->table)
+        ->where('end_date < :now')
+        ->andWhere('status = 0')
+        ->andWhere('user_id is NULL')
+        ->setParameter(':now', $now);
+        $result = $qb->execute();
+
+        return $result->fetchAll();
+    }
+
+    public function userUnreported($userId)
+    {
+        $qb = $this->db->createQueryBuilder();
+        $query1 = $qb->select('item_id')
+        ->from('reported_item')
+        ->where('user_id =' . $userId)
+        ->execute();
+
+        $qb2 = $this->db->createQueryBuilder();
+        $query2 = $qb2->select('group_id')
+        ->from('user_group')
+        ->where('user_id =' . $userId)
+        ->execute();
+
+        $now = date('Y-m-d');
+        $qb1 = $this->db->createQueryBuilder();
+        if (!empty($query1->fetchAll()[0])) {
+            $this->query = $qb1->select('i.*')
+            ->from($this->table, 'i')
+            ->join('i', 'reported_item', 'r', $qb1->expr()->notIn('i.id', $query1))
+            ->join('i', 'user_group', 'ug', $qb1->expr()->in('i.group_id', $query2))
+            ->where('i.user_id = '. $userId || 'i.user_id = NULL')
+            ->andWhere('i.deleted = 0 && i.status = 0 && end_date ')
+            ->andWhere('end_date < :now')
+            ->setParameter(':now', $now);
+        } else {
+            $this->query = $qb1->select('i.*')
+            ->from($this->table, 'i')
+            ->join('i', 'user_group', 'ug', $qb1->expr()->in('i.group_id', $query2))
+            ->where('i.user_id = '. $userId || 'i.user_id = NULL')
+            ->andWhere('i.deleted = 0 && i.status = 0')
+            ->andWhere('end_date < :now')
+            ->setParameter(':now', $now);
+        }
+        return array_map("unserialize", array_unique(array_map("serialize", $this->fetchAll())));
+    }
+
+    public function getUnreportedGroupItem($groupId)
+    {
+
+        $qb = $this->db->createQueryBuilder();
+        $this->query = $qb->select('i.*', 'u.username')
+        ->from($this->table, 'i')
+        ->leftJoin('i', 'users', 'u', 'u.id = i.user_id')
+        ->where('i.group_id = '. $groupId.' && '.'i.status = 0');
+        // ->execute();
+        return $this;
+        // $result = $qb->execute();
+        // return $result->fetchAll();
+    }
 
 }

@@ -18,9 +18,6 @@ class PicController extends BaseController
                     'page'    => $request->getQueryParam('page')
                 ]
             ]);
-			// $request->getUri()->getQuery());
-			// $result->addHeader('Authorization', '7e505da11dd87b99ba9a4ed644a20ba4');
-
         } catch (GuzzleException $e) {
             $result = $e->getResponse();
         }
@@ -28,22 +25,26 @@ class PicController extends BaseController
         $data = json_decode($result->getBody()->getContents(), true);
         $count = count($data['data']);
         // $findUser =
-        // var_dump($data); die();
 		// var_dump($data); die();
+        if ($data['error'] == false) {
+            return $this->view->render($response, 'pic/group-member.twig', [
+                'members'	=> $data['data'],
+                'group'	    => $args['id'],
+                'pagination'=> $data['pagination'],
+            ]);
+        } else {
+            $this->flash->addMessage('warning', $data['message']);
+            return $response->withRedirect($this->router->pathFor('group.user'));
 
-		// var_dump($data->reporting->results);die();
-		return $this->view->render($response, 'pic/group-member.twig', [
-			'members'	=> $data['data'],
-			'group'	=> $args['id'],
-			'pagination'	=> $data['pagination'],
-		]);
-	}
+        }
+        // var_dump($data->reporting->results);die();
+    }
 
     public function getUnreportedItem($request, $response, $args)
     {
-        $userGroup = new \App\Models\UserGroupModel($this->db);
+        // $userGroup = new \App\Models\UserGroupModel($this->db);
         $page = !$request->getQueryParam('page') ? 1 : $request->getQueryParam('page');
-        $getMember = $userGroup->findAll($args['id'])->setPaginate($page,40);
+        // $getMember = $userGroup->findAll($args['id'])->setPaginate($page,40);
         // var_dump($getMember); die();
         try {
             $result = $this->client->request('GET', 'item/group/'. $args['id'], [
@@ -62,7 +63,7 @@ class PicController extends BaseController
         return $this->view->render($response, 'pic/tugas.twig', [
             'items'	=> $data['data'],
             'group'	=> $args['id'],
-            'member' => $getMember['data'],
+            // 'member' => $getMember['data'],
             'pagination'	=> $data['pagination'],
         ]);
     }
@@ -183,9 +184,7 @@ class PicController extends BaseController
         $findUser = $user->find('id', $userId);
         // var_dump($data); die();
 
-
         if ($data['data']) {
-
             return $this->view->render($response, 'pic/show-item-tugas.twig', [
                 'items'        => $data['data'],
                 'comment'      => $allComment['data'],
@@ -194,8 +193,8 @@ class PicController extends BaseController
                 'user'         => $userId,
             ]);
         } else {
+            $this->flash->addMessage('error', $data['message']);
             return $response->withRedirect($this->router->pathFor('home'));
-            // return $this->view->render($response, 'users/home.twig');
 
         }
 

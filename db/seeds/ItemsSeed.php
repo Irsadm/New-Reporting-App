@@ -19,26 +19,29 @@ class ItemsSeed extends AbstractSeed
                 'name'       =>  'Membaca',
                 'description'=>  'Membaca buku pelajaran',
                 'group_id'   =>  '1',
-                'creator'   =>  '1',
-                'start_date' =>  '2017-06-9',
-                'recurrent'  =>  'Harian',
+                'creator'    =>  '1',
+                'start_date' =>  '2017-08-9',
+                'end_date'   =>  '2017-08-10',
+                'recurrent'  =>  'harian',
             ];
 
             $data[] = [
                 'name'       =>  'Upacara',
                 'description'=>  'Upacara bendera Hari Senin',
-                'recurrent'  =>  'Mingguan',
-                'start_date' =>  '2017-06-4',
-                'creator'   =>  '1',
+                'recurrent'  =>  'mingguan',
+                'start_date' =>  '2017-08-9',
+                'end_date'   =>  '2017-08-16',
+                'creator'    =>  '1',
                 'group_id'   =>  '1',
             ];
 
             $data[] = [
                 'name'       =>  'Tugas Bulanan',
-                'start_date' =>  '2017-05-8',
-                'start_date' =>  '2017-06-4',
-                'recurrent'  =>  'Bulanan',
-                'creator'   =>  '1',
+                'name'       =>  'Tugas akhir bulan',
+                'start_date' =>  '2017-08-28',
+                'end_date'   =>  '2017-09-28',
+                'recurrent'  =>  'bulanan',
+                'creator'    =>  '1',
                 'group_id'   =>  '1',
             ];
 

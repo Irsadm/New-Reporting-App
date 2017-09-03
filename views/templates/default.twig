@@ -41,7 +41,6 @@
         <div style="margin-top:25px; padding-bottom:0px;" dir=""class="container">
             <ol class="breadcrumb">
                 <li class="active"> {% block current %} {% endblock %}</li>
-
             </ol>
         </div>
     </section>
@@ -62,13 +61,13 @@
 
     <footer style="color:white; width:100%; padding:17px;"id="footer">
         <center><strong> &copy; 2017
-            <a href="http://blog.mitschool.co.id/"><i>MIT School</i></a></strong></center>
+            <a href="http://blog.mitschool.co.id/"><i>MIT School</i></a>
+        </strong></center>
     </footer>
 
     <!-- Modals -->
-
     <!-- Add Page -->
-    <div class="modal fade" id="addPage" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <!-- <div class="modal fade" id="addPage" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <form>
@@ -106,7 +105,7 @@
     </form>
     </div>
   </div>
-</div>
+</div> -->
 
   <script>
      CKEDITOR.replace( 'editor1' );
@@ -114,8 +113,8 @@
 
 <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
 <!-- Include a polyfill for ES6 Promises (optional) for IE11 and Android browser -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/core-js/2.4.1/core.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/core-js/2.4.1/core.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/2.3.11/js/app.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/2.3.11/js/demo.js"></script>
 
@@ -188,26 +187,9 @@ $(document).ready(function() {
 } );
 </script>
 <script type="text/javascript">
-// $(document).ready(function(){
-//    $(".laporkan").click(function(){ // Click to only happen on announce links
-//      $('#reportedModal').modal('show');
-//      $("#data-id").val($(this).data('id'));
-//      $('#laporkan').attr('action', '{{ base_url() }}/items/report/'$(this).data('id'));
-//    });
-// });
-
-
-// $(document).on("click", ".laporkan", function () {
-//      var myBookId = $(this).data('id');
-//      $(".#laporkan").attr('title', '/items/report/'+myBookId);
-//      $(".#coba").attr('title', '/items/report/'+myBookId);
-// });
-
-
-// $(document).on("click", ".open-AddBookDialog", function () {
-//      var myBookId = $(this).data('id');
-//      $(".modal-body #bookId").attr('title', '/items/report/'+myBookId);
-// });
+$('#infoGroup').on('shown.bs.modal', function () {
+  $('#myInput').focus()
+});
 </script>
 
 {% block script %} {% endblock %}

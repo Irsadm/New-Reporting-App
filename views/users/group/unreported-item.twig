@@ -26,9 +26,12 @@
                                 <i class="fa fa-sort-desc" aria-hidden="true"></i>
                             </a>
                             <ul class="dropdown-menu">
+                                <li><a href="#" data-toggle="modal" data-target="#createItem">
+                                    <i class="icon-fixed-width icon-pencil">
                                 <li> <a href="" data-toggle="modal" data-target="#create"
                                  title="Buat tugas baru" style="margin-bottom:7px">
                                  <i class="icon-fixed-width icon-pencil">
+                                <li><a href="#" data-toggle="modal" data-target="#squarespaceModal"><i class="icon-fixed-width icon-pencil">
                                      Buat tugas</i></a></li>
                                 <li><a href="#"><i class="icon-fixed-width icon-pencil">
                                      Info grup</i></a></li>
@@ -90,12 +93,12 @@
               <div class="pagination">
                   <ul>
                       {% if pagination.current > 1 %}
-                      <li><a href="{{ base_url() }}/home/?page={{ pagination.current - 1 }}">
+                      <li><a href="{{ base_url() }}/user/groups?page={{ pagination.current - 1 }}">
                               Sebelumnya</a></li>
                       {% endif %}
                       <li class="active"> <a>{{ pagination.current }}</a></li>
                       {% if pagination.current < pagination.total_page %}
-                      <li><a href="{{ base_url() }}/home/?page={{ pagination.current + 1 }}">
+                      <li><a href="{{ base_url() }}/user/groups?page={{ pagination.current + 1 }}">
                               Selanjutnya</a></li>
                       {% endif %}
                   </ul>
@@ -108,9 +111,76 @@
 </div>
 </div>
 </div>
-{% for key, item in data %}
 
 <!-- line modal items-->
+<div class="modal fade" id="createItem" tabindex="-1"
+role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+<div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">
+                <span aria-hidden="true">×</span><span class="sr-only">Close</span></button>
+                <h3 class="modal-title" id="lineModalLabel">Form Tambah tugas</h3>
+            </div>
+            <div class="modal-body">
+
+                <!-- content goes here -->
+                <form  action="{{ base_url() }}/group/{{group.id}}"
+                method="POST" enctype="multipart/form-data">
+                {% if errors %}
+                <div class="alert alert-danger">
+                    <a class="close" data-dismiss="alert" href="#">x</a>
+                    Form hars diisi
+                </div>
+                {% endif %}
+                <div class="row">
+                    <div class="col-xs-12 col-sm-4 col-md-5">
+                        <div class="form-group {{ errors.name ? 'has-error' : '' }}">
+                            <label for="name">Name :</label>
+                            <input type="text" name="name" class="form-control">
+                            {% if errors.name %}
+                            <span class="help-block">{{ errors.name | first }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-6 col-md-7">
+                        <div class="form-group {{ errors.description ? 'has-error' : '' }}">
+                            <label for="description">Description :</label>
+                            <input type="text" name="description" class="form-control">
+                            {% if errors.description %}
+                            <span class="help-block">{{ errors.description | first }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-5 col-md-5">
+                        <div class="form-group {{ errors.public ? 'has-error' : '' }}">
+                            <label for="public">Item to :</label>
+                            <select class="form-control" name="public" >
+                                <option value="">Select Group</option>
+                                <option value="0">Public</option>
+                                <option value="1">Private</option>
+                            </select>
+                            {% if errors.public %}
+                            <span class="help-block">{{ errors.public | first }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-6 col-md-7">
+                        <div class="form-group {{ errors.recurrent ? 'has-error' : '' }}">
+                            <label for="recurrent">Recurring :</label>
+                            <select class="form-control" name="recurrent" value="">
+                                <option value="">No Recurring</option>
+                                <option value="daily">Daily</option>
+                                <option value="weekly">Weekly</option>
+                                <option value="monhtly">Monthly</option>
+                                <option value="yearly">Yearly</option>
+                            </select>
+                            {% if errors.recurrent %}
+                            <span class="help-block">{{ errors.recurrent | first }}</span>
+                            {% endif %}
+                        </div>
 <div class="modal fade" id="create" tabindex="-1"
  role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
   <div class="modal-dialog">
@@ -189,17 +259,16 @@
                         <label for="recurrent">Pengulangan :</label>
                         <select class="form-control" name="recurrent" value="">
                             <option selected="selected" value="">Tanpa pengulangan</option>
-                            <option value="Harian">Harian</option>
-                            <option value="Mingguan">Mingguan</option>
-                            <option value="Bulanan">Bulanan</option>
-                            <option value="Tahunan">Tahunan</option>
+                            <option value="harian">Harian</option>
+                            <option value="mingguan">Mingguan</option>
+                            <option value="bulanan">Bulanan</option>
+                            <option value="tahunan">Tahunan</option>
                         </select>
                         {% if errors.recurrent %}
                         <span class="help-block">{{ errors.recurrent | first }}</span>
                         {% endif %}
                     </div>
                 </div>
-            </div>
                 <div class="col-xs-12 col-sm-12 col-md-12">
                     <div class="form-group {{ errors.description ? 'has-error' : '' }}">
                         <label for="description">Deskripsi :</label>
@@ -223,6 +292,7 @@
                 <div class="btn-group btn-group-justified" role="group" aria-label="group button">
                     <div class="btn-group" role="group">
                         <button type="button" class="btn btn-danger"
+                        data-dismiss="modal" role="button">Close</button>
                          data-dismiss="modal" role="button">Tutup</button>
                     </div>
                     <div class="btn-group" role="group">
@@ -232,9 +302,10 @@
             </div>
         </form>
     </div>
-  </div>
+</div>
 </div>
 
+{% for key, item in data %}
 
 <div id="{{item.id}}" class="modal fade" role="dialog">
     <div class="modal-dialog">

@@ -33,6 +33,8 @@ class RequestTable extends AbstractMigration
                 ->addColumn('group_id', 'integer', ['null' => true])
                 ->addColumn('category', 'integer')
                 ->addColumn('status', 'integer', ['default' => '0'])
+                ->addColumn('created_at', 'timestamp', ['default' => 'CURRENT_TIMESTAMP'])
+                ->addColumn('updated_at', 'timestamp', ['default' => 'CURRENT_TIMESTAMP','update' => 'CURRENT_TIMESTAMP'])
                 ->addForeignKey('group_id', 'groups', 'id', ['delete' => 'CASCADE', 'update' => 'NO_ACTION'])
                 ->addForeignKey('user_id', 'users', 'id', ['delete' => 'CASCADE', 'update' => 'NO_ACTION'])
                 ->addForeignKey('guard_id', 'users', 'id', ['delete' => 'CASCADE', 'update' => 'NO_ACTION'])

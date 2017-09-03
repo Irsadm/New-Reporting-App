@@ -12,9 +12,13 @@
               <span align="center" aria-hidden="true"><i class="icon-file"></i></span> Group Items
             </a>
             <hr>
-                <div class="btn-group" role="group">
+                <div class="btn-group hidden-xs visible-lg-*" role="group">
                     <button style="width:396px" class="btn btn-primary" id="btn2">Tugas yang belum dilaporkan </button>
                     <a href="{{ base_url() }}/items/group/{{group_id}}/reported" style="width:396px" class="btn btn-primary">Tugas yang sudah dilaporkan</a>
+                </div>                
+                <div class="btn-group hidden-lg visible-xs-*">
+                    <button class="btn btn-primary">Laporkan</button>
+                    <a href="{{ base_url() }}/items/group/{{group_id}}/reported" class="btn btn-primary">Telah dilaporkan</a>
                 </div>
                 <span style="float:right;">
                     <div class="btn-group">
@@ -24,7 +28,7 @@
                         </a>
                         <ul class="dropdown-menu">
                             <li><a href="" data-toggle="modal" data-target="#squarespaceModal"><i class="icon-fixed-width icon-pencil"></i> Buat Tugas</a></li>
-                            <li><a href="#"><i class="icon-fixed-width icon-trash"></i> Info Group </a></li>
+                            <li><a href="" data-toggle="modal" data-target="#infoGroup"><i class="icon-fixed-width icon-trash"></i> Info Group </a></li>
                             <li><a href="{{ base_url() }}/group/{{ group_id }}/leave"><i class="icon-fixed-width icon-trash"></i> Tinggalkan Group </a></li>
                         </ul>
                     </div>
@@ -93,6 +97,29 @@
 </div>
 </div>
 
+<!-- line modal info group-->
+<div class="modal fade" id="infoGroup" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title" id="exampleModalLabel">Form info group</h3>
+<!--         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">×</span>
+        </button> -->
+      </div>
+      <div class="modal-body">
+    <span style="font-size:17px;color:#000ec7">
+        <li class="pull-left">{{count_item}} Items</li><hr>
+    </span>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!--  -->
+
 <!-- line modal items-->
 <div class="modal fade" id="squarespaceModal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
   <div class="modal-dialog">
@@ -149,10 +176,10 @@
                         <label for="recurrent">Pengulangan :</label>
                         <select class="form-control" name="recurrent" value="">
                             <option selected="selected" value="">Tanpa pengulangan</option>
-                            <option value="Harian">Harian</option>
-                            <option value="Mingguan">Mingguab</option>
-                            <option value="Bulanan">Bulanan</option>
-                            <option value="Tahunan">Tahunan</option>
+                            <option value="harian">Harian</option>
+                            <option value="mingguan">Mingguan</option>
+                            <option value="bulanan">Bulanan</option>
+                            <option value="tahunan">Tahunan</option>
                         </select>
                         {% if errors.recurrent %}
                         <span class="help-block">{{ errors.recurrent | first }}</span>
@@ -190,7 +217,7 @@
   <div class="modal-dialog">
     <div class="modal-content">
         <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>
+            <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">Tutup</span></button>
             <h3 class="modal-title" id="lineModalLabel">Form laporan tugas</h3>
         </div>
         <div class="modal-body">
@@ -199,13 +226,14 @@
         <form  action="{{data.id}}" method="POST" enctype="multipart/form-data" id="laporkan">
             {% if errors %}
             <div class="alert alert-danger">
-                <a class="close" data-dismiss="alert" href="#">x</a> Please fill out the form
+                <a class="close" data-dismiss="alert" href="#">x</a>
+                 Mohon mengisiisi form dengan benar
             </div>
             {% endif %}
             <div class="row">
                 <div class="col-xs-12 col-sm-12 col-md-12">
                     <div class="form-group {{ errors.description ? 'has-error' : '' }}">
-                        <label for="description">Description :</label>
+                        <label for="description">Deskripsi :</label>
                         <input type="text" name="description" class="form-control" id="coba">
                         <input type="hidden" id="data-id" name="" value="">
                         {% if errors.description %}
@@ -217,11 +245,11 @@
             <div class="row">
                 <div class="col-xs-10 col-sm-5 col-md-12">
                     <div class="form-group {{ errors.public ? 'has-error' : '' }}">
-                        <label for="privacy">Item to :</label>
+                        <label for="privacy">Privasi :</label>
                         <select class="form-control" name="privacy" >
-                            <option value="">Select Group</option>
-                            <option value="0">Public</option>
-                            <option value="1">Private</option>
+                            <option value="">Pilih privasi Group</option>
+                            <option value="0">Publik</option>
+                            <option value="1">Privat</option>
 
                         </select>
                         {% if errors.public %}
@@ -233,7 +261,7 @@
             <div class="modal-footer">
                 <div class="btn-group btn-group-justified" role="group" aria-label="group button">
                     <div class="btn-group" role="group">
-                        <button type="button" class="btn btn-danger" data-dismiss="modal"  role="button">Close</button>
+                        <button type="button" class="btn btn-danger" data-dismiss="modal"  role="button">Tutup</button>
                     </div>
                     <div class="btn-group" role="group">
                         <button type="submit" class="btn btn-primary btn-hover-green" >Laporkan</button>

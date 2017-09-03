@@ -13,7 +13,7 @@
     <div style="padding:20px; background:#fff;" class="widget-content">
         <ul style="padding-left:10px;" class="recent-posts">
 
-                <div style="font-size:15px;" class="user-thumb">
+                <div style="font-size:15px; margin: 0px 40px 5px 0px" class="user-thumb">
                     {% if items.reported_at == null and items.creator_image != null %}
                     <img width="60" height="60" alt="User"
                     src="{{ base_url() }}/assets/images/{{ items.creator_image }}">
@@ -26,8 +26,9 @@
                     {% endif %}
                 </div>
                     <span class="user-info" style="margin-left: 20px; font-size:14px;">
+                        <br>
                     {% if items.reported_at == null  %}
-                    &nbsp&nbsp&nbsp<b>
+                    <b>
                         {% if items.creator == login.username %}
                         Anda
                         {% else %}
@@ -35,7 +36,7 @@
                         {% endif %}</b>
                     <i>membuat item di grup</i> <b>{{ items.group_name }}</b>
                     {% else %}
-                    &nbsp&nbsp&nbsp <b>
+                    <b>
                         {% if items.user == login.username %}
                         Anda
                         {% else %}
@@ -47,16 +48,18 @@
 
 
                 <div class="article-post">
-                    <br>
+                    <p style="font-size: 10pt; margin-left: 80px;"><i class="fa fa-clock-o" aria-hidden="true">
+                        {{ items.updated_at | date('j F Y | H:i')}}</i></p>
+                        <br>
                     {% if items.reported_at == null %}
-                    <span style="font-size: 14pt;margin-left: 30px;" class="user-info"> <b>
+                    <span style="font-size: 14pt;" class="user-info"> <b>
                         <span class="label label-warning">{{ items.name }}
                         </span>&nbsp > &nbsp
                         <span class="label label-success">{{ items.group_name }}
                         </span></b>
                     </span>
                     {% else %}
-                    <span style="font-size: 14pt;margin-left: 30px;" class="user-info"> <b>
+                    <span style="font-size: 14pt;" class="user-info"> <b>
                         <span class="label label-warning">{{ items.name }}
                         </span>&nbsp > &nbsp
                         <span class="label label-success">{{ items.group_name }}
@@ -64,8 +67,6 @@
                         </span></b>
                     </span>
                     {% endif %}
-                    <p style="font-size: 10pt;"><i class="fa fa-clock-o" aria-hidden="true"></i>
-                        {{ items.updated_at | date('j F Y | H:i')}}</p>
                     <br>
                     <br>
                 <p>
@@ -122,10 +123,18 @@
                 </div>
                 <div class="chat-message well">
                     <form action="{{path_for('post.comment')}}" method="post">
-                        <span class="input-box">
+                        <span class="input-box" style="margin-right:0px;">
+                            <div class="hidden-xs">
                             <input type="hidden" name="item_id" value="{{ items.id }}" />
-                            <input type="text" name="comment" style="width:80%" id="msg-box" />
-                            <button class="btn btn-success">Kirim komentar</button>
+                            <input type="text" name="comment" style="margin-right:0px; width:83%" id="msg-box" />
+                                <button style="" class="btn btn-success">Kirim komentar</button>
+                            </div>
+                            <div class="visible-xs">
+                                <input type="hidden" name="item_id" value="{{ items.id }}" />
+                                <input type="text" name="comment" style="margin-right:0px; width:83%" id="msg-box" />
+                                    <!-- <button style="" class="btn btn-success">Kirim komentar</button> -->
+                                <button style="float:left;" class="btn btn-success">Kirim komentars</button>
+                            </div>
                         </span>
                     </form>
                 </div>

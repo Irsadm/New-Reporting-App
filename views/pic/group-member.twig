@@ -46,20 +46,24 @@
                                             </a>
                                             <ul style="left: -140px; top: 13px; "class="dropdown-menu">
                                                 <li>
-                                                    <a href="{{path_for('web.pic.set.status', {'id':member.id, 'group':group})}}"><i  class="icon-fixed-width icon-pencil">
-                                                     Jadikan PIC</i></a>
+                                                    <a href="{{path_for('web.pic.set.status', {'id':member.id, 'group':group})}}">
+                                                        <i  class="icon-fixed-width icon-wrench">
+                                                     &nbsp Jadikan PIC</i></a>
                                                  </li>
                                                 <li>
-                                                    <a href="{{ path_for('web.pic.set.as.member', {'id':member.id, 'group':group})}}"><i class="icon-fixed-width icon-pencil">
-                                                     Jadikan anggota</i></a>
+                                                    <a href="{{ path_for('web.pic.set.as.member', {'id':member.id, 'group':group})}}">
+                                                        <i class="icon-fixed-width icon-user">
+                                                     &nbsp Jadikan anggota</i></a>
                                                  </li>
                                                 <li>
-                                                    <a href="{{ path_for('web.pic.search', {'id':member.id})}}" ><i class="icon-fixed-width icon-pencil">
-                                                     Jadikan wali</i></a></li>
+                                                    <a href="{{ path_for('web.pic.search', {'id':member.id})}}" >
+                                                        <i class="icon-fixed-width icon-user-md">
+                                                     &nbsp Jadikan wali</i></a></li>
 
                                                 <li class="divider"></li>
                                                 <li>
-                                                    <a href="{{ path_for('web.pic.delete.member', {'id': member.id, 'group': group })}}"><i class="i"> Keluarkan dari grup</i></a>
+                                                    <a href="{{ path_for('web.pic.delete.member', {'id': member.id, 'group': group })}}">
+                                                        <i class="icon-fixed-width icon-remove"> &nbsp Keluarkan dari grup</i></a>
                                                 </li>
                                             </ul>
                                         </div>
@@ -83,14 +87,17 @@
                     <nav aria-label="...">
                         <ul class="pager">
                             <div class="pagination">
-                                <ul>
-                                    <li class="{% if pagination.current == 1 %}disabled{% endif %}">
+                                <ul style="padding:0px;">
+                                    {% if pagination.current > 1 %}
+                                    <li class="">
                                         <a href="{{ base_url() }}/pic/group/{{group}}/member?page={{ pagination.current - 1 }}">
                                             Sebelumnya</a></li>
+                                            {% endif %}
                                             <li class="active"> <a>{{ pagination.current }}</a></li>
-                                            <li class="{% if pagination.current == pagination.total_page %}disabled{% endif %}">
+                                            {% if pagination.current < pagination.total_page %}
+                                            <li class="">
                                                 <a href="{{ base_url() }}/pic/group/{{group}}/member?page={{ pagination.current + 1 }}">
-                                                    Selanjutnya</a></li>
+                                                    Selanjutnya</a></li>{% endif %}
                                                 </ul>
                                             </div>
                                         </ul>

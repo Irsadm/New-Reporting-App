@@ -2,7 +2,7 @@
 
 use Phinx\Migration\AbstractMigration;
 
-class GroupsTable extends AbstractMigration
+class UnreportedItemTable extends AbstractMigration
 {
     /**
      * Change Method.
@@ -27,14 +27,12 @@ class GroupsTable extends AbstractMigration
      */
     public function change()
     {
-        $groups = $this->table('groups');
-        $groups->addColumn('name', 'string')
-                ->addColumn('description', 'string')
-                ->addColumn('image', 'string', ['null' => true])
-                ->addColumn('creator', 'integer')
-                ->addColumn('deleted', 'integer', ['default' => '0'])
-                ->addForeignKey('creator', 'users', 'id', ['delete' => 'CASCADE', 'update' => 'NO_ACTION'])
-
-                ->create();
+        $items = $this->table('unreported_item');
+        $items->addColumn('item_id', 'integer')
+             ->addColumn('user_id', 'integer', ['null' => true])
+             ->addColumn('date', 'date', ['null' => true])
+             ->addForeignKey('item_id', 'items', 'id', ['delete' => 'CASCADE', 'update' => 'NO_ACTION'])
+             ->addForeignKey('user_id', 'users', 'id', ['delete' => 'CASCADE', 'update' => 'NO_ACTION'])
+             ->create();
     }
 }

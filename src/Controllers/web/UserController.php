@@ -48,7 +48,7 @@ class UserController extends BaseController
             }
             if ($_SESSION['login']['status'] == 2) {
                 $_SESSION['user_group'] = $groups;
-                $this->flash->addMessage('success', 'Selamat datang, '. $login['username']);
+                $this->flash->addMessage('succes', 'Selamat datang, '. $_SESSION['login']['username']);
                 return $response->withRedirect($this->router->pathFor('home'));
             } else {
                 $this->flash->addMessage('warning',

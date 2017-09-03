@@ -50,9 +50,9 @@ abstract class BaseController
 			'key'		=> $data['key']
 		];
 
-		if ($data['pagination'] == null) {
-			unset($response['pagination']);
-		}
+		// if ($data['pagination'] == null) {
+		// 	unset($response['pagination']);
+		// }
 
 		if ($data['key'] == null) {
 			unset($response['key']);

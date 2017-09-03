@@ -1,0 +1,136 @@
+
+{% extends 'templates/default.twig' %}
+
+{% block title %} Pemberitahuan {% endblock %}
+
+{% block current %} Pemberitahuan {% endblock %}
+
+{% block content %}
+<div class="row-fluid">
+    <div class="span12">
+        <div class="widget-box" style="margin-top:0px;">
+            <a class="list-group-item active main-color-bg">
+              <span align="center" aria-hidden="true"><i class="icon-globe"></i></span> Pemberitahuan
+            </a>
+
+            <div class="widget-box">
+                <div class="widget-title">
+                    <ul class="nav nav-tabs">
+                        <li class="active"><a data-toggle="tab" href="#grup">Grup</a></li>
+                        <li><a data-toggle="tab" href="#wali">Wali</a></li>
+                        <li><a data-toggle="tab" href="#anak">Anak</a></li>
+                    </ul>
+                </div>
+                <div class="widget-content tab-content">
+                    <div id="grup" class="tab-pane active">
+                        <ul>
+                        {% for data in data.group %}
+                        <li>
+                            <span class="span8">
+                                <b>{{ data.user }}</b> <i>ingin bergabung di grup</i> <b>{{ data.group_name }}</b>.
+                            </span>
+                            <span class="span4">
+                                <a href="#anak"><span class="label label-primary">konfirmasi</span></a>
+                                <button class="label label-danger">hapus permintaan</button>
+                            </span>
+                        </li><br>
+                        {% endfor %}
+                    </ul>
+                    </div>
+                    <div id="wali" class="tab-pane">
+                        <ul>
+                            {% for data in data.guard %}
+                            {% if data.status == 0 %}
+                            <li>
+                                <span class="span8">
+                                <b>{{ data.guard }}</b> <i>menambahkan anda sebagai anak.</i>
+                            </span>
+                            <span class="span4"  >
+                                <a href="{{ path_for('web.confirm.request', {'id':data.id})}}"><span class="label label-primary">konfirmasi</span></a>
+                                <a href="{{ path_for('web.delete.request', {'id':data.id})}}"><span class="label label-danger">hapus permintaan</span></a>
+                            </span>
+                        </li><br>
+                        {% endif %}
+                            {% endfor %}
+                        </ul>
+                     </div>
+                    <div id="anak" class="tab-pane">
+                        <ul>
+                        {% for key, data in data.user %}
+                        {% if data.status == 0 %}
+                        <li>
+                            <span class="span8">
+                                <b>{{ data.user }}</b><i> menambahkan anda sebagai wali.</i>
+                            </span>
+                        <span class="span4"  >
+                            <a href="{{ path_for('web.confirm.request', {'id':data.id})}}"><span class="label label-primary">konfirmasi</span></a>
+                            <a href="{{ path_for('web.delete.request', {'id':data.id})}}"><span class="label label-danger">hapus permintaan</span></a>
+                        </span>
+                    </li><br>
+                    {% endif %}
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+
+                    <!-- </li> -->
+
+                <!-- <nav aria-label="...">
+                    <ul class="pager">
+                        <li class="previous"><a href="{{ base_url() }}/home?page={{ data.first_page }}">
+                            <span aria-hidden="true">&larr;</span> Halaman pertama</a></li>
+                        <li class="previous"><a href="{{ base_url() }}/home?page={{ data.current - 1 }}">
+                            <span aria-hidden="true">&larr;</span> Kembali</a></li>
+                        {% if count.item  < 1 %}
+                        <li class="next"><a href="{{ base_url() }}/home?page={{ data.total_page }}">
+                            Halaman terakhir <span aria-hidden="true">&rarr;</span></a></li>
+                        <li class="next"><a href="{{ base_url() }}/home?page={{ data.current + 1 }}">
+                            Selanjutnya <span aria-hidden="true">&rarr;</span></a></li>
+                        {% endif %}
+                    </ul>
+                </nav> -->
+                <hr style="margin-top:10px;margin-bottom:10px;" >
+            </li>
+        </ul>
+    </div>
+</div>
+<!-- <div class="accordion" id="collapse-group">
+<div class="accordion-group widget-box">
+<div class="accordion-heading">
+<div class="widget-title"> <a data-parent="#collapse-group" href="#collapseGOne"
+data-toggle="collapse"> <span class="icon"><i class="icon-ok"></i></span>
+<h5>Accordion option1</h5>
+</a> </div>
+</div>
+<div class="collapse in accordion-body" id="collapseGOne">
+<div class="widget-content"> This is opened by default </div>
+</div>
+</div>
+<div class="accordion-group widget-box">
+<div class="accordion-heading">
+<div class="widget-title"> <a data-parent="#collapse-group" href="#collapseGTwo"
+data-toggle="collapse"> <span class="icon"><i class="icon-circle-arrow-right"></i></span>
+<h5>Accordion closed</h5>
+</a> </div>
+</div>
+<div class="collapse accordion-body" id="collapseGTwo">
+<div class="widget-content"> Another is open </div>
+</div>
+</div>
+<div class="accordion-group widget-box">
+<div class="accordion-heading">
+<div class="widget-title"> <a data-parent="#collapse-group" href="#collapseGThree"
+data-toggle="collapse"> <span class="icon"><i class="icon-eye-open"></i></span>
+<h5>Accordion closed</h5>
+</a> </div>
+</div>
+<div class="collapse accordion-body" id="collapseGThree">
+<div class="widget-content"> Another is open </div>
+</div>
+</div>
+</div> -->
+</div>
+</div>
+
+{% endblock %}

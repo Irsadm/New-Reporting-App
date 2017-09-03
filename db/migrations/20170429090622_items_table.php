@@ -29,6 +29,7 @@ class ItemsTable extends AbstractMigration
     {
         $items = $this->table('items');
         $items->addColumn('name', 'string')
+<<<<<<< HEAD
          ->addColumn('description', 'string', ['null' => true])
     //  ->addColumn('image', 'string', ['null' => true])
         ->addColumn('group_id', 'integer')
@@ -46,5 +47,25 @@ class ItemsTable extends AbstractMigration
          ->addForeignKey('user_id', 'users', 'id', ['delete' => 'CASCADE', 'update' => 'NO_ACTION'])
          ->addForeignKey('creator', 'users', 'id', ['delete' => 'NO_ACTION', 'update' => 'NO_ACTION'])
          ->create();
+=======
+             ->addColumn('description', 'string', ['null' => true])
+            //  ->addColumn('image', 'string', ['null' => true])
+             ->addColumn('group_id', 'integer')
+             ->addColumn('user_id', 'integer', ['null' => true])
+             ->addColumn('creator', 'integer')
+             ->addColumn('start_date', 'date')
+             ->addColumn('end_date', 'date', ['null' => true])
+             ->addColumn('recurrent', 'string', ['null' => true])
+             ->addColumn('status', 'integer', ['default' => '0'])
+             ->addColumn('privacy', 'integer', ['default' => '0'])
+             ->addColumn('reported_at', 'timestamp', ['null' => true])
+             ->addColumn('created_at', 'timestamp', ['default' => 'CURRENT_TIMESTAMP'])
+             ->addColumn('updated_at', 'timestamp', ['default' => 'CURRENT_TIMESTAMP','update' => 'CURRENT_TIMESTAMP'])
+             ->addColumn('deleted', 'integer', ['default' => '0'])
+             ->addForeignKey('group_id', 'groups', 'id', ['delete' => 'CASCADE', 'update' => 'NO_ACTION'])
+             ->addForeignKey('user_id', 'users', 'id', ['delete' => 'CASCADE', 'update' => 'NO_ACTION'])
+             ->addForeignKey('creator', 'users', 'id', ['delete' => 'NO_ACTION', 'update' => 'NO_ACTION'])
+             ->create();
+>>>>>>> upstream/web
     }
 }

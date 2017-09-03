@@ -34,7 +34,7 @@ class UsersTable extends AbstractMigration
              ->addColumn('gender', 'string')
              ->addColumn('email', 'string')
              ->addColumn('phone', 'string')
-             ->addColumn('image', 'string', ['default' => 'user.png'])
+             ->addColumn('image', 'string', ['null' => true])
              ->addColumn('address', 'string', ['null' => true])
              ->addColumn('status', 'integer', ['limit' => 1, 'default' => '0'])
              ->addColumn('deleted', 'integer', ['default' => '0'])

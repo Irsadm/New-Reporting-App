@@ -454,7 +454,7 @@ class UserController extends BaseController
             $resetUrl = '<a href ='.$base ."/password/reset/".$token.'>
             <h3>RESET PASSWORD</h3></a>';
             $content = '<html><head></head>
-            <body style="font-family: Verdana;font-size: 12.0px;">
+            <body style="margin: 0;padding: 0; font-family: Verdana;font-size: 12.0px;">
             <table border="0" cellpadding="0" cellspacing="0" style="max-width: 600.0px;">
             <tbody><tr><td><table border="0" cellpadding="0" cellspacing="0" width="100%">
             <tbody><tr><td align="left">
