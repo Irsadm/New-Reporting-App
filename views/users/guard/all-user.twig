@@ -45,7 +45,7 @@
                         <li><a href="{{ path_for('item.archive', {'id': user.id }) }}"><i class="icon-fixed-width icon-pencil">
                              Lihat arsip laporan</i></a></li>
                         <li class="divider"></li>
-                        <li><a href="#"><i class="i"> Hapus anak</i></a></li>
+                        <li><a href="{{path_for('guard.delete.user',{'id':user.id})}}"><i class="i"> Hapus anak</i></a></li>
                     </ul>
                 </div>
                 </span>

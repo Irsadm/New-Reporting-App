@@ -106,7 +106,8 @@ $app->group('/api', function() use ($app, $container) {
 
     $app->group('/guard', function() use ($app, $container) {
         $app->post('/create/{guard}/{user}', 'App\Controllers\api\GuardController:createGuardian')->setName('api.guard.add');
-        $app->get('/delete/{id}', 'App\Controllers\api\GuardController:deleteGuardian')->setName('api.guard.delete');
+        $app->delete('/delete/{id}', 'App\Controllers\api\GuardController:deleteGuardian')->setName('api.guard.delete');
+        $app->delete('/delete/user/{id}', 'App\Controllers\api\GuardController:deleteUser')->setName('api.guard.delete.user');
         $app->get('/show/user', 'App\Controllers\api\GuardController:getUserByGuard')->setName('api.guard.show.user');
         $app->get('/show/guard', 'App\Controllers\api\GuardController:getGuardByUser')->setName('api.guard.show');
         $app->get('/user', 'App\Controllers\api\GuardController:getUser')->setName('api.guard.get.user');

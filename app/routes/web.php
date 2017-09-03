@@ -58,7 +58,8 @@ $app->group('', function() use ($app, $container) {
         $app->get('/user', 'App\Controllers\web\GuardController:getUser');
         $app->get('/show/user', 'App\Controllers\web\GuardController:getUserByGuard')->setName('guard.show.user');
         $app->get('/show/guard', 'App\Controllers\web\GuardController:getUserGuard')->setName('guard.show');
-        $app->delete('/delete/{id}', 'App\Controllers\web\GuardController:deleteGuardian');
+        $app->get('/delete/{id}', 'App\Controllers\web\GuardController:deleteGuardian')->setName('guard.delete');
+        $app->get('/delete/user/{id}', 'App\Controllers\web\GuardController:deleteUser')->setName('guard.delete.user');
         $app->get('/search', 'App\Controllers\web\GuardController:getSearch')->setName('guard.search');
         $app->get('/search/user', 'App\Controllers\web\GuardController:searchUser')->setName('guard.search.user');
 

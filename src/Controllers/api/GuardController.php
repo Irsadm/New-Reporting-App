@@ -43,17 +43,17 @@ class GuardController extends BaseController
         $userToken = new \App\Models\Users\UserToken($this->db);
 
         $token = $request->getHeader('Authorization')[0];
-        $findUser = $userToken->find('token', '72af357cae642386ccaaf5c4e86b669a');
-        $findGuard = $guard->findGuards('user_id', $findUser['user_id'], 'guard_id', $args['id']);
+        $user  = $userToken->getUserId($token);
+        // $findUser = $userToken->find('token', '72af357cae642386ccaaf5c4e86b669a');
+
+        $findGuard = $guard->findGuards('user_id', $user, 'guard_id', $args['id']);
+        $findUser  = $guard->findGuards('user_id', $args['id'], 'guard_id', $user);
            // var_dump($findGuard);die();
         // $query = $request->getQueryParams();
-           if ($findGuard && $findUser['user_id']) {
-               $oh = $guard->deleteGuard($args['id']);
-               var_dump($oh);die();
-               $data = $this->responseDetail(200, false, 'Guardian berhasil dihapus', [
-                    'data' => $findGuard
-                ]);
-           } else {
+           if ($findGuard) {
+               $guard->hardDelete($findGuard['id']);
+               $data = $this->responseDetail(200, false, 'Anda berhasil menghapus salah satu wali anda');
+           }else {
                $data = $this->responseDetail(404, true, 'Data tidak ditemukan');
            }
            return $data;
@@ -136,6 +136,27 @@ class GuardController extends BaseController
             $data = $this->responseDetail(400, true, 'Gagal menampilkan user');
         }
         return $data;
+    }
+
+    public function deleteUser(Request $request, Response $response, $args)
+    {
+        $guard = new GuardModel($this->db);
+        $userToken = new \App\Models\Users\UserToken($this->db);
+
+        $token = $request->getHeader('Authorization')[0];
+        $user  = $userToken->getUserId($token);
+
+        // $findGuard = $guard->findGuards('user_id', $user, 'guard_id', $args['id']);
+        $findUser  = $guard->findGuards('user_id', $args['id'], 'guard_id', $user);
+           // var_dump($findGuard);die();
+        // $query = $request->getQueryParams();
+           if ($findUser) {
+               $guard->hardDelete($findUser['id']);
+               $data = $this->responseDetail(200, false, 'Anda berhasil menghapus salah satu anak anda');
+           }else {
+               $data = $this->responseDetail(404, true, 'Data tidak ditemukan');
+           }
+           return $data;
     }
 
 }

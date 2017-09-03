@@ -40,12 +40,19 @@ class GuardController extends BaseController
     public function deleteGuardian(Request $request, Response $response, $args)
     {
         try {
-            $result = $this->client->request('GET', $this->router->pathFor('api.guard.delete', ['id' => $args['id']]));
-            $content = json_decode($client->getBody()->getContents());
+            $result = $this->client->request('DELETE', 'guard/delete/'.$args['id']);
+            $content = json_decode($result->getBody()->getContents(), true);
         } catch (GuzzleException $e) {
-            $content = json_decode($e->getResponse()->getBody()->getContents());
+            $content = json_decode($e->getResponse()->getBody()->getContents(), true);
         }
-            var_dump($content);
+            // var_dump($content);
+        if ($content['code'] == 200) {
+            $this->flash->addMessage('success', $content['message']);
+            return $response->withRedirect($this->router->pathFor('user.view.profile'));
+        }else {
+            $this->flash->addMessage('warning', $content['message']);
+            return $response->withRedirect($this->router->pathFor('user.view.profile'));
+        }
     }
 
     // Function Create Guardian
@@ -187,5 +194,23 @@ class GuardController extends BaseController
             'data'          =>  $data['data'] ,
             'pagination'    =>  $data['pagination']
         ]);    // return $this->view->render($response, 'guard/show-user.twig', $content->reporting);
+    }
+
+    public function deleteUser(Request $request, Response $response, $args)
+    {
+        try {
+            $result = $this->client->request('DELETE', 'guard/delete/user/'.$args['id']);
+            $content = json_decode($result->getBody()->getContents(), true);
+        } catch (GuzzleException $e) {
+            $content = json_decode($e->getResponse()->getBody()->getContents(), true);
+        }
+            // var_dump($content);
+        if ($content['code'] == 200) {
+            $this->flash->addMessage('success', $content['message']);
+            return $response->withRedirect($this->router->pathFor('guard.show.user'));
+        }else {
+            $this->flash->addMessage('warning', $content['message']);
+            return $response->withRedirect($this->router->pathFor('guard.show.user'));
+        }
     }
 }
