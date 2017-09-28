@@ -1,0 +1,438 @@
+{% extends 'templates/default.twig' %}
+
+{% block title %} Laporan {{ user.name }} {% endblock %}
+
+{% block current %}{{user.name}} > Item belum dilaporkan {% endblock %}
+
+{% block content %}
+<div class="row-fluid">
+    <div class="span12">
+        <div class="widget-box" style="margin-top:0px;">
+            <div style="background:#ffffff" class="">
+                <div style="padding:0px; background:#24272E;" class="panel-heading">
+                    <div class="widget-title span12">
+                        <div class="btn-group btn-group-justified">
+                          <a href="{{ path_for('reported.item.user') }}" class="btn btn-primary">Dilaporkan</a>
+                          <a href="#" class="btn btn-primary active">Tidak dilaporkan</a>
+                       </div>
+                   </div>
+
+            </div>
+                <div class="panel-body" style="padding:0px;">
+                    <div class="widget-content tab-content">
+                        <div id="tab1" class="tab-pane active">
+                            <span style="float:right; margin-top:5px;">
+                                <div class="btn-group span6">
+                                    <a class="btn btn-primary" href="{{ path_for('item.archive', {'id': user.id }) }}">
+                                        <i class="icon-collapse"></i>Arsip laporan
+                                    </a>
+                                </div>
+                            </span>
+                        <div class="widget-box">
+                              <h3><i class="fa" aria-hidden="true">
+                                 &nbsp Daftar tugas tidak dilaporkan {{ user.name }} </i></h3>
+                          <div class="widget-content nopadding">
+                            <table class="table table-striped table-bordered">
+                              <thead>
+                                <tr>
+                                  <th>No</th>
+                                  <th>Nama</th>
+                                  <th>Tanggal</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                  {% for key, item in data %}
+                                  <tr>
+                                      <td class="taskDesc">
+                                          {{ (pagination.current - 1) * pagination.perpage + (key + 1) }}</td>
+                                      <td class="taskDesc">
+                                          <a href="{{ base_url() }}/item/show/{{item.id}}">
+                                           {{ item.name }}</a><span style="float:right;">
+                                               {% if item.recurrent != null %}
+                                          ({{ item.recurrent }}){% endif %}
+                                           </span>
+                                       </td>
+                                      <td class="taskOptions">
+                                          {{ item.date | date('j-M-Y') }}
+                                  </td>
+                              </tr>
+                              {% endfor %}
+                          </tbody>
+                      </table>
+                  </div>
+              </div>
+          </div>
+      </div>
+      {% if data == null %}
+      <center><h4>Tidak ada data</h4></center><hr>
+      {% else %}
+      <nav aria-label="...">
+          <ul class="pager">
+              <div class="pagination">
+                  <ul>
+                      {% if pagination.current > 1 %}
+                      <li><a href="{{ base_url() }}/user/item/unreported?page={{ pagination.current - 1 }}">
+                              Sebelumnya</a></li>
+                      {% endif %}
+                      <li class="active"> <a>{{ pagination.current }}</a></li>
+                      {% if pagination.current < pagination.total_page %}
+                      <li><a href="{{ base_url() }}/user/item/unreported?page={{ pagination.current + 1 }}">
+                              Selanjutnya</a></li>
+                      {% endif %}
+                  </ul>
+              </div>
+          </ul>
+      </nav>
+      {% endif %}
+  </div>
+  </div>
+</div>
+</div>
+</div>
+<!-- </div> -->
+
+
+<!-- <div class="modal fade" id="create" tabindex="-1"
+ role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div style="padding-left:20px;" class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">
+                <span aria-hidden="true">×</span><span class="sr-only">Tutup</span></button>
+            <h3 class="modal-title" id="lineModalLabel">Form Tambah tugas</h3>
+        </div>
+        <div class="modal-body">
+
+
+         <form  action="{{ path_for('web.item.user.create',
+         {'group': group.id}) }}"
+         method="POST" enctype="multipart/form-data">
+            {% if errors %}
+            <div class="alert alert-danger">
+                <a class="close" data-dismiss="alert" href="#">x</a>
+                Mohon isi form dengan benar
+            </div>
+            {% endif %}
+            <div class="row">
+                <div class="col-xs-12 col-sm-4 col-md-5">
+                    <div class="form-group {{ errors.name ? 'has-error' : '' }}">
+                        <label for="name">Nama :</label>
+                        <input type="text" name="name" class="form-control">
+                        {% if errors.name %}
+                        <span class="help-block">{{ errors.name | first }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-xs-12 col-sm-6 col-md-7">
+                    <div class="form-group {{ errors.public ? 'has-error' : '' }}">
+                        <label for="privacy">Privasi :</label>
+                        <select class="form-control" name="privacy" >
+                            <option value="0">Publik</option>
+                            <option selected="selected" value="1">Privat</option>
+                        </select>
+                        {% if errors.public %}
+                        <span class="help-block">{{ errors.public | first }}</span>
+                        {% endif %}
+                    </div>
+                     <div class="form-group {{ errors.description ? 'has-error' : '' }}">
+                        <label for="description">Deskripsi :</label>
+                     <input type="text" name="description" class="form-control">
+                         <textarea rows="5" name="description" class="form-control"></textarea>
+                        {% if errors.description %}
+                        <span class="help-block">{{ errors.description | first }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12 col-sm-5 col-md-5">
+                    <div class="form-group {{ errors.start_date ? 'has-error' : '' }}">
+                        <label for="start_date">Tanggal mulai :</label>
+                        <input type="date" name="start_date" class="form-control">
+                        {% if errors.start_date %}
+                        <span class="help-block">{{ errors.start_date | first }}</span>
+                        {% endif %}
+                    </div>
+                     <div class="form-group {{ errors.public ? 'has-error' : '' }}">
+                        <label for="privacy">Privasi :</label>
+                        <select class="form-control" name="privacy" >
+                            <option value="0">Publik</option>
+                            <option selected="selected" value="1">Privat</option>
+                        </select>
+                        {% if errors.public %}
+                        <span class="help-block">{{ errors.public | first }}</span>
+                        {% endif %}
+                    </div>
+                 </div>
+                <div class="col-xs-12 col-sm-6 col-md-7">
+                    <div class="form-group {{ errors.recurrent ? 'has-error' : '' }}">
+                        <label for="recurrent">Pengulangan :</label>
+                        <select class="form-control" name="recurrent" value="">
+                            <option selected="selected" value="">Tanpa pengulangan</option>
+                            <option value="harian">Harian</option>
+                            <option value="mingguan">Mingguan</option>
+                            <option value="bulanan">Bulanan</option>
+                            <option value="tahunan">Tahunan</option>
+                        </select>
+                        {% if errors.recurrent %}
+                        <span class="help-block">{{ errors.recurrent | first }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-xs-12 col-sm-12 col-md-12">
+                    <div class="form-group {{ errors.description ? 'has-error' : '' }}">
+                        <label for="description">Deskripsi :</label>
+                        <input type="text" name="description" class="form-control">
+                        <textarea rows="4" name="description" class="form-control"></textarea>
+                        {% if errors.description %}
+                        <span class="help-block">{{ errors.description | first }}</span>
+                        {% endif %}
+                    </div>
+                    <div class="form-group {{ errors.start_date ? 'has-error' : '' }}">
+                        <label for="start_date">Tanggal mulai :</label>
+                        <input type="date" name="start_date" class="form-control">
+                        {% if errors.start_date %}
+                        <span class="help-block">{{ errors.start_date | first }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="btn-group btn-group-justified" role="group" aria-label="group button">
+                    <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-danger"
+                        data-dismiss="modal" role="button">Close</button>
+                         data-dismiss="modal" role="button">Tutup</button>
+                    </div>
+                    <div class="btn-group" role="group">
+                        <button type="submit" class="btn btn-primary btn-hover-green">Buat tugas</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</div>
+</div> -->
+
+<!-- line modal items-->
+<div class="modal fade" id="create" role="dialog">
+  <div class="modal-dialog">
+    <div style="padding-left:20px;" class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">
+                <span aria-hidden="true">×</span><span class="sr-only">Close</span></button>
+            <h3 class="modal-title" id="lineModalLabel">Form Tambah tugas</h3>
+        </div>
+        <div class="modal-body">
+
+        <!-- content goes here -->
+        <form  action="{{ path_for('web.pic.create.item')}}"
+         method="POST" enctype="multipart/form-data">
+            {% if errors %}
+            <div class="alert alert-danger">
+                <a class="close" data-dismiss="alert" href="#">x</a>
+                Form hars diisi
+            </div>
+            {% endif %}
+            <div class="row">
+                <div class="col-xs-12 col-sm-4 col-md-5">
+                    <div class="form-group {{ errors.name ? 'has-error' : '' }}">
+                        <label for="name">Nama :</label>
+                        <input type="text" name="name" value="{{old.name}}" class="form-control">
+                        {% if errors.name %}
+                        <span class="help-block">{{ errors.name | first }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-xs-12 col-sm-6 col-md-7">
+                    <div class="form-group {{ errors.description ? 'has-error' : '' }}">
+                        <label for="description">Deskripsi :</label>
+                        <input type="text" name="description" value="{{old.description}}"class="form-control">
+                        {% if errors.description %}
+                        <span class="help-block">{{ errors.description | first }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12 col-sm-5 col-md-5">
+                    <div class="form-group {{ errors.privacy ? 'has-error' : '' }}">
+                        <label for="privacy">Privasi :</label>
+                        <select class="form-control" name="privacy" >
+                            <option value="">Pilih</option>
+                            <option {% if old.privacy == 0 %}
+                             selected="selected"{% endif %}value="0">Public</option>
+                            <option {% if old.privacy == 1 %}
+                             selected="selected"{% endif %} value="1">Pribadi</option>
+                        </select>
+                        {% if errors.public %}
+                        <span class="help-block">{{ errors.privacy | first }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-xs-12 col-sm-6 col-md-7">
+                    <div class="form-group {{ errors.recurrent ? 'has-error' : '' }}">
+                        <label for="recurrent">Perulangan :</label>
+                        <select class="form-control" name="recurrent" value="">
+                            <option value="">Tanpa Perulangan</option>
+                            <option {% if old.recurrent == "harian" %}
+                             selected="selected"{% endif %} value="harian">Harian</option>
+                            <option {% if old.recurrent == "mingguan" %}
+                             selected="selected"{% endif %} value="mingguan">Mingguan</option>
+                            <option {% if old.recurrent == "bulanan" %}
+                             selected="selected"{% endif %} value="bulanan">Bulanan</option>
+                            <option {% if old.recurrent == "tahunan" %}
+                             selected="selected"{% endif %} value="tahunan">Tahunan</option>
+                        </select>
+                        {% if errors.recurrent %}
+                        <span class="help-block">{{ errors.recurrent | first }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12 col-sm-5 col-md-5">
+                    <div class="form-group {{ errors.start_date ? 'has-error' : '' }}">
+                        <label for="start_date">Tanggal dimulai :</label>
+                        <input type="date" name="start_date" value="{{old.start_date}}" class="form-control">
+                        <input type="hidden" name="group" value="{{ group }}">
+                        {% if errors.start_date %}
+                        <span class="help-block">{{ errors.start_date | first }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-xs-12 col-sm-6 col-md-7">
+                    <div class="form-group {{ errors.image ? 'has-error' : '' }}">
+                        <label for="image">Foto :</label>
+                        <div class="input-group">
+                            <div class="input-group-addon">
+                                <i class="fa fa-image"></i>
+                            </div>
+                            <input type="file" id="file" class="form-control"
+                            name="image" placeholder="Item image">
+                        </div>
+                        {% if errors.image %}
+                        <span class="help-block">{{errors.image | first}}</span>
+                        {% endif %}<br />
+                    </div>
+                </div>
+            </div>
+            <!-- <div class="row">
+                <div class="col-xs-12 col-sm-5 col-md-12">
+                    <div class="form-group {{ errors.image ? 'has-error' : '' }}">
+                        <label for="image">Foto :</label>
+                        <div class="input-group">
+                            <div class="input-group-addon">
+                                <i class="fa fa-image"></i>
+                            </div>
+                            <input type="file" id="file" class="form-control"
+                            name="image" placeholder="Item image">
+                        </div>
+                        {% if errors.image %}
+                        <span class="help-block">{{errors.image | first}}</span>
+                        {% endif %}<br />
+                    </div>
+                </div>
+            </div> -->
+            <div class="modal-footer">
+                <div class="btn-group btn-group-justified" role="group" aria-label="group button">
+                    <div class="btn-group" role="group">
+                        <input type="hidden" id="data-id" name="user_id"
+                         value="{{ login.id }}">
+                         <input type="hidden" id="data-id" name="member"
+                          value="{{ login.id }}">
+                         <button type="button" class="btn btn-danger"
+                         data-dismiss="modal" role="button">Tutup</button>
+                    </div>
+                    <div class="btn-group" role="group">
+                        <button type="submit" class="btn btn-primary btn-hover-green" onClick="myFunction()">Buat</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+  </div>
+</div>
+</div>
+
+{% for key, item in data %}
+
+<div id="{{item.id}}" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content" style="padding-left:20px;">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <span aria-hidden="true">×</span><span class="sr-only">Tutup</span></button>
+                <h3 class="modal-title" id="lineModalLabel">Form laporan tugas</h3>
+            </div>
+            <div class="modal-body">
+
+            <!-- content goes here -->
+            <form  action="{{path_for('report.item', {item:item.id})}}"
+            method="POST" enctype="multipart/form-data" id="laporkan">
+                {% if errors %}
+                <div class="alert alert-danger">
+                    <a class="close" data-dismiss="alert" href="#">x</a>
+                    Mohon mengisi form dengan benar
+                </div>
+                {% endif %}
+                <div class="row" style="margin-left:45px;">
+                    <div class="col-xs-12 col-sm-6 col-md-10">
+                        <div class="form-group {{ errors.image ? 'has-error' : '' }}">
+                            Foto :
+                            <div class="input-group">
+                                <div class="input-group-addon">
+                                    <i class="fa fa-image"></i>
+                                </div>
+                                <input type="file" id="file" class="form-control"
+                                name="image" placeholder="foto">
+                            </div>
+                            {% if errors.image %}
+                            <span class="help-block">{{errors.image | first}}</span>
+                            {% endif %}<br />
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12 col-md-12">
+                        <div class="form-group {{ errors.description ? 'has-error' : '' }}">
+                            <label for="description">Deskripsi :</label>
+                            <textarea rows="5" name="description" class="form-control"
+                            value="{{ item.description }}">{{ item.description }}</textarea>
+                                    <!-- <input type="text" name="description" class="form-control" id="coba"> -->
+                            <input type="hidden" id="data-id" name="item_id"
+                             value="{{ item.id }}">
+                             <input type="hidden" id="data-id" name="group_id"
+                              value="{{ item.group_id }}">
+                            {% if errors.description %}
+                            <span class="help-block">{{ errors.description | first }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="btn-group btn-group-justified" role="group" aria-label="group button">
+                        <div class="btn-group" role="group">
+                            <button type="button" class="btn btn-danger"
+                             data-dismiss="modal"  role="button"><b>Tutup</b></button>
+                        </div>
+                        <div class="btn-group" role="group">
+                            <button type="submit" class="btn btn-success btn-hover-green">
+                                <b>Laporkan</b></button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    </div>
+<!-- </div> -->
+
+<!-- line modal report -->
+
+{% endfor %}
+
+{% endblock %}

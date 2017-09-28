@@ -1,0 +1,77 @@
+
+{% extends 'templates/default.twig' %}
+
+{% block title %}Anggota  Grup{% endblock %}
+
+{% block current %} Grup {{group.name}} > {% endblock %}
+
+{% block content %}
+<div class="panel panel-default">
+    <a class="list-group-item active main-color-bg">
+      <span align="center" aria-hidden="true">
+          <i class="icon-file"></i></span> Daftar anggota {{group.name}}
+    </a>
+    <div class="panel-body">
+        {% for member in data %}
+
+        <div style="padding:5px;" class="col-md-4" >
+            <div class="well dash-box" style="background:#f2f2f2;">
+                {% if member.image != null %}
+                    <img  style="margin-right:10px;" width="75" height="75" alt="User"
+                    src="{{ base_url() }}/assets/images/{{ member.image }}">
+                {% else %}
+                    <img width="75" height="75" alt="User"
+                    src="{{ base_url() }}/assets/images/avatar.png">
+                {% endif %}
+                <span style="float: right; top: 1px; ">
+                    <div class="btn-group span4">
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                        <i class="fa fa-sort-desc" aria-hidden="true"></i>
+                    </a>
+                    <ul style="left: -140px; top: 13px; " class="dropdown-menu">
+                        <li><a href="#"><i class="icon-fixed-width icon-pencil">
+                             Jadikan PIC</i></a></li>
+                        <li><a href="#"><i class="icon-fixed-width icon-pencil">
+                             Jadikan anggota</i></a></li>
+                        <li><a href="#"><i class="icon-fixed-width icon-pencil">
+                             Jadikan wali</i></a></li>
+                        <li class="divider"></li>
+                        <li><a href="#"><i class="i"> Lihat detail anggota</i></a></li>
+                    </ul>
+                </div>
+                </span>
+                <span style="position: absolute; float: right; font-family: Franklin Gothic Medium;">
+                    <br><b>{{ member.username }}</b><br>
+                    {% if member.status_member == 0 %}
+                    Anggota
+                    {% elseif member.status_member == 1 %}
+                    PIC
+                    {% elseif member.status_member == 2 %}
+                    Wali
+                    {% endif %}
+                </span>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<nav aria-label="...">
+    <ul class="pager">
+        <div class="pagination">
+            <ul>
+                {% if pagination.current > 1 %}
+                <li><a href="{{ base_url() }}/home/?page={{ pagination.current - 1 }}">
+                    Sebelumnya</a></li>
+                    {% endif %}
+                <li class="active"> <a>{{ pagination.current }}</a></li>
+                    {% if pagination.current < pagination.total_page %}
+                <li><a href="{{ base_url() }}/home/?page={{ pagination.current + 1 }}">
+                        Selanjutnya</a></li>
+                        {% endif %}
+            </ul>
+        </div>
+    </ul>
+</nav>
+
+{% endblock %}
