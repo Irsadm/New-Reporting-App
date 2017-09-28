@@ -624,13 +624,14 @@ class GroupController extends BaseController
 		$content = $result->getBody()->getContents();
 		$data = json_decode($content, true);
 		$_SESSION['group'] = $dataGroup['data'];
+		$_SESSION['user_id'] = $_SESSION['login']['id'];
 		// var_dump($_SESSION['group']);die;
 		if ($data['error'] == true) {
 			$this->flash->addMessage('error', $data['message']);
 			return $response->withRedirect($this->router->pathFor('group.user'));
 		} elseif ($data['data'] == 'PIC') {
 			$this->flash->addMessage('success', $data['message']);
-			return $response->withRedirect($this->router->pathFor('pic.group.reported'));
+			return $response->withRedirect($this->router->pathFor('get.group.timeline'));
 		} elseif ($data['data'] == 'member') {
 			$this->flash->addMessage('success', $data['message']);
 			return $response->withRedirect($this->router->pathFor('unreported.item.user.group'));
@@ -687,4 +688,31 @@ class GroupController extends BaseController
         }
     }
 
+	public function timeline($request, $response)
+	{
+		$id = $_SESSION['group']['id'];
+
+		try {
+            $result = $this->client->request('GET', 'group/timeline',[
+                'query' => [
+					'perpage' => 5,
+                    'group_id' => $id,
+                    'page' => $request->getQueryParam('page')
+                    ]]);
+                } catch (GuzzleException $e) {
+                    $result = $e->getResponse();
+                }
+
+        $data = json_decode($result->getBody()->getContents(), true);
+		// var_dump($data);die;
+        if (!isset($data['pagination'])) {
+        $data['pagination'] = null;
+        }
+
+		return $this->view->render($response, 'pic/laporan.twig', [
+            'items'	=> $data['data'],
+            // 'group'	=> $args['id'],
+            'pagination'	=> $data['pagination'],
+        ]);
+	}
 }

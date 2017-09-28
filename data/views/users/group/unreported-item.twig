@@ -36,8 +36,11 @@
                                 </div>
                             </span>
                         <div class="widget-box">
-                              <h3><i class="fa" aria-hidden="true">
-                                &nbsp Tugas di {{ group.name}} </i></h3>
+                            <h3><i class="fa" aria-hidden="true">
+                                &nbsp {% if login.id == user.id %}Tugas saya di
+                                 {% else %}
+                                 Tugas {{user.username}} di
+                             {% endif %} {{ group.name}} </i></h3>
                           <div class="widget-content nopadding">
                             <table class="table table-striped table-bordered">
                               <thead>
@@ -101,131 +104,6 @@
 </div>
 </div>
 </div>
-<!-- </div> -->
-
-
-<!-- <div class="modal fade" id="create" tabindex="-1"
- role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div style="padding-left:20px;" class="modal-content">
-        <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal">
-                <span aria-hidden="true">×</span><span class="sr-only">Tutup</span></button>
-            <h3 class="modal-title" id="lineModalLabel">Form Tambah tugas</h3>
-        </div>
-        <div class="modal-body">
-
-
-         <form  action="{{ path_for('web.item.user.create',
-         {'group': group.id}) }}"
-         method="POST" enctype="multipart/form-data">
-            {% if errors %}
-            <div class="alert alert-danger">
-                <a class="close" data-dismiss="alert" href="#">x</a>
-                Mohon isi form dengan benar
-            </div>
-            {% endif %}
-            <div class="row">
-                <div class="col-xs-12 col-sm-4 col-md-5">
-                    <div class="form-group {{ errors.name ? 'has-error' : '' }}">
-                        <label for="name">Nama :</label>
-                        <input type="text" name="name" class="form-control">
-                        {% if errors.name %}
-                        <span class="help-block">{{ errors.name | first }}</span>
-                        {% endif %}
-                    </div>
-                </div>
-                <div class="col-xs-12 col-sm-6 col-md-7">
-                    <div class="form-group {{ errors.public ? 'has-error' : '' }}">
-                        <label for="privacy">Privasi :</label>
-                        <select class="form-control" name="privacy" >
-                            <option value="0">Publik</option>
-                            <option selected="selected" value="1">Privat</option>
-                        </select>
-                        {% if errors.public %}
-                        <span class="help-block">{{ errors.public | first }}</span>
-                        {% endif %}
-                    </div>
-                     <div class="form-group {{ errors.description ? 'has-error' : '' }}">
-                        <label for="description">Deskripsi :</label>
-                     <input type="text" name="description" class="form-control">
-                         <textarea rows="5" name="description" class="form-control"></textarea>
-                        {% if errors.description %}
-                        <span class="help-block">{{ errors.description | first }}</span>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-xs-12 col-sm-5 col-md-5">
-                    <div class="form-group {{ errors.start_date ? 'has-error' : '' }}">
-                        <label for="start_date">Tanggal mulai :</label>
-                        <input type="date" name="start_date" class="form-control">
-                        {% if errors.start_date %}
-                        <span class="help-block">{{ errors.start_date | first }}</span>
-                        {% endif %}
-                    </div>
-                     <div class="form-group {{ errors.public ? 'has-error' : '' }}">
-                        <label for="privacy">Privasi :</label>
-                        <select class="form-control" name="privacy" >
-                            <option value="0">Publik</option>
-                            <option selected="selected" value="1">Privat</option>
-                        </select>
-                        {% if errors.public %}
-                        <span class="help-block">{{ errors.public | first }}</span>
-                        {% endif %}
-                    </div>
-                 </div>
-                <div class="col-xs-12 col-sm-6 col-md-7">
-                    <div class="form-group {{ errors.recurrent ? 'has-error' : '' }}">
-                        <label for="recurrent">Pengulangan :</label>
-                        <select class="form-control" name="recurrent" value="">
-                            <option selected="selected" value="">Tanpa pengulangan</option>
-                            <option value="harian">Harian</option>
-                            <option value="mingguan">Mingguan</option>
-                            <option value="bulanan">Bulanan</option>
-                            <option value="tahunan">Tahunan</option>
-                        </select>
-                        {% if errors.recurrent %}
-                        <span class="help-block">{{ errors.recurrent | first }}</span>
-                        {% endif %}
-                    </div>
-                </div>
-                <div class="col-xs-12 col-sm-12 col-md-12">
-                    <div class="form-group {{ errors.description ? 'has-error' : '' }}">
-                        <label for="description">Deskripsi :</label>
-                        <input type="text" name="description" class="form-control">
-                        <textarea rows="4" name="description" class="form-control"></textarea>
-                        {% if errors.description %}
-                        <span class="help-block">{{ errors.description | first }}</span>
-                        {% endif %}
-                    </div>
-                    <div class="form-group {{ errors.start_date ? 'has-error' : '' }}">
-                        <label for="start_date">Tanggal mulai :</label>
-                        <input type="date" name="start_date" class="form-control">
-                        {% if errors.start_date %}
-                        <span class="help-block">{{ errors.start_date | first }}</span>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <div class="btn-group btn-group-justified" role="group" aria-label="group button">
-                    <div class="btn-group" role="group">
-                        <button type="button" class="btn btn-danger"
-                        data-dismiss="modal" role="button">Close</button>
-                         data-dismiss="modal" role="button">Tutup</button>
-                    </div>
-                    <div class="btn-group" role="group">
-                        <button type="submit" class="btn btn-primary btn-hover-green">Buat tugas</button>
-                    </div>
-                </div>
-            </div>
-        </form>
-    </div>
-</div>
-</div>
-</div> -->
 
 <!-- line modal items-->
 <div class="modal fade" id="create" role="dialog">
@@ -244,7 +122,7 @@
             {% if errors %}
             <div class="alert alert-danger">
                 <a class="close" data-dismiss="alert" href="#">x</a>
-                Form hars diisi
+                Mohon mengisi form dengan benar
             </div>
             {% endif %}
             <div class="row">
@@ -308,7 +186,7 @@
                     <div class="form-group {{ errors.start_date ? 'has-error' : '' }}">
                         <label for="start_date">Tanggal dimulai :</label>
                         <input type="date" name="start_date" value="{{old.start_date}}" class="form-control">
-                        <input type="hidden" name="group" value="{{ group }}">
+                        <input type="hidden" name="group" value="{{ group.id }}">
                         {% if errors.start_date %}
                         <span class="help-block">{{ errors.start_date | first }}</span>
                         {% endif %}
@@ -330,30 +208,13 @@
                     </div>
                 </div>
             </div>
-            <!-- <div class="row">
-                <div class="col-xs-12 col-sm-5 col-md-12">
-                    <div class="form-group {{ errors.image ? 'has-error' : '' }}">
-                        <label for="image">Foto :</label>
-                        <div class="input-group">
-                            <div class="input-group-addon">
-                                <i class="fa fa-image"></i>
-                            </div>
-                            <input type="file" id="file" class="form-control"
-                            name="image" placeholder="Item image">
-                        </div>
-                        {% if errors.image %}
-                        <span class="help-block">{{errors.image | first}}</span>
-                        {% endif %}<br />
-                    </div>
-                </div>
-            </div> -->
             <div class="modal-footer">
                 <div class="btn-group btn-group-justified" role="group" aria-label="group button">
                     <div class="btn-group" role="group">
                         <input type="hidden" id="data-id" name="user_id"
-                         value="{{ login.id }}">
+                         value="{{ user.id }}">
                          <input type="hidden" id="data-id" name="member"
-                          value="{{ login.id }}">
+                          value="{{ user.id }}">
                          <button type="button" class="btn btn-danger"
                          data-dismiss="modal" role="button">Tutup</button>
                     </div>

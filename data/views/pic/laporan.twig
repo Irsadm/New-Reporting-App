@@ -12,7 +12,7 @@
                 <!-- <div style="padding-bottom:0px; padding-top:0px; background:#24272E;" class="panel-heading"> -->
                     <div class="widget-title span12">
                         <div class="btn-group btn-group-justified">
-                            <a href="{{ base_url() }}/pic/items/group/reported" class="btn btn-primary active">Laporan</a>
+                            <a href="{{ base_url() }}/group/timeline/" class="btn btn-primary active">Timeline</a>
                             <a href="{{ base_url()}}/pic/items/group" class="btn btn-primary">Tugas</a>
                           <a href="{{ base_url()}}/pic/group/member" class="btn btn-primary">Anggota</a>
                         </div>
@@ -34,8 +34,8 @@
                                         <li><a style="font-size: medium" href="{{ path_for('get.group.detail')}}">
                                             <i class="icon-fixed-width icon-pencil"> Info Grup</i></a>
                                         </li>
-                                        <li><a style="font-size: medium" href="" data-toggle="modal" data-target="#squarespaceModal2">
-                                            <i class="icon-fixed-width icon-search"> Pengaturan</i></a>
+                                        <li><a style="font-size: medium" href="{{path_for('pic.get.user.item',{'id': login.id})}}">
+                                            <i class="icon-fixed-width icon-list"> Daftar tugas saya</i></a>
                                         </li>
                                     </ul>
                                 </div>
@@ -62,19 +62,36 @@
                                         <span>
                                             <br>
                                             {% if item.reported_at == null  %}
-                                            &nbsp&nbsp&nbsp<b>{{ item.creator }}</b>
-                                            <i>melaporkan tugas</i> <b>{{ item.name}}</b>
-                                            {% else %}
-                                            &nbsp&nbsp&nbsp <b>{{ item.user }}</b>
-                                            <i>melaporkan tugas</i> <b>{{ item.name }}</b>
-                                            {% endif %}
+                                            &nbsp&nbsp&nbsp<b>
+                                                {% if item.creator == login.username %}
+                                                Anda
+                                                {% else %}
+                                                {{ item.creator }}
+                                                {% endif %}</b>
+                                                <i>membuat tugas </i>
+                                                <!-- <b><span style="font-size: 10pt;" class="label label-success">
+                                                {{ item.name }}
+                                                </span></b> -->
+                                                {% else %}
+                                                &nbsp&nbsp&nbsp <b>
+                                                {% if item.user == login.username %}
+                                                Anda
+                                                {% else %}
+                                                {{ item.user }}
+                                                {% endif %}</b>
+                                                <i>melaporkan tugas </i>
+                                                <!-- <b><span style="font-size: 10pt;" class="label label-success">
+                                                {{ item.name }}
+                                                </span></b> -->
+                                                {% endif %}
                                         </span>
 
                                         <div class="article-post">
-                                            <br><br>
+                                            <br><br><b><span style="font-size: 10pt;" class="label label-success">
+                                            {{ item.name }}
+                                            </span></b><br><br>
                                         {% if item.image != null %}
-
-                                        <img width="80%" style="max-width: 250px;"alt="Image item"
+                                        <img width="80%" style="max-width: 250px;"
                                         src="{{ base_url() }}/assets/images/{{ item.image }}">
                                         <br><br>
                                         {% endif %}
@@ -95,13 +112,13 @@
                                             <ul>
                                                 {% if pagination.current > 1 %}
                                                 <li class="">
-                                                    <a href="{{ base_url() }}/pic/items/group/reported?page={{ pagination.current - 1 }}">
+                                                    <a href="{{ base_url() }}/group/timeline/?page={{ pagination.current - 1 }}">
                                                         Sebelumnya</a></li>
                                                         {% endif %}
                                                 <li class="active"> <a>{{ pagination.current }}</a></li>
                                                 {% if pagination.current < pagination.total_page %}
                                                 <li class="">
-                                                    <a href="{{ base_url() }}/pic/items/group/reported?page={{ pagination.current + 1 }}">
+                                                    <a href="{{ base_url() }}/group/timeline/?page={{ pagination.current + 1 }}">
                                                         Selanjutnya</a></li>
                                                         {% endif %}
                                             </ul>
@@ -137,7 +154,7 @@
             {% if errors %}
             <div class="alert alert-danger">
                 <a class="close" data-dismiss="alert" href="#">x</a>
-                Form hars diisi
+                Mohon mengisi form dengan benar
             </div>
             {% endif %}
             <div class="row">

@@ -356,12 +356,10 @@ class ItemController extends BaseController
     //Get group item reported
     public function getReportedUserGroupItem($request, $response)
     {
-        // $userId = $_SESSION['login']['id'];
-        // $groupId = $args['id'];
         try {
             $result = $this->client->request('GET', 'item/group/user/reported',[
                 'query' => [
-                    'user_id' =>  $_SESSION['login']['id'],
+                    'user_id' =>  $_SESSION['user']['id'],
                     'group_id' =>  $_SESSION['group']['id'],
                     'perpage' => 10,
                     'page' => $request->getQueryParam('page')
@@ -386,7 +384,7 @@ class ItemController extends BaseController
         try {
             $result = $this->client->request('GET', 'item/group/user/unreported',[
                 'query' => [
-                    'user_id' =>  $_SESSION['login']['id'],
+                    'user_id' =>  $_SESSION['user']['id'],
                     'group_id' => $_SESSION['group']['id'],
                     'perpage' => 10,
                     'page' => $request->getQueryParam('page')

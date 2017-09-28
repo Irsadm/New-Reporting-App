@@ -776,6 +776,45 @@ class ItemController extends BaseController
         return $data;
     }
 
+    public function groupTimeline($request, $response)
+    {
+        $items = new Item($this->db);
+
+        $page = !$request->getQueryParam('page') ? 1 : $request->getQueryParam('page');
+        $perPage = $request->getQueryParam('perpage');
+        $groupId = $request->getQueryParam('group_id');
+        $findItem = $items->getGroupItem($groupId);
+
+        $newItem = array();
+        if ($findItem){
+            foreach ($findItem as $item) {
+                if (!empty($newItem[$item['id']])) {
+                    $currentValue1 = (array) $newItem[$item['id']]['image'];
+                    $currentValue2 = (array) $newItem[$item['id']]['comment'];
+                    $newItem[$item['id']]['image'] =
+                     array_unique(array_merge($currentValue1, (array) $item['image']));
+                    $newItem[$item['id']]['comment'] =
+                     array_unique(array_merge($currentValue2, (array) $item['comment']));
+                } else {
+                    $newItem[$item['id']] = $item;
+                }
+            }
+            if (empty($perpage)) {
+                $perpage = 5;
+            }
+            $result = $this->paginateArray($newItem, $page, $perpage);
+            $data = $this->responseDetail(200, false, 'Data tersedia', [
+                'data'        => $result['data'],
+                'pagination'  => $result['pagination']
+            ]);
+
+        } else {
+            $data = $this->responseDetail(404, true, 'Data tidak ditemukan');
+        }
+
+        return $data;
+    }
+
     public function guardTimeline($request, $response, $args)
     {
         $items = new Item($this->db);

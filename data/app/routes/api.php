@@ -88,6 +88,7 @@ $app->group('/api', function() use ($app, $container) {
         $app->post('/pic/set/status/{id}', 'App\Controllers\api\GroupController:setAsPic');
         $app->get('/delete/member/{id}/{group}', 'App\Controllers\api\GroupController:deleteUser');
         $app->post('/pic/set/member/{id}', 'App\Controllers\api\GroupController:setAsMember');
+        $app->get('/timeline', 'App\Controllers\api\ItemController:groupTimeline')->setname('api.group.timeline');
         // $app->get('/user/join', 'App\Controllers\api\GroupController:getUserGroup');
         // $app->get('/items/group/{group}', 'App\Controllers\web\ItemController:getUserInGroupItem')->setName('api.group.item');
     });

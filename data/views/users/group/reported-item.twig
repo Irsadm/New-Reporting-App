@@ -15,7 +15,7 @@
                         <div class="btn-group btn-group-justified">
                           <a href="#" class="btn btn-primary active">Dilaporkan</a>
                           <a href="{{path_for('unreported.item.user.group',
-                           {'group': group.id, 'user':login.id})}}" class="btn btn-primary">Belum dilaporkan</a>
+                           {'group': group.id, 'user':user.id})}}" class="btn btn-primary">Belum dilaporkan</a>
                         </div>
 
                     </div>
@@ -40,7 +40,10 @@
                                             </span>
                             <div class="widget-box">
                                 <h3><i class="fa" aria-hidden="true">
-                                    &nbsp Tugas di {{ group.name}} </i></h3>
+                                    &nbsp {% if login.id == user.id %}Tugas saya di
+                                     {% else %}
+                                     Tugas {{user.username}} di
+                                 {% endif %} {{ group.name}} </i></h3>
                                     <div class="widget-content nopadding">
                                         <table class="table table-striped table-bordered">
                                             <thead>
@@ -121,7 +124,7 @@
                 {% if errors %}
                 <div class="alert alert-danger">
                     <a class="close" data-dismiss="alert" href="#">x</a>
-                    Form hars diisi
+                    Mohon mengisi form dengan benar
                 </div>
                 {% endif %}
                 <div class="row">
@@ -211,9 +214,9 @@
                     <div class="btn-group btn-group-justified" role="group" aria-label="group button">
                         <div class="btn-group" role="group">
                             <input type="hidden" id="data-id" name="user_id"
-                             value="{{ login.id }}">
+                             value="{{ user.id }}">
                              <input type="hidden" id="data-id" name="member"
-                              value="{{ login.id }}">
+                              value="{{ user.id }}">
                              <button type="button" class="btn btn-danger"
                              data-dismiss="modal" role="button">Tutup</button>
                         </div>

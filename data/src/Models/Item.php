@@ -462,4 +462,25 @@ class Item extends BaseModel
 
         return $this;
     }
+
+    public function getGroupItem($groupId)
+    {
+        $qb1 = $this->db->createQueryBuilder();
+        $query1 = $qb1->select('i.*', 'u.username as user', 'u.image as user_image', 'c.comment',
+                'us.username as creator', 'us.image as creator_image','gr.name as group_name', 'img.image')
+                ->from($this->table, 'i')
+                ->where('i.deleted = 0')
+                ->andWhere('i.privacy = 0')
+                ->andWhere('i.group_id = '. $groupId)
+                ->leftJoin('i', 'users', 'u', 'i.user_id = u.id')
+                ->leftJoin('i', 'users', 'us', 'i.creator = us.id')
+                ->leftJoin('i', 'groups', 'gr', 'i.group_id = gr.id')
+                ->leftJoin('i', 'image_item', 'img', 'i.id = img.item_id')
+                ->leftJoin('i', 'comments', 'c', 'i.id = c.item_id')
+                ->orderBy('i.updated_at', 'desc')
+                ->execute();
+
+        return  $query1->fetchAll();
+
+    }
 }

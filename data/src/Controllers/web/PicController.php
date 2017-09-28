@@ -127,6 +127,7 @@ class PicController extends BaseController
 
     public function createItem($request, $response)
     {
+        // var_dump($request->getParams()); die();
 
         if (empty($request->getParam('user_id'))) {
             $user_id = null;
@@ -168,14 +169,6 @@ class PicController extends BaseController
                                 'Mime-Type'=> $mime,
                                 'contents' => fopen( $path, 'r' )
                             ],
-                            // [
-                            //     'name'     => 'description',
-                            //     'contents' => $request->getParam('description')
-                            // ],
-                            // [
-                            //     'name'     => 'user',
-                            //     'contents' => $_SESSION['login']['id']
-                            // ],
                             [
                                 'name'     => 'item_id',
                                 'contents' => $contents['data']['id']
@@ -341,6 +334,21 @@ class PicController extends BaseController
             $this->flash->addMessage('warning', $data['message']);
             return $response->withRedirect($this->router->pathFor('web.pic.show.item',['id' => $data['data']['item_id']]));
         }
+    }
+
+    public function getUserReport($request, $response, $args)
+    {
+
+        try {
+            $user = $this->client->request('GET', 'user/detail/'. $args['id']);
+        } catch (GuzzleException $e) {
+            $user = $e->getResponse();
+        }
+
+        $dataUser = json_decode($user->getBody()->getContents(), true);
+        $_SESSION['user'] = $dataUser['data'];
+
+        return $response->withRedirect($this->router->pathFor('unreported.item.user.group'));
     }
 
 }

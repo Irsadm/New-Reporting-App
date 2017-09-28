@@ -34,6 +34,7 @@ $app->group('', function() use ($app, $container) {
         $app->get('/join/{id}', 'App\Controllers\web\GroupController:joinGroup')->setName('web.join.group');
         $app->post('/setuser', 'App\Controllers\web\GroupController:setUserGroup')->setName('group.setuser');
         $app->get('/show/detail', 'App\Controllers\web\GroupController:getDetail')->setName('get.group.detail');
+        $app->get('/timeline/', 'App\Controllers\web\GroupController:timeline')->setName('get.group.timeline');
         $app->post('/image/change', 'App\Controllers\web\GroupController:changeImage')->setName('group.change.image');
     });
     $app->group('/item', function() use ($app, $container) {
@@ -94,6 +95,7 @@ $app->group('', function() use ($app, $container) {
         $app->get('/member/{group}', 'App\Controllers\web\PicController:getSearch')->setName('web.pic.search.member');
         $app->get('/comment/delete/{id}', 'App\Controllers\web\PicController:deleteComment')->setName('pic.delete.comment');
         $app->post('/group/edit', 'App\Controllers\web\GroupController:setMemberGroup')->setName('web.pic.set.member');
+        $app->get('/item/user/{id}', 'App\Controllers\web\PicController:getUserReport')->setName('pic.get.user.item');
         // $app->get('/search/user', 'App\Controllers\web\UserController:searchUser')->setName('web.pic.search.user');
         // $app->post('/setguard', 'App\Controllers\web\GuardController:createGuardian')->setName('pic.setguard');
     });
