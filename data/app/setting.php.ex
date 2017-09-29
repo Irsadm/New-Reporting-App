@@ -16,13 +16,13 @@ return [
 
 	//setting db (with doctrine)
 	'db'	=> [
-		'url'	=> 'mysql://dhezign:PXUqTYk1@localhost/dhezign_reporting',
+		'url'	=> 'mysql://root:root@localhost/report',
 	],
 
 	'determineRouteBeforeAppMiddleware' => true,
 
 	'reporting' => [
-       'base_uri' => 'http://reporting.mitschool.co.id/api/',
+       'base_uri' => 'http://localhost/new-reporting/public_html/api/',
        'headers' => [
            'key' => @$_ENV['REPORTING_API_KEY'],
            'Accept' => 'application/json',
@@ -39,10 +39,22 @@ return [
 		]
 	],
 
-    'base_url' => "http://reporting.mitschool.co.id",
+   // eporting' => [
+   //  'base_uri' => 'http://localhost/Reporting-App/public/api/',
+   //  'headers' => [
+   //   'key' => @$_ENV['REPORTING_API_KEY'],
+   //   'Accept' => 'application/json',
+   //   'Content-Type' => 'application/json',
+   //   'Authorization'	=>	@$_SESSION['key']['key_token'],
+   //  ],
+   // ],
+
+    'base_url' => "http://localhost/",
     "plates_path" => "/../view",
 
     'flysystem' => [
     	'path'	=> __DIR__ . "/../public/assets",
-     ]
+	],
+
+	 'imgUrl'	=> [$_SERVER['DOCUMENT_ROOT'].'/Reporting-App/public/assets/images/']
 ];
