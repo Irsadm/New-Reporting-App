@@ -8,7 +8,7 @@ class Mailer
     public function send(array $data)
     {
 
-		$transport = (new \Swift_SmtpTransport('smtp.gmail.com', 465, 'ssl'))
+		$transport = (new \Swift_SmtpTransport('smtp.gmail.com', 587, 'tls'))
 					->setUsername('reportingmit@gmail.com')
 					->setPassword('ltpbhipfvxxnlaoy');
 
