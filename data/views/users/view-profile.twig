@@ -16,7 +16,8 @@
                         <div class="col-lg-4">
                             <br>
                             <img style="width:300px" class="img-thumbnail"
-                            src="{{ base_url() }}/assets/images/{{user.image}}" alt="">
+                            src="{{ base_url() }}/assets/images/{{user.image}}"
+                            onerror=this.src="{{ base_url() }}/assets/images/avatar.png">
                             <br><br>
                             <div class='wrapper text-center'>
                                 <div class="btn-group" role="group">

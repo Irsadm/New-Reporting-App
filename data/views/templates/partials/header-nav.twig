@@ -9,8 +9,8 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
         </button>
-        <h3 style="color:#fff;"><span class="glyphicon glyphicon-cog" aria-hidden="true">
-        </span> Reporting App <small></small></h3>
+        <a href="{{path_for('home') }}"><h3 style="color:#fff;"><span class="glyphicon glyphicon-cog" aria-hidden="true">
+        </span> Reporting App<small></small></h3> </a>
     </div>
     <div id="navbar" class="collapse navbar-collapse">
         <ul style="background:#d5dfe7;" class="nav navbar-nav hidden-lg">
@@ -23,24 +23,23 @@
             <li><a href="{{path_for('logout')}}">Keluar</a></li>
         </ul>
         {% if login.id != null %}
-        <ul style="margin-top:10px;" class="nav navbar-nav navbar-right hidden-xs">
+        <ul style="margin-top:5px;" class="nav navbar-nav navbar-right hidden-xs">
 
             <li class="user-header">
+                <a title="" href="#" data-toggle="dropdown" data-target="#profile-messages" class="dropdown-toggle">
                 {% if login.image != null %}
                 <img width="40" height="40" src="{{ base_url() }}/assets/images/{{ login.image }}"
                 class="img-circle" alt="User Image">
                 {% else %}
                 <img width="40" height="40"src="{{ base_url() }}/assets/images/avatar.png"
                 class="img-circle" alt="User Image">
-
             {% endif %}
+        </a>
         </li>
-            <li class="dropdown hidden-xs" id="profile-messages" >
+            <li style="margin-top:10px;" class="dropdown hidden-xs" id="profile-messages" >
                 <a title="" href="#" data-toggle="dropdown" data-target="#profile-messages" class="dropdown-toggle">
-                    <!-- <i class="icon icon-user"></i> -->
                     <span  style="color:#fff; font-size:20px;"class="text">
                     {{ login.username}} <b class="caret"></b></span>
-
                 </a>
                 <ul class="dropdown-menu">
                     <li><a style="font-size:15px;" href="{{path_for('user.view.profile') }}">
@@ -52,12 +51,11 @@
                          aria-hidden="true"></span> Keluar</a></li>
                 </ul>
             </li>
-            {% if notif.count > 0 %}
-            <li><a title="" href="#" data-toggle="dropdown" data-target="#notif" class="dropdown-toggle">
+            <li style="margin-top:10px;"><a title="" href="#" data-toggle="dropdown" data-target="#notif" class="dropdown-toggle">
                 <!-- <i class="icon icon-user"></i> -->
                 <span  style="color:#fff; font-size:20px;"class="text">
                     <span class="badge badge-important"><i class="fa fa-bell" aria-hidden="true">
-                    </i>{{ notif.count }}</span><b class="caret"></b></span>
+                    </i>{% if notif.count != 0 %}{{ notif.count }}{% endif %}</span><b class="caret"></b></span>
 
                 </a>
                 <ul class="dropdown-menu" style="width:217px;">
@@ -67,7 +65,6 @@
                         {{ notif.user|length }}</span></span></a></li>
                         {% endif %}
                         {% if notif.guard|length > 0 %}
-
                     <li><a style="font-size:14px;"><i>Permintaan dari wali</i>
                         <span class="pull-right"><span class="badge badge-important">
                         {{ notif.guard|length }}</span></span></a></li>
@@ -78,11 +75,14 @@
                         {{ notif.group|length }}</span></span></a></li>
                         <li class="divider"></li>
                         {% endif %}
+                    {% if notif.count == 0 %}
+                    <li><a style="font-size:14px;">
+                        <center><i>Tidak ada pemberitahuan</i><center></a></br>
+                        {% endif %}
                     <li><a style="font-size:13px; align:center;" href="{{path_for('notification')}}">
                         <span class="glyphicon glyphicon-hand-right"
-                        aria-hidden="true"></span><u>Lihat semua permintaan</u></a></li>
+                        aria-hidden="true"></span> &nbsp<u>Lihat semua</u> . . .</a></li>
                 </ul></li>
-                {% endif %}
             </ul>
             {% endif %}
         </div>

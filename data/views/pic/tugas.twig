@@ -1,7 +1,44 @@
 {% extends 'templates/default.twig' %}
 
 {% block title %} {{group.name}} {% endblock %}
+{% block js %}
+<style media="screen">
+    .select2-results { color: #015b4d; }
+    .select2-container--default .select2-selection--multiple .select2-selection__choice
+    { color: #0430b6; background-color: #254236; }
 
+    .wrap {
+    	position: relative;
+    	width: 100%;
+    	height: 40px;
+    	margin-top: 25px;
+    	overflow: hidden;
+    }
+    .date {
+    	border: 0;
+    	width: 100%;
+    	height: 30px;
+    	line-height: 24px;
+    	position: absolute;
+    	top: 0;
+    	left: 0;
+    	background: #fff;
+    	border: 1px solid #999;
+    	box-sizing: border-box;
+    }
+    .picker {
+    	width: 200px;
+    	height: 24px;
+    	font-size: 999px;
+    	opacity: 0;
+    	position: absolute;
+    	top: 0;
+    	right: 0;
+    	margin: 0;
+    	padding: 0;
+    }
+</style>
+{% endblock %}
 {% block script %}
 {% if errors  %}
 <script type="text/javascript">
@@ -9,6 +46,24 @@ $('#create').modal('show');
 // $('#create').modal({"backdrop": "static"});
 </script>
 {% endif %}
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.4/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.4/js/select2.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function() {
+    $('.select2').select2();
+    $('.select2').select2({
+            placeholder: "Semua anggota"
+            // allowClear: true
+        });
+});
+
+$(".picker").on("change", function() {
+	var date = $(this).val();
+	$(".date").val(date);
+})
+
+</script>
 {% endblock %}
 
 {% block current %} Group {{group.name}} > Daftar tugas {% endblock %}
@@ -18,26 +73,33 @@ $('#create').modal('show');
     <div class="span12">
         <div class="widget-box" style="margin-top:0px;">
             <div style="background:#ffffff" class="">
-                <!-- <div style="padding-bottom:0px; padding-top:0px; background:#24272E;" class="panel-heading"> -->
-                    <div class="widget-title span12">
-                        <div class="btn-group btn-group-justified">
-                            <a href="{{ base_url() }}/group/timeline/" class="btn btn-primary">Timeline</a>
-                            <a href="#" class="btn btn-primary active">Tugas</a>
-                          <a href="{{ base_url()}}/pic/group/member" class="btn btn-primary">Anggota</a>
-                        </div>
-                    <!-- </div> -->
+                <div class="widget-title span12">
+                    <div class="btn-group btn-group-justified">
+                        <a href="{{ base_url() }}/group/timeline/" class="btn btn-primary">Timeline</a>
+                        <a href="#" class="btn btn-primary active">Tugas</a>
+                        <a href="{{ base_url()}}/pic/group/member" class="btn btn-primary">Anggota</a>
+                    </div>
                 </div>
                 <div class="panel-body" style="padding-top:0px;">
                     <div class="widget-content tab-content">
                         <div id="tab1" class="tab-pane active">
                             <span style="float:right; margin-top:5px;">
-                                <!-- <div class="btn-group span4"> -->
-                                <a  data-toggle="modal" data-target="#create"><i class="icon-collapse"></i>
-                                    <button type="button" class="btn btn-primary"><span class="glyphicon glyphicon-plus">
-                                    </span> Tambahkan Tugas</button> </a>
-                                <!-- </div> -->
+                                <div class="btn-group">
+                                    <a class="btn btn-mini btn-primary dropdown-toggle" data-toggle="modal" data-target="#create">
+                                        <i class="icon-collapse"></i> Tambah tugas</a>
+                                    <a class="btn btn-primary dropdown-toggle" data-toggle="dropdown" href="#">
+                                        <i class="fa fa-caret-down"></i>
+                                    </a>
+                                    <ul style="font-size: larger" class="dropdown-menu">
+                                        <li><a style="font-size: medium" href="{{ path_for('get.group.detail')}}">
+                                            <i class="icon-fixed-width"> Info Grup</i></a>
+                                        </li>
+                                        <li><a style="font-size: medium" href="{{path_for('pic.get.user.item',{'id': login.id})}}">
+                                            <i class="icon-fixed-width"> Daftar tugas saya</i></a>
+                                        </li>
+                                    </ul>
+                                </div>
                             </span>
-
                         <div class="widget-box">
                           <br>
                               <h4>&nbsp&nbsp<i class="fa fa-list-alt" aria-hidden="true">
@@ -51,7 +113,7 @@ $('#create').modal('show');
                                   <th>Kepada</th>
                                   <!-- <th>Perulangan</th> -->
                                   <th>Batas akhir</th>
-                                  <th>Hapus</th>
+                                  <th>Tindakan</th>
                                 </tr>
                               </thead>
                               <tbody>
@@ -72,9 +134,9 @@ $('#create').modal('show');
                                       <td class="taskDesc">{{ item.end_date }}</td>
                                       <td class="taskOptions">
                                           <div class="btn-group-sm">
-                                              <a href="{{ base_url()}}/pic/items/delete/{{ item.id}}"
+                                              <a class="btn btn-danger" href="{{ path_for('pic.delete.item', {'id': item.id})}}"
                                                value="{{item.id}}"title="Hapus tugas">
-                                               <i  style="color:red" class="fa fa-trash-o fa-lg"></i></a>
+                                               <i class="fa fa-trash-o fa-lg"></i></a>
                                           </div>
                                   </td>
                               </tr>
@@ -121,7 +183,8 @@ $('#create').modal('show');
         <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal">
                 <span aria-hidden="true">×</span><span class="sr-only">Close</span></button>
-            <h3 class="modal-title" id="lineModalLabel">Form Tambah tugas</h3>
+            <center><h3 class="modal-title" id="lineModalLabel">
+                Buat Tugas untuk member {{group.name}}</h3></center>
         </div>
         <div class="modal-body">
 
@@ -159,11 +222,10 @@ $('#create').modal('show');
                     <div class="form-group {{ errors.privacy ? 'has-error' : '' }}">
                         <label for="privacy">Privasi :</label>
                         <select class="form-control" name="privacy" >
-                            <option value="">Pilih</option>
                             <option {% if old.privacy == 0 %}
                              selected="selected"{% endif %}value="0">Public</option>
                             <option {% if old.privacy == 1 %}
-                             selected="selected"{% endif %} value="1">Pribadi</option>
+                             selected="selected"{% endif %} value="1">Privat</option>
                         </select>
                         {% if errors.public %}
                         <span class="help-block">{{ errors.privacy | first }}</span>
@@ -192,9 +254,10 @@ $('#create').modal('show');
             </div>
             <div class="row">
                 <div class="col-xs-12 col-sm-5 col-md-5">
-                    <div class="form-group {{ errors.start_date ? 'has-error' : '' }}">
+                    <div style="height: 50px;" class="form-group {{ errors.start_date ? 'has-error' : '' }} wrap">
                         <label for="start_date">Tanggal dimulai :</label>
-                        <input type="date" name="start_date" value="{{old.start_date}}" class="form-control">
+                        <input type="date" name="start_date" value="{{old.start_date}}" class="form-control date">
+                        <input class="picker" type="date">
                         <input type="hidden" name="group" value="{{ group.id }}">
                         {% if errors.start_date %}
                         <span class="help-block">{{ errors.start_date | first }}</span>
@@ -204,7 +267,7 @@ $('#create').modal('show');
                 <div class="col-xs-12 col-sm-6 col-md-7">
                     <div class="form-group {{ errors.user_id ? 'has-error' : '' }}">
                         <label for="recurrent">Ditugaskan untuk :</label>
-                        <select class="form-control" name="user_id" >
+                        <select style="width: 97%;" class="form-control select2" name="user_id[]" multiple="multiple">
                             <option value="">Semua Anggota</option>
                             {% for member in member %}
                             <option {% if old.user_id == member.id %}

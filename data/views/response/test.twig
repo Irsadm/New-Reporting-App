@@ -4,7 +4,10 @@
 {% block title %} Group {% endblock %}
 
 {% block current %} Pencarian {% endblock %}
-
+{% block js %}
+<script src="https://adminlte.io/themes/AdminLTE/bower_components/select2/dist/js/select2.full.min.js"></script>
+<link rel="stylesheet" href="https://adminlte.io/themes/AdminLTE/bower_components/select2/dist/css/select2.min.css">
+{% endblock %}
 {% block content %}
 <div id="content" style="margin-left: 0px;">
 <div class="container-fluid"><hr>
@@ -22,14 +25,17 @@
             <div class="panel-content nopadding">
                 <ul class="contact-list">
                 <li id="user-Alex" class="online"><a href="">
-                    <img width="40" height="40" alt="User"
-                       src="{{ base_url() }}/assets/images/avatar.png"> <span>Alex</span></a></li>
+                    <img width="40" height="40" alt="User" src="{{ base_url() }}/assets/images/avatar.png">
+                    <span>Alex</span></a></li>
                 <li id="user-Linda"><a href="">
                     <img width="40" height="40" alt="User"
                        src="{{ base_url() }}/assets/images/avatar.png"> <span>Linda</span></a></li>
-                <li id="user-John" class="online new"><a href=""><img alt="" src="img/demo/av3.jpg" /> <span>John</span></a><span class="msg-count badge badge-info">3</span></li>
-                <li id="user-Mark" class="online"><a href=""><img alt="" src="img/demo/av4.jpg" /> <span>Mark</span></a></li>
-                <li id="user-Maxi" class="online"><a href=""><img alt="" src="img/demo/av5.jpg" /> <span>Maxi</span></a></li>
+                <li id="user-John" class="online new"><a href=""><img alt="" src="img/demo/av3.jpg" />
+                    <span>John</span></a><span class="msg-count badge badge-info">3</span></li>
+                <li id="user-Mark" class="online"><a href=""><img alt="" src="img/demo/av4.jpg" />
+                    <span>Mark</span></a></li>
+                <li id="user-Maxi" class="online"><a href=""><img alt="" src="img/demo/av5.jpg" />
+                    <span>Maxi</span></a></li>
               </ul>
             </div>
           </div>

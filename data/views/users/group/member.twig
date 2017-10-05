@@ -16,8 +16,6 @@
         <a class="btn" href="{{path_for('unreported.item.user.group')}}">
             <i class="fa fa-angle-double-left" aria-hidden="true">&nbsp&nbsp Kembali</i></a>
         </div>
-
-
         <div style="padding:5px;" class="col-md-3" >
             <div style="margin-top: 5px;" class="widget-box">
 
@@ -29,43 +27,14 @@
                              height="151" width="151" style="margin-bottom:5px"></a></center>
                         <b>{{group.name}}</b><br><br>
                          {{group.description}}<br><br>
-
+                         <center>
+                         <a href="{{path_for('web.leave.group', {'id':group.id})}}"
+                          title="Keluar dari grup" style="margin-bottom:7px">
+                         <button class="btn btn-danger btn-md"
+                         style="margin-right:10px">Keluar dari grup</button>
+                     </a></center>
                     </div>
-                    <div id="2" class="tab-pane">
-                        <form action="{{path_for('group.update')}}" method="POST" enctype="multipart/form-data">
-                             <div class="box-body">
-                                 <div class="form-group {{ errors.name ? 'has-error' : '' }}">
-                                     <label>Nama:</label>
-                                     <div class="input-group">
-                                         <div class="input-group-addon" style="background:#706767" >
-                                             <!-- <i class="fa fa-pencil-square-o"></i> -->
-                                         </div>
-                                         <input type="text" name="name" class="form-control"
-                                          value="{{ group.name }}" placeholder="Nama grup">
-                                     </div>
-                                     {% if errors.name %}
-                                     <span class="help-block">{{errors.name | first}}</span>
-                                     {% endif %}
-                                 </div>
 
-                                 <div class="form-group {{ errors.description ? 'has-error' : '' }}">
-                                     <label>Deskripsi:</label>
-                                     <div class="input-group">
-                                         <div class="input-group-addon" style="background:#706767">
-                                             <!-- <i class="fa fa-edit"></i> -->
-                                         </div>
-                                          <textarea name="description" class="form-control"
-                                           rows="5">{{ group.description }}</textarea>
-                                     </div>
-                                     {% if errors.description %}
-                                     <span class="help-block">{{errors.description | first}}</span>
-                                     {% endif %}
-                                 </div>
-                                 <button type="submit" class="btn btn-social-button btn-tumblr pull-left" style="margin-top:11.5px">
-                                     <i class="fa fa-cog"></i> Simpan perubahan</button>
-                             </div>
-                       </form>
-                    </div>
                 </div>
             </div>
         </div>
@@ -100,12 +69,12 @@
             <div class="pagination">
                 <ul>
                     {% if pagination.current > 1 %}
-                    <li><a href="{{ base_url() }}/home/?page={{ pagination.current - 1 }}">
+                    <li><a href="{{path_for('pic.group.member') }}?page={{ pagination.current - 1 }}">
                         Sebelumnya</a></li>
                         {% endif %}
                         <li class="active"> <a>{{ pagination.current }}</a></li>
                         {% if pagination.current < pagination.total_page %}
-                        <li><a href="{{ base_url() }}/home/?page={{ pagination.current + 1 }}">
+                        <li><a href="{{path_for('pic.group.member')}}?page={{ pagination.current + 1 }}">
                             Selanjutnya</a></li>
                             {% endif %}
                         </ul>

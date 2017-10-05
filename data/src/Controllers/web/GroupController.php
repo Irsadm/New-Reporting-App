@@ -49,23 +49,7 @@ class GroupController extends BaseController
 			'pagination'	=>	$data['pagination']
 		]);
 	}
-	public function enter($request, $response, $args)
-	{
-		$query = $request->getQueryParams();
-        try {
-            $result = $this->client->request('GET', 'group/'.$args['id'].'/member'.
-			$request->getUri()->getQuery());
-			// $result->addHeader('Authorization', '7e505da11dd87b99ba9a4ed644a20ba4');
-        } catch (GuzzleException $e) {
-            $result = $e->getResponse();
-        }
-        $data = json_decode($result->getBody()->getContents(), true);
-		return $this->view->render($response, 'pic/group-timeline.twig', [
-			'members'	=> $data['data'],
-			'group'	=> $args['id'],
-			'pagination'	=> $data['pagination'],
-		]);
-	}
+
 	//Find group by id
 	public function findGroup($request, $response, $args)
 	{
@@ -79,6 +63,7 @@ class GroupController extends BaseController
 		}
 		return $this->view->render($response, 'admin/group/detail.twig', $content->reporting);
 	}
+
 	//Get create group
 	public function getAdd($request, $response)
 	{
@@ -99,11 +84,14 @@ class GroupController extends BaseController
 		}
 		$content = $result->getBody()->getContents();
         $data = json_decode($content, true);
-		if ($data['error'] == false) {
+		// var_dump($data);die;
+		if ($data['code'] == 201) {
 			$this->flash->addMessage('success', $data['message']);
 			return $response->withRedirect($this->router->pathFor('group.user'));
 		} else {
-			$this->flash->addMessage('error', $data['message']);
+			// $this->flash->addMessage('error', $data['message']);
+			$_SESSION['old'] = $request->getParams();
+			$_SESSION['errors'] = $data['message'];
 			return $response->withRedirect($this->router->pathFor('group.user'));
 		}
 	}
@@ -410,7 +398,7 @@ class GroupController extends BaseController
 			$content = json_decode($e->getResponse()->getBody()->getContents());
 			$this->flash->addMessage(404, 'Data tidak ditemukan');
 		}
-		return $this->router->render($response, 'user.group', $content->reporting);
+		return $this->router->render($response, 'user.group');
 	}
 	public function searchGroup($request, $response)
     {
@@ -433,35 +421,53 @@ class GroupController extends BaseController
     //leave group
 	public function leaveGroup($request, $response, $args)
     {
-    	$query = $request->getQueryParams();
     	try {
-    		$result = $this->client->request('GET', 'group/'.$args['id'].'/leave'.
-    			$request->getUri()->getQuery());
-            $this->flash->addMessage('succes', 'Berhasil meninggalkan group');
+    		$result = $this->client->request('GET', 'group/leave/'.$args['id'].'');
     	} catch (GuzzleException $e) {
     		$result = $e->getResponse();
-            $this->flash->addMessage('error', 'Ada kesalahan saat meninggalkan group');
     	}
+
 		$data = json_decode($result->getBody()->getContents(), true);
-    	return $response->withRedirect($this->router->pathFor('group.user'));
+// var_dump($data);die;
+		if ($data['code'] == 200) {
+			$this->flash->addMessage('succes', 'Berhasil meninggalkan group');
+		}else {
+			$this->flash->addMessage('error', $data['message']);
+		}
+
+		return $response->withRedirect($this->router->pathFor('group.user'));
     }
+
 	//Delete group
 	public function delete($request, $response, $args)
 	{
 		try {
 			$client = $this->client->request('GET',
-						$this->router->pathFor('api.group.delete', ['id' => $args['id']]));
-			$content = json_decode($client->getBody()->getContents());
+			$this->router->pathFor('api.group.delete', ['id' => $args['id']]));
 		} catch (GuzzleException $e) {
-			$content = json_decode($e->getResponse()->getBody()->getContents());
-			$this->flash->addMessage(404, 'Data tidak ditemukan');
+			$client = $e->getResponse();
 		}
-		return $this->view->render($response, 'admin/group/index.twig', $content->reporting);
+
+		$content = json_decode($client->getBody()->getContents(), true);
+// var_dump($content);die;
+		if ($content['code'] == 200) {
+			$this->flash->addMessage('success', $content['message']);
+			unset($_SESSION['group']);
+		} else {
+			$this->flash->addMessage('error', $content['message']);
+			return $response->withRedirect($this->router->pathFor('group.user'));
+		}
+
+		if ($_SESSION['login']['status'] == 1) {
+			return $this->view->render($response, 'admin/group/index.twig');
+		} else {
+			return $response->withRedirect($this->router->pathFor('group.user'));
+		}
 	}
+
 	//Set user as member of group
 	public function joinGroup($request, $response, $args)
     {
-        $query = $request->getQueryParams();
         try {
             $result = $this->client->request('GET', 'group/join/'.$args['id'],
                 ['query' => [

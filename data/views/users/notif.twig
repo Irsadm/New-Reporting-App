@@ -11,7 +11,7 @@
         <div class="widget-box" style="margin-top:0px;">
             <a class="list-group-item active main-color-bg">
               <span align="center" aria-hidden="true">
-                  <i class="icon-globe"> Pemberitahuans</i></span>
+                  <i class="icon-globe"> Pemberitahuan</i></span>
             </a>
             <div style="margin: 0px;" class="widget-box">
                 <div class="widget-title">
@@ -24,10 +24,14 @@
                 <div class="widget-content tab-content">
                     <div id="grup" class="tab-pane active">
                         <ul>
+                            {% if notif.group|length == 0 %}
+                            <center>Tidak ada pemberitahuan</center>
+                            {% endif %}
+
                         {% for data in data.group %}
                         <li>
                             <span class="span6">
-                                <b>{{ data.user }}</b> <i>ingin bergabung di grup</i>
+                                <b>{{ data.user }}</b> <i>ingin bergabung ke Grup</i>
                                  <b>{{ data.group_name }}</b>.
                             </span>
                             <span class="span1">
@@ -39,7 +43,7 @@
                                 value="{{ data.group_id }}">
                                 <input type="hidden" id="data-id" name="req_id"
                                 value="{{ data.id }}">
-                                <button class="label label-primary">konfirmasi</button>
+                                <button class="label label-primary">Konfirmasi</button>
                             </form>
                         </span>
                         <span class="span1">
@@ -47,7 +51,7 @@
                             method="POST" enctype="multipart/form-data">
                             <input type="hidden" id="data-id" name="req_id"
                             value="{{ data.id }}">
-                            <button class="label label-danger">hapus permintaan</button>
+                            <button class="label label-danger">Hapus permintaan</button>
                             </form>
                         </span>
                     </li><br>
@@ -56,6 +60,10 @@
                     </div>
                     <div id="wali" class="tab-pane">
                         <ul>
+                            {% if notif.guard|length == 0 %}
+                            <center>Tidak ada pemberitahuan</center>
+                            {% endif %}
+
                             {% for data in data.guard %}
                             <li>
                                 <span class="span6">
@@ -70,7 +78,7 @@
                                 value="{{ data.guard_id }}">
                                 <input type="hidden" id="data-id" name="req_id"
                                 value="{{ data.id }}">
-                                <button class="label label-primary">konfirmasi</button>
+                                <button class="label label-primary">Konfirmasi</button>
                                 </form>
                             </span>
                             <span class="span1">
@@ -78,7 +86,7 @@
                                 method="POST" enctype="multipart/form-data">
                                 <input type="hidden" id="data-id" name="req_id"
                                 value="{{ data.id }}">
-                                <button class="label label-danger">hapus permintaan</button>
+                                <button class="label label-danger">Hapus permintaan</button>
                                 </form>
                             </span>
                         </li><br>
@@ -87,6 +95,10 @@
                      </div>
                     <div id="anak" class="tab-pane">
                         <ul>
+                            {% if notif.user|length == 0 %}
+                            <center>Tidak ada pemberitahuan</center>
+                            {% endif %}
+
                         {% for data in data.user %}
                         <li>
                             <span class="span6">
@@ -101,7 +113,7 @@
                             value="{{ data.guard_id }}">
                             <input type="hidden" id="data-id" name="req_id"
                             value="{{ data.id }}">
-                            <button class="label label-primary">konfirmasi</button>
+                            <button class="label label-primary">Konfirmasi</button>
                             </form>
                         </span>
                         <span class="span1">
@@ -109,7 +121,7 @@
                             method="POST" enctype="multipart/form-data">
                             <input type="hidden" id="data-id" name="req_id"
                             value="{{ data.id }}">
-                            <button class="label label-danger">hapus permintaan</button>
+                            <button class="label label-danger">Hapus permintaan</button>
                             </form>
                         </span>
                     </li><br>

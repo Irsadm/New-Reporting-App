@@ -95,15 +95,17 @@ class Item extends BaseModel
             $this->query = $qb1->select('i.*')
             ->from($this->table, 'i')
             ->join('i', 'reported_item', 'r', $qb1->expr()->notIn('i.id', $query1))
-            ->where(('i.user_id = '. $userId || 'i.user_id = NULL').'&&'. 'i.group_id = '. $groupId)
+            ->where('i.user_id = '. $userId .'&& i.group_id = '. $groupId)
+            ->orWhere('i.group_id = '. $groupId . '&& i.user_id is NULL')
+            // ->where('i.user_id = '. $userId || 'i.user_id = NULL')
+            // ->andWhere('i.group_id = '. $groupId)
             ->andWhere('i.deleted = 0 && i.status = 0')
             ->groupBy('i.id');
         } else {
             $this->query = $qb1->select('*')
             ->from($this->table)
-            ->where(('user_id = '. $userId || 'user_id = NULL').'&&'. 'group_id = '. $groupId)
-            // ->where('user_id = '. $userId .'&& group_id = '. $groupId)
-            // ->orWhere('group_id = '. $groupId . '&& user_id = NULL')
+            ->where('user_id = '. $userId .'&& group_id = '. $groupId)
+            ->orWhere('group_id = '. $groupId . '&& user_id is NULL')
             ->andWhere('deleted = 0 && status = 0')
             ->groupBy('id');
         }
@@ -290,12 +292,13 @@ class Item extends BaseModel
     public function getByMonth($month, $year, $user_id)
     {
         $qb = $this->db->createQueryBuilder();
-        $qb->select('*')
-            ->from($this->table)
-            ->where('YEAR(updated_at) = :year')
-            ->andWhere('MONTH(reported_at) = :month')
-            ->andWhere('user_id = :id')
-            ->andWhere('status = 1');
+        $qb->select('it.*', 'g.name as grup')
+            ->from($this->table, 'it')
+            ->where('YEAR(it.updated_at) = :year')
+            ->andWhere('MONTH(it.reported_at) = :month')
+            ->andWhere('it.user_id = :id')
+            ->andWhere('it.status = 1')
+            ->join('it', 'groups', 'g', 'g.id = it.group_id');
 
         $qb->setParameter('year', $year)
             ->setParameter('month', $month)
@@ -308,12 +311,12 @@ class Item extends BaseModel
     public function getByYear($year, $user_id)
     {
         $qb = $this->db->createQueryBuilder();
-        $qb->select('*')
+        $qb->select('it.*', 'g.name as grup')
             ->from($this->table, 'it')
-            ->where('it.YEAR(reported_at) = :year')
+            ->where('YEAR(it.reported_at) = :year')
             ->andWhere('it.user_id = :id')
-            ->join('it', 'groups', 'g', 'g.id = it.group_id')
-            ->andWhere('status = 1');
+            ->andWhere('status = 1')
+            ->join('it', 'groups', 'g', 'g.id = it.group_id');
 
         $qb->setParameter('year', $year)
            ->setParameter('id', $user_id);
@@ -408,7 +411,7 @@ class Item extends BaseModel
             ->from($this->table, 'i')
             ->join('i', 'reported_item', 'r', $qb1->expr()->notIn('i.id', $query1))
             ->join('i', 'user_group', 'ug', $qb1->expr()->in('i.group_id', $query2))
-            ->where('i.user_id = '. $userId || 'i.user_id = NULL')
+            ->where('i.user_id = '. $userId || 'i.user_id is NULL')
             ->andWhere('i.deleted = 0 && i.status = 0 && end_date ')
             ->andWhere('end_date < :now')
             ->setParameter(':now', $now);
@@ -416,7 +419,7 @@ class Item extends BaseModel
             $this->query = $qb1->select('i.*')
             ->from($this->table, 'i')
             ->join('i', 'user_group', 'ug', $qb1->expr()->in('i.group_id', $query2))
-            ->where('i.user_id = '. $userId || 'i.user_id = NULL')
+            ->where('i.user_id = '. $userId || 'i.user_id is NULL')
             ->andWhere('i.deleted = 0 && i.status = 0')
             ->andWhere('end_date < :now')
             ->setParameter(':now', $now);
@@ -481,6 +484,46 @@ class Item extends BaseModel
                 ->execute();
 
         return  $query1->fetchAll();
+    }
 
+    public function getUnreportedUserItem($userId)
+    {
+        $qb = $this->db->createQueryBuilder();
+        $query1 = $qb->select('item_id')
+        ->from('reported_item')
+        ->where('user_id =' . $userId)
+        ->execute();
+
+        $qb2 = $this->db->createQueryBuilder();
+        $query2 = $qb2->select('group_id')
+        ->from('user_group')
+        ->where('user_id =' . $userId)
+        ->execute();
+
+        $qb1 = $this->db->createQueryBuilder();
+        if (!empty($query1->fetchAll()[0])) {
+            $this->query = $qb1->select('i.*', 'g.name as grup')
+            ->from($this->table, 'i')
+            ->where('i.user_id = '. $userId)
+            ->orWhere('i.user_id is NULL')
+            ->andWhere('i.deleted = 0 && i.status = 0')
+            ->join('i', 'user_group', 'ug', $qb1->expr()->in('i.group_id', $query2))
+            ->join('i', 'reported_item', 'r', $qb1->expr()->notIn('i.id', $query1))
+            ->leftJoin('i', $this->joinTable, 'g', 'g.id = i.group_id')
+            ->orderBy('i.created_at', 'desc')
+            ->groupBy('i.id');
+        } else {
+            $this->query = $qb1->select('i.*', 'g.name as grup')
+            ->from($this->table, 'i')
+            ->where('i.user_id = '. $userId )
+            ->orWhere('i.user_id is NULL')
+            ->andWhere('i.deleted = 0 && i.status = 0')
+            ->join('i', 'user_group', 'ug', $qb1->expr()->in('i.group_id', $query2))
+            ->join('i', $this->joinTable, 'g', 'g.id = i.group_id')
+            ->orderBy('i.created_at', 'desc')
+            ->groupBy('i.id');
+        }
+        // var_dump($this->fetchAll());die;
+        return $this;
     }
 }

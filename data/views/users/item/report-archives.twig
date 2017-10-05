@@ -2,10 +2,19 @@
 
 {% block title %} Arsip Laporan {% endblock %}
 {% block js %}
+<style >
+input[type=search] {
+-moz-appearance:none;
+-webkit-appearance:none;
+}
+</style>
 {% if query.year == null %}
-<script>window.onload = function(){
+<script>
+window.onload = function(){
   document.forms['archive'].submit();
-}</script>
+}
+$('.datatables_filter input').attr('type', 'text');
+</script>
 {% endif %}
 {% endblock %}
 
@@ -17,27 +26,35 @@
     <div class="span12">
         <div class="widget-box" style="margin-top:0px;">
             <div style="background:#ffffff" class="">
-                <div style="padding-bottom:0px; padding-top:0px; background:#24272E;" class="panel-heading">
-                    <!-- <div class="widget-title span8">
-                    <ul style="text-align:center" class="nav nav-tabs">
-                        <li class="active"><a data-toggle="tab" href="#">Arsip laporan </a></li>
-                        <li ><a  href="#"
-                             class="btn btn-primary">Tugas tidak dilaporkan</a></li>
-                    </ul>
-                    </div> -->
+                <div style="padding:0px; background:#24272E;" class="panel-heading">
+                    <div class="widget-title span12">
+                        <div class="btn-group btn-group-justified">
+                          <a href="{{path_for('unreported.item.user')}}" class="btn btn-primary">Tidak dilaporkan</a>
+                          <a href="#" class="btn btn-primary active">Dilaporkan</a>
+                       </div>
+                   </div>
                 </div>
                 <div class="panel-body" style="padding-top:0px;">
-                    <div class="widget-content tab-content">
-                        <div id="tab1" class="tab-pane active">
+                    <!-- <div class="widget-content tab-content"> -->
+                        <div id="tab1" class="tab-pane active"><br><br>
+                            <!-- <span style="float:right; margin-top:5px;">
+                                <div class="btn-group span6">
+                                    <a class="btn btn-primary" href="{{ path_for('item.archive', {'id': user.id }) }}">
+                                        <i class="icon-collapse"></i>Arsip laporan
+                                    </a>
+                                </div>
+                            </span> -->
                             <div class="widget-box">
                                 <h4 style="margin-left:5px;"><i class="fa fa-list-alt" aria-hidden="true">
+                                    Arsip laporan
                                     {% if query.month != null %}
                                     {% if query.month == 'all' %}
-                                    Daftar Laporan Tahunan {{user.username}}
+                                    Tahunan
                                     {% else %}
-                                    Daftar Laporan Bulanan {{user.username}}
+                                    Bulanan
                                     {% endif %}
                                     {% endif %}
+                                    {{user.username}}
                                 </i></h4>
                                     <form name="archive" action="{{path_for('search.item.archive',{'id': user_id })}}"
                                     method="POST" enctype="multipart/form-data">
@@ -91,11 +108,11 @@
                                          <b>Cari arsip</b></button></span>
                                 </div><br>
                                 <div class="widget-content nopadding">
-                                    <table id="example2" class="table table-bordered table-striped ">
+                                    <table id="example2" class="display" cellspacing="0" width="100%">
                                         <thead>
                                             <tr>
                                                 <th>Nama</th>
-                                                <th>Pengulangan</th>
+                                                <th>Grup</th>
                                                 <th>Waktu lapor</th>
                                             </tr>
                                         </thead>
@@ -105,8 +122,8 @@
                                                 <td class="taskDesc">
                                                     <a href="{{ base_url() }}/item/show/{{item.id}}"
                                                     title="Lihat detail item">{{ item.name }}</a></td>
-                                                <td class="taskStatus">{{ item.recurrent }}</td>
-                                                <td class="taskStatus"><span class="in-progress">{{ item.reported_at }}
+                                                <td>{{ item.grup }}</td>
+                                                <td><span class="in-progress">{{ item.reported_at }}
                                                 </span></td>
                                             </tr>
                                             {% endfor %}
@@ -115,7 +132,7 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    <!-- </div> -->
                 </div>
             </div>
         </div>
@@ -124,8 +141,5 @@
 {% for key, item in data %}
 
 {% endfor %}
-
-{% endblock %}
-{% block script %}
 
 {% endblock %}

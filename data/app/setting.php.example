@@ -16,20 +16,21 @@ return [
 
 	//setting db (with doctrine)
 	'db'	=> [
-		'url'	=> 'mysql://root:root@localhost/report',
+		'url'	=> 'mysql://root:root@localhost/reporting',
 	],
 
 	'determineRouteBeforeAppMiddleware' => true,
 
 	'reporting' => [
-       'base_uri' => 'http://localhost/new-reporting/public_html/api/',
-       'headers' => [
-           'key' => @$_ENV['REPORTING_API_KEY'],
-           'Accept' => 'application/json',
-           'Content-Type' => 'application/json',
-           'Authorization' => @$_SESSION['key']['key_token']
-       ],
-  ],
+		'base_uri' => 'http://localhost/new-reporting/public_html/api/',
+		'headers' => [
+			'key' => @$_ENV['REPORTING_API_KEY'],
+			'Accept' => 'application/json',
+			'Content-Type' => 'application/json',
+			'Authorization' => @$_SESSION['key']['key_token']
+		],
+	],
+
 	// Setting View
 	'view' => [
 		'path'	=>	__DIR__ . '/../views',
@@ -38,16 +39,6 @@ return [
 			'debug' => true
 		]
 	],
-
-   // eporting' => [
-   //  'base_uri' => 'http://localhost/Reporting-App/public/api/',
-   //  'headers' => [
-   //   'key' => @$_ENV['REPORTING_API_KEY'],
-   //   'Accept' => 'application/json',
-   //   'Content-Type' => 'application/json',
-   //   'Authorization'	=>	@$_SESSION['key']['key_token'],
-   //  ],
-   // ],
 
     'base_url' => "http://localhost/",
     "plates_path" => "/../view",

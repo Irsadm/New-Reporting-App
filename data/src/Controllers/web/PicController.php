@@ -105,10 +105,8 @@ class PicController extends BaseController
         ]);
     }
 
-    public function deleteTugas($request, $response, $args)
+    public function deleteItem($request, $response, $args)
 	{
-        // $item = new \App\Models\Item($this->db);
-        // $findItem = $item->find('id', $args['id']);
 		try {
 			$client = $this->client->request('GET', 'item/delete/'.$args['id']);
 			$content = json_decode($client->getBody()->getContents(), true);
@@ -127,61 +125,80 @@ class PicController extends BaseController
 
     public function createItem($request, $response)
     {
-        // var_dump($request->getParams()); die();
+        // var_dump($_FILES['image']['name']); die();
 
         if (empty($request->getParam('user_id'))) {
-            $user_id = null;
+            $userId = null;
         } else {
-            $user_id = $request->getParam('user_id');
+            $userId = $request->getParam('user_id');
         }
 
+        if (!empty($_FILES['image']['name'])) {
+            $path = $_FILES['image']['tmp_name'];
+            $mime = $_FILES['image']['type'];
+            $name = $_FILES['image']['name'];
+            $imgData = [
+                'name'     => 'image',
+                'filename' => $name,
+                'Mime-Type'=> $mime,
+                'contents' => fopen( $path, 'r' )
+            ];
+        } else {
+            $imgData = [
+                'name'     => 'image',
+                'contents' => null
+            ];
+        }
         try {
             $result = $this->client->request('POST', 'item/create', [
-                'form_params' => [
-                    'name'          => $request->getParam('name'),
-                    'description'   => $request->getParam('description'),
-                    'recurrent'     => $request->getParam('recurrent'),
-                    'start_date'    => $request->getParam('start_date'),
-                    'user_id'    	=> $user_id,
-                    'group_id'      => $_SESSION['group']['id'],
-                    'creator'    	=> $_SESSION['login']['id'],
-                    'privacy'       => $request->getParam('privacy'),
+                'multipart' => [
+                    $imgData,
+                    [
+                        'name'     => 'user_id',
+                        'contents' => json_encode($userId)
+                    ],
+                    [
+                        'name'     => 'name',
+                        'contents' => $request->getParam('name')
+                    ],
+                    [
+                        'name'     => 'description',
+                        'contents' => $request->getParam('description')
+                    ],
+                    [
+                        'name'     => 'recurrent',
+                        'contents' => $request->getParam('recurrent')
+                    ],
+                    [
+                        'name'     => 'start_date',
+                        'contents' => $request->getParam('start_date')
+                    ],
+                    [
+                        'name'     => 'group_id',
+                        'contents' => $_SESSION['group']['id']
+                    ],
+                    [
+                        'name'     => 'creator',
+                        'contents' => $_SESSION['login']['id']
+                    ],
+                    [
+                        'name'     => 'privacy',
+                        'contents' => $request->getParam('privacy')
+                    ],
+
                 ]
             ]);
         } catch (GuzzleException $e) {
             $result = $e->getResponse();
         }
 
-        $content = $result->getBody()->getContents();
-        $contents = json_decode($content, true);
-        // var_dump($contents); die();
-        if ($contents['code'] == 201) {
-            if (!empty($_FILES['image']['name'])) {
-                $path = $_FILES['image']['tmp_name'];
-                $mime = $_FILES['image']['type'];
-                $name = $_FILES['image']['name'];
-                try {
-                    $result2 = $this->client->request('POST', 'item/add/image', [
-                        'multipart' => [
-                            [
-                                'name'     => 'image',
-                                'filename' => $name,
-                                'Mime-Type'=> $mime,
-                                'contents' => fopen( $path, 'r' )
-                            ],
-                            [
-                                'name'     => 'item_id',
-                                'contents' => $contents['data']['id']
-                            ]
-                        ]
-                    ]);
-                } catch (Exception $e) {
-                    $result2 = $e->getResponse();
-                }
-            }
-            $this->flash->addMessage('success', $contents['message']);
+        // $content = $result->getBody()->getContents();
+        $content = json_decode($result->getBody()->getContents(), true);
+        // var_dump($result); die();
+        if ($content['code'] == 201) {
+            $this->flash->addMessage('success', $content['message']);
         } else {
-            $_SESSION['errors'] = $contents['message'];
+            $_SESSION['errors'] = $content['message'];
             $_SESSION['old']    = $request->getParams();
         }
         if (!empty($request->getParam('member'))) {

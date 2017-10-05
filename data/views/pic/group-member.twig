@@ -10,38 +10,47 @@
     <div class="span12">
         <div class="widget-box" style="margin-top:0px;">
             <div style="background:#ffffff" class="">
-                <!-- <div style="padding-bottom:0px; padding-top:0px; background:#24272E;" class="panel-heading"> -->
-                    <div class="widget-title span12">
-                        <div class="btn-group btn-group-justified">
-                            <a href="{{ base_url() }}/group/timeline/" class="btn btn-primary">Timeline</a>
-                          <a href="{{ base_url()}}/pic/items/group" class="btn btn-primary ">Tugas</a>
-                          <a href="" class="btn btn-primary active">Anggota</a>
-                        </div>
+                <div class="widget-title span12">
+                    <div class="btn-group btn-group-justified">
+                        <a href="{{ base_url() }}/group/timeline/" class="btn btn-primary">Timeline</a>
+                        <a href="{{ base_url()}}/pic/items/group" class="btn btn-primary ">Tugas</a>
+                        <a href="" class="btn btn-primary active">Anggota</a>
+                    </div>
 
-                     </div>
-                <!-- </div> -->
-                <div class="panel-body" style="padding-top:40px;">
+                </div>
+                <div class="panel-body" style="padding-top:20px;">
                     <div class="widget-content tab-content">
                         <div id="tab1" class="tab-pane active">
                             <span style="float:right; margin-top:5px;">
-                                <div class="btn-group span4">
+                                <div class="btn-group">
+                                    <a class="btn btn-mini btn-primary"  href="{{path_for('web.pic.search.member', {'group': group.id})}}">
+                                        <i class="icon-collapse"></i> Tambah Anggota</a>
+                                    <a class="btn btn-primary dropdown-toggle" data-toggle="dropdown" href="#">
+                                        <i class="fa fa-caret-down"></i>
+                                    </a>
+                                    <ul style="font-size: larger" class="dropdown-menu">
+                                        <li><a style="font-size: medium" href="{{ path_for('get.group.detail')}}">
+                                            <i class="icon-fixed-width"> Info Grup</i></a>
+                                        </li>
+                                        <li><a style="font-size: medium" href="{{path_for('pic.get.user.item',{'id': login.id})}}">
+                                            <i class="icon-fixed-width"> Daftar tugas saya</i></a>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <!-- <div class="btn-group span4">
                                     <a class="btn btn-primary" href="{{path_for('web.pic.search.member', {'group': group.id})}}">
                                         <i class="glyphicon glyphicon-plus"></i>
                                         Tambah Anggota</a>
-                                    </div>
+                                    </div> -->
                                 </span><br>
                                 <div class="widget-box">
                     {% for member in members %}
                     <div style="padding:5px;" class="col-md-4" >
                         <div class="well dash-box" style="background:#f2f2f2;">
                             <a style="font-size: medium" href="{{path_for('pic.get.user.item',{'id': member.id})}}">
-                            {% if member.image != null %}
-                            <img  style="margin-right:10px;" width="75" height="75" alt="User"
+                            <img  style="margin-right:10px;" width="75" height="75"
+                            onerror=this.src="{{ base_url() }}/assets/images/avatar.png"
                             src="{{ base_url() }}/assets/images/{{ member.image }}">
-                            {% else %}
-                            <img style="margin-right:10px;" width="75" height="75" alt="User"
-                            src="{{ base_url() }}/assets/images/avatar.png">
-                            {% endif %}
                         </a>
                             <span style="float: right; top: 1px; ">
                                 <div class="btn-group span4">
@@ -89,21 +98,20 @@
                             <div class="pagination">
                                 <ul style="padding:0px;">
                                     {% if pagination.current > 1 %}
-                                    <li class="">
-                                        <a href="{{ base_url() }}/pic/group/{{group.id}}/member?page={{ pagination.current - 1 }}">
-                                    Sebelumnya</a></li>
-                                    {% endif %}
-                                    <li class="active"> <a>{{ pagination.current }}</a></li>
-                                    {% if pagination.current < pagination.total_page %}
-                                    <li class="">
-                                    <a href="{{ base_url() }}/pic/group/{{group.id}}/member?page={{ pagination.current + 1 }}">
-                                        Selanjutnya</a></li>{% endif %}
+                                    <li><a href="{{path_for('pic.group.member') }}?page={{ pagination.current - 1 }}">
+                                        Sebelumnya</a></li>
+                                        {% endif %}
+                                        <li class="active"> <a>{{ pagination.current }}</a></li>
+                                        {% if pagination.current < pagination.total_page %}
+                                        <li><a href="{{path_for('pic.group.member')}}?page={{ pagination.current + 1 }}">
+                                            Selanjutnya</a></li>
+                                            {% endif %}
                                 </ul>
                             </div>
                         </ul>
                     </nav>
                 {% else %}
-                    <center><em> Silahkan tambahkan anggota </em></center>
+                    <center><em>Tidak ada data</em></center>
                     <br>
                 {% endif %}
             </div>

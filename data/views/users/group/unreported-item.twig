@@ -2,8 +2,14 @@
 
 {% block title %} Group {% endblock %}
 
-{% block current %} Group {{group.name}} > Item belum dilaporkan {% endblock %}
-
+{% block current %} Group {{group.name}} > Item belum dilaporkan{{error_item}} {% endblock %}
+{% block script %}
+{% if errors.description %}
+<script type="text/javascript">
+$('#{{error_item}}').modal('show');
+</script>
+{% endif %}
+{% endblock %}
 {% block content %}
 <div class="row-fluid">
     <div class="span12">
@@ -12,8 +18,8 @@
                 <div style="padding:0px; background:#24272E;" class="panel-heading">
                     <div class="widget-title span12">
                         <div class="btn-group btn-group-justified">
+                            <a href="#" class="btn btn-primary active">Belum dilaporkan</a>
                           <a href="{{ path_for('reported.item.user.group') }}" class="btn btn-primary">Dilaporkan</a>
-                          <a href="#" class="btn btn-primary active">Belum dilaporkan</a>
                        </div>
                    </div>
             </div>
@@ -36,18 +42,18 @@
                                 </div>
                             </span>
                         <div class="widget-box">
-                            <h3><i class="fa" aria-hidden="true">
+                            <h4><i class="fa" aria-hidden="true">
                                 &nbsp {% if login.id == user.id %}Tugas saya di
                                  {% else %}
                                  Tugas {{user.username}} di
-                             {% endif %} {{ group.name}} </i></h3>
+                             {% endif %} {{ group.name}} </i></h4>
                           <div class="widget-content nopadding">
                             <table class="table table-striped table-bordered">
                               <thead>
                                 <tr>
                                   <th>No</th>
                                   <th>Nama</th>
-                                  <th>Opsi</th>
+                                  <th>Tindakan</th>
                                 </tr>
                               </thead>
                               <tbody>
@@ -63,12 +69,16 @@
                                            </span>
                                        </td>
                                       <td class="taskOptions">
-                                          <a href="" data-toggle="modal" data-target="#{{item.id}}"
-                                          value="{{item.id}}"title="View Group Details"
+                                          <a class="btn btn-success" href="" data-toggle="modal" data-target="#{{item.id}}"
+                                          value="{{item.id}}"title="Laporkan"
                                           style="margin-bottom:7px">
-                                          <button class="btn btn-success btn-md"
-                                          style="margin-right:10px">Laporkan</button>
+                                           <i class="fa fa-check-circle"></i>
                                       </a>
+                                      {% if item.creator == login.id %} &nbsp&nbsp&nbsp
+                                      <a class="btn btn-danger" href="{{ path_for('pic.delete.item', {'id': item.id})}}"
+                                       value="{{item.id}}"title="Hapus tugas">
+                                       <i class="fa fa-trash-o fa-lg"></i></a>
+                                       {% endif %}
                                   </td>
                               </tr>
                               {% endfor %}
@@ -117,7 +127,7 @@
         <div class="modal-body">
 
         <!-- content goes here -->
-        <form  action="{{ path_for('web.pic.create.item')}}"
+        <form  action="{{ path_for('user.create.item')}}"
          method="POST" enctype="multipart/form-data">
             {% if errors %}
             <div class="alert alert-danger">
@@ -154,7 +164,7 @@
                             <option {% if old.privacy == 0 %}
                              selected="selected"{% endif %}value="0">Public</option>
                             <option {% if old.privacy == 1 %}
-                             selected="selected"{% endif %} value="1">Pribadi</option>
+                             selected="selected"{% endif %} value="1">Privat</option>
                         </select>
                         {% if errors.public %}
                         <span class="help-block">{{ errors.privacy | first }}</span>
@@ -238,7 +248,7 @@
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal">
                     <span aria-hidden="true">×</span><span class="sr-only">Tutup</span></button>
-                <h3 class="modal-title" id="lineModalLabel">Form laporan tugas</h3>
+                <h3 class="modal-title" id="lineModalLabel">Laporkan {{item.name}}</h3>
             </div>
             <div class="modal-body">
 

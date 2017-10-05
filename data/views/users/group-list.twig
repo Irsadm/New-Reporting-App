@@ -3,7 +3,14 @@
 {% block title %} Daftar grup {% endblock %}
 
 {% block current %} Daftar grup {% endblock %}
-
+{% block script %}
+{% if errors  %}
+<script type="text/javascript">
+$('#create').modal('show');
+// $('#create').modal({"backdrop": "static"});
+</script>
+{% endif %}
+{% endblock %}
 {% block content %}
 <div class="widget-box" style="margin-top:0px; background:#fff;">
 <a class="list-group-item active main-color-bg">
@@ -19,7 +26,7 @@
                 <i class="fa fa-caret-down"></i>
             </a>
             <ul style="font-size: larger" class="dropdown-menu">
-                <li><a style="font-size: medium" href="" data-toggle="modal" data-target="#squarespaceModal">
+                <li><a style="font-size: medium" href="" data-toggle="modal" data-target="#create">
                     <i class="icon-fixed-width icon-pencil"> Buat grup</i></a>
                 </li>
                 <li><a style="font-size: medium" href="" data-toggle="modal" data-target="#squarespaceModal2">
@@ -124,7 +131,7 @@
 <!-- line modal -->
 <!-- <div class="modal fade" id="squarespaceModal" tabindex="-1" role="dialog"
  aria-labelledby="modalLabel" aria-hidden="true"> -->
-<div class="modal fade" id="squarespaceModal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+<div class="modal fade" id="create" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -140,20 +147,26 @@
                     <div class="form-group">
                         <label for="exampleInputEmail1">Nama</label>
                         <input type="text" name="name" class="form-control" placeholder="Nama grup">
+                        {% if errors.name %}
+                        <span style="color:red;" class="help-block">{{errors.name | first}}</span>
+                        {% endif %}<br />
                     </div>
                     <div class="form-group">
                         <label for="exampleTextarea">Deskripsi</label>
                         <textarea name="description" class="form-control" rows="3"></textarea>
+                        {% if errors.description %}
+                        <span style="color:red;" class="help-block">{{errors.description | first}}</span>
+                        {% endif %}<br />
                     </div>
                 </div>
                 <div class="modal-footer">
                     <div class="btn-group btn-group-justified" role="group" aria-label="group button">
                         <div class="btn-group" role="group">
                             <button type="button" class="btn btn-danger"
-                            data-dismiss="modal" role="button">Batalkan</button>
+                            data-dismiss="modal" role="button">Batal</button>
                         </div>
                         <div class="btn-group" role="group">
-                            <button type="submit" class="btn btn-success btn-hover-green" >Simpan</button>
+                            <button type="submit" class="btn btn-success btn-hover-green" >Buat</button>
                         </div>
                     </div>
                 </div>

@@ -22,7 +22,10 @@ class UserController extends BaseController
 
     public function getLogin($request, $response)
     {
-        return  $this->view->render($response, 'auth/login.twig');
+        if (isset($_SESSION['login']) && $_SESSION['login']['id'] == 2) {
+            return $response->withRedirect($this->router->pathFor('home'));
+        }
+        return $this->view->render($response, 'auth/login.twig');
     }
 
      public function login($request, $response)
@@ -122,6 +125,15 @@ class UserController extends BaseController
                 silakan cek email anda untuk mengaktifkan akun');
                 return $response->withRedirect($this->router->pathFor('signup'));
             } else {
+                if ($data['message'] == "Email & username sudah digunakan") {
+                    $_SESSION['errors']['username'][0] = 'Username sudah digunakan';
+                    $_SESSION['errors']['email'][0] = "Email sudah digunakan";
+                } elseif ($data['message'] == "Username sudah digunakan") {
+                    $_SESSION['errors']['username'][0] = $data['message'];
+                } elseif ($data['message'] == "Email sudah digunakan") {
+                    $_SESSION['errors']['email'][0] = $data['message'];
+                }
+
                 $_SESSION['old'] = $request->getParams();
                 $this->flash->addMessage('warning', $data['message']);
                 return $response->withRedirect($this->router->pathFor('signup'));
@@ -351,10 +363,11 @@ class UserController extends BaseController
 
         $data = json_decode($result->getBody()->getContents(), true);
         // var_dump($data);die;
-        if ($data['error'] == false) {
+        if ($data['code'] == 200) {
             $this->flash->addMessage('success', $data['message']);
             return $response->withRedirect($this->router->pathFor('login'));
         } else {
+            $this->flash->addMessage('warning', $data['message']);
             $_SESSION['errors'] = $data['message'];
             $_SESSION['old'] = $request->getParams();
             return  $this->view->render($response, 'auth/reset-password.twig', [

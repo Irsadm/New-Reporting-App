@@ -13,9 +13,8 @@
                 <div style="padding:0px; background:#24272E;" class="panel-heading">
                     <div class="widget-title span12">
                         <div class="btn-group btn-group-justified">
-                          <a href="#" class="btn btn-primary active">Dilaporkan</a>
-                          <a href="{{path_for('unreported.item.user.group',
-                           {'group': group.id, 'user':user.id})}}" class="btn btn-primary">Belum dilaporkan</a>
+                          <a href="{{path_for('unreported.item.user.group')}}" class="btn btn-primary">Belum dilaporkan</a>
+                           <a href="#" class="btn btn-primary active">Dilaporkan</a>
                         </div>
 
                     </div>
@@ -39,18 +38,18 @@
                                                 </div>
                                             </span>
                             <div class="widget-box">
-                                <h3><i class="fa" aria-hidden="true">
+                                <h4><i class="fa" aria-hidden="true">
                                     &nbsp {% if login.id == user.id %}Tugas saya di
                                      {% else %}
                                      Tugas {{user.username}} di
-                                 {% endif %} {{ group.name}} </i></h3>
+                                 {% endif %} {{ group.name}} </i></h4>
                                     <div class="widget-content nopadding">
                                         <table class="table table-striped table-bordered">
                                             <thead>
                                                 <tr>
                                                     <th>No</th>
                                                     <th>Nama</th>
-                                                    <th>Opsi</th>
+                                                    <th>Tindakan</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -66,9 +65,11 @@
                                                          </span>
                                                      </td>
                                                     <td class="taskOptions">
-                                                        <a href="#">
-                                                            <span class="label label-danger"
-                                                            >Hapus</span></a>
+                                                        {% if item.creator == login.id %} &nbsp&nbsp&nbsp
+                                                        <a href="{{ path_for('pic.delete.item', {'id': item.id})}}"
+                                                         value="{{item.id}}"title="Hapus tugas">
+                                                         <i style="color:red" class="fa fa-trash-o fa-lg"></i></a>
+                                                         {% endif %}
                                                     </td>
                                                 </tr>
                                                 {% endfor %}
@@ -119,7 +120,7 @@
             <div class="modal-body">
 
             <!-- content goes here -->
-            <form  action="{{ path_for('web.pic.create.item')}}"
+            <form  action="{{ path_for('user.create.item')}}"
              method="POST" enctype="multipart/form-data">
                 {% if errors %}
                 <div class="alert alert-danger">
@@ -156,7 +157,7 @@
                                 <option {% if old.privacy == 0 %}
                                  selected="selected"{% endif %}value="0">Public</option>
                                 <option {% if old.privacy == 1 %}
-                                 selected="selected"{% endif %} value="1">Pribadi</option>
+                                 selected="selected"{% endif %} value="1">Privat</option>
                             </select>
                             {% if errors.public %}
                             <span class="help-block">{{ errors.privacy | first }}</span>

@@ -34,7 +34,9 @@
                         {% else %}
                         {{ items.creator }}
                         {% endif %}</b>
-                    <i>membuat item di grup</i> <b>{{ items.group_name }}</b>
+                    <i>membuat item di grup</i>
+                    <!-- <a href="{{ path_for('enter.group', {'id': items.group_id})}}"
+                     title="Masuk ke grup {{ items.group_name }}"> <b>{{ items.group_name }}</b></a> -->
                     {% else %}
                     <b>
                         {% if items.user == login.username %}
@@ -42,7 +44,9 @@
                         {% else %}
                         {{ items.user }}
                         {% endif %}</b>
-                    <i>melaporkan item di grup</i> <b>{{ items.group_name }}</b>
+                    <i>melaporkan item di grup</i>
+                    <!-- <a href="{{ path_for('enter.group', {'id': items.group_id})}}"
+                     title="Masuk ke grup {{ items.group_name }}"> <b>{{ items.group_name }}</b></a> -->
                     {% endif %}
                     </span>
 
@@ -55,16 +59,19 @@
                     <span style="font-size: 14pt;" class="user-info"> <b>
                         <span class="label label-warning">{{ items.name }}
                         </span>&nbsp > &nbsp
+                        <a href="{{ path_for('enter.group', {'id': items.group_id})}}"
+                         title="Masuk ke grup {{ items.group_name }}">
                         <span class="label label-success">{{ items.group_name }}
-                        </span></b>
+                        </span></b></a>
                     </span>
                     {% else %}
                     <span style="font-size: 14pt;" class="user-info"> <b>
                         <span class="label label-warning">{{ items.name }}
                         </span>&nbsp > &nbsp
+                        <a href="{{ path_for('enter.group', {'id': items.group_id})}}"
+                         title="Masuk ke grup {{ items.group_name }}">
                         <span class="label label-success">{{ items.group_name }}
-
-                        </span></b>
+                        </span></b></a>
                     </span>
                     {% endif %}
                     <br>

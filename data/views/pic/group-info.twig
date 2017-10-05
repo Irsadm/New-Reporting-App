@@ -77,6 +77,11 @@
                                              </div>
                                              <button type="submit" class="btn btn-social-button btn-tumblr pull-left" style="margin-top:11.5px">
                                                  <i class="fa fa-cog"></i> Simpan perubahan</button>
+                                             <span style="float:right; margin-top:5px;">
+                                                 <a href="{{ path_for('delete.group', {'id': group.id }) }}"
+                                                 class="btn btn-social-button btn-yahoo pull-left" style="margin-top:11.5px">
+                                                 <i class="fa fa-trash"></i> Hapus grup</a>
+                                             </span>
                                          </div>
                                    </form>
                                 </div>
@@ -89,7 +94,6 @@
     </div>
 </div>
 </div>
-
 
 <div id="foto" class="modal fade" role="dialog">
     <div class="modal-dialog">

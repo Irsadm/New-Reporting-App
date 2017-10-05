@@ -106,25 +106,21 @@ class ItemController extends BaseController
 
         return $data;
     }
+
     //Get user item (unreported)
-    public function getUnreportedUserItem($request, $response, $args)
+    public function getUnreportedUserItem($request, $response)
     {
         $item     = new Item($this->db);
         $page = !$request->getQueryParam('page') ?  1 : $request->getQueryParam('page');
-        $findItem   = $item->getGroupItem($args['user']);
-            // ->setPaginate($page,5);
-        $countItem  = count($findItem);
-        $query      = $request->getQueryParams();
+        $perPage = $request->getQueryParam('perpage');
+        $userId = $request->getQueryParam('user_id');
+        $findItem = $item->getUnreportedUserItem($userId)->setPaginate($page, $perPage);
 
         // var_dump($findItem); die();
         if ($findItem) {
-            $data = $this->responseDetail(200, false, 'Data Tersedia', [
-                'data'  => $findItem,
-
-            ]);
+            $data = $this->responseDetail(200, false, 'Data Tersedia', $findItem);
         } else {
             $data = $this->responseDetail(200, false, 'Data kosong');
-
         }
 
         return $data;
@@ -204,7 +200,15 @@ class ItemController extends BaseController
     //Create item
     public function createItem($request, $response)
     {
+        // return $this->responseDetail(201, false, 'Item baru telah berhasil ditambahkan', [
+        //     'data'  => json_decode($request->getParam('user_id')),
+        //     // 'pagination' => $_FILES['image']
+        // ]);
+        $usersId =  json_decode($request->getParam('user_id'));
         // var_dump($request->getparams());die;
+        $item = new Item($this->db);
+        $imageItem = new \App\Models\ImageItem($this->db);
+
         $rules = [
             'required' => [
                 ['name'],
@@ -221,7 +225,102 @@ class ItemController extends BaseController
         $this->validator->labels([
             'name'        => 'Nama',
             'recurrent'   => 'Perulangan',
-            'description' => 'Deskipsi',
+            'description' => 'Deskripsi',
+            'start_date'  => 'Tanggal mulai',
+            'group_id'    => 'Id Grup',
+            'creator '    => 'Creator',
+            'privacy'     => 'Privasi'
+        ]);
+
+        if ($this->validator->validate()) {
+            if (!empty($_FILES['image']['name'])) {
+                $storage = new \Upload\Storage\FileSystem('assets/images');
+                $image = new \Upload\File('image', $storage);
+                $image->setName(uniqid());
+                $image->addValidations(array(
+                    new \Upload\Validation\Mimetype(array('image/png', 'image/gif',
+                    'image/jpg', 'image/jpeg')),
+                    new \Upload\Validation\Size('1M')
+                ));
+
+                $image->upload();
+                $imgName = $image->getNameWithExtension();
+            }
+
+            if (is_array($usersId)) {
+                foreach ($usersId as $Id) {
+                    $data = [
+                        "name"          => $request->getParam('name'),
+                        "description"   => $request->getParam('description'),
+                        "recurrent"     => $request->getParam('recurrent'),
+                        "start_date"    => $request->getParam('start_date'),
+                        "user_id"       => $Id,
+                        "group_id"      => $request->getParam('group_id'),
+                        "privacy"       => $request->getParam('privacy'),
+                        "creator"       => $request->getParam('creator'),
+                        "status"        => 0,
+                        "reported_at"   => null,
+                    ];
+
+                    $newItem = $item->create($data);
+                    if (!empty($_FILES['image']['name'])) {
+                        $dataImage = [
+                            'image'   => $imgName,
+                            'item_id' => $newItem
+                        ];
+                        $imageItem->createData($dataImage);
+                    }
+                }
+            } else {
+                $data = [
+                    "name"          => $request->getParam('name'),
+                    "description"   => $request->getParam('description'),
+                    "recurrent"     => $request->getParam('recurrent'),
+                    "start_date"    => $request->getParam('start_date'),
+                    "user_id"       => null,
+                    "group_id"      => $request->getParam('group_id'),
+                    "privacy"       => $request->getParam('privacy'),
+                    "creator"       => $request->getParam('creator'),
+                    "status"        => 0,
+                    "reported_at"   => null,
+                ];
+
+                $newItem = $item->create($data);
+                if (!empty($_FILES['image']['name'])) {
+                    $dataImage = [
+                        'image'   => $imgName,
+                        'item_id' => $newItem
+                    ];
+                    $imageItem->createData($dataImage);
+                }
+            }
+            // }
+            return $this->responseDetail(201, false, 'Item baru telah berhasil ditambahkan');
+        } else {
+            return $this->responseDetail(400, true, $this->validator->errors());
+        }
+    }
+
+    //Create item
+    public function createItemUser($request, $response, $args)
+    {
+
+        // var_dump($request->getparams());die;
+        $rules = [
+            'required' => [
+                ['name'],
+                ['description'],
+                ['start_date'],
+                ['group_id'],
+                ['creator'],
+                ['privacy'],
+            ],
+        ];
+        $this->validator->rules($rules);
+        $this->validator->labels([
+            'name'        => 'Nama',
+            'recurrent'   => 'Perulangan',
+            'description' => 'Deskripsi',
             'start_date'  => 'Tanggal mulai',
             'group_id'    => 'Id Grup',
             'creator '    => 'Creator',
@@ -229,9 +328,7 @@ class ItemController extends BaseController
         ]);
         // var_dump($this->validator);
         // die();
-
         if ($this->validator->validate()) {
-
             $data = [
                 "name"          => $request->getParam('name'),
                 "description"   => $request->getParam('description'),
@@ -245,10 +342,8 @@ class ItemController extends BaseController
                 "reported_at"   => null,
             ];
             $item = new Item($this->db);
-
             $newItem = $item->create($data);
             $recentItem = $item->find('id', $newItem);
-
             if (!empty($_FILES['image']['name'])) {
                 $imageItem = new \App\Models\ImageItem($this->db);
                 $storage = new \Upload\Storage\FileSystem('assets/images');
@@ -259,86 +354,19 @@ class ItemController extends BaseController
                     'image/jpg', 'image/jpeg')),
                     new \Upload\Validation\Size('1M')
                 ));
-
                 $image->upload();
                 $imgName = $image->getNameWithExtension();
-
                 $dataImage = [
                     'image'   => $imgName,
                     'item_id' => $newItem
                 ];
                 $imageItem->createData($dataImage);
             }
-
             return $this->responseDetail(201, false, 'Item baru telah berhasil ditambahkan', [
                 'data' => $recentItem
-
             ]);
-
         } else {
-
             return $this->responseDetail(400, true, $this->validator->errors());
-        }
-    }
-
-    //Create item
-    public function createItemUser($request, $response, $args)
-    {
-        // $userGroup = new \App\Models\UserGroupModel($this->db);
-        $item = new Item($this->db);
-        $token = $request->getHeader('Authorization')[0];
-        $user = $item->getUserByToken($token);
-
-        $rules = [
-            'required' => [
-                ['name'],
-                ['start_date'],
-                // ['public'],
-                ['group_id'],
-                ['creator'],
-                ['privacy'],
-            ],
-        ];
-
-        $this->validator->rules($rules);
-        $this->validator->labels([
-            'name'        => 'Name',
-            'recurrent'   => 'Recurrent',
-            'description' => 'Description',
-            'start_date'  => 'Start date',
-            'user_id'     => 'User id',
-            'group_id'    => 'Group id',
-            'creator '    => 'Creator',
-            'privacy'     => 'Privacy'
-        ]);
-        // var_dump($this->validator);
-        // die();
-
-        if ($this->validator->validate()) {
-
-            $data = [
-                'name'          => $request->getParams()['name'],
-                'description'   => $request->getParams()['description'],
-                'recurrent'     => $request->getParams()['recurrent'],
-                'start_date'    => $request->getParams()['start_date'],
-                'user_id'       => $request->getParams()['user_id'],
-                'group_id'      => $request->getParams()['group_id'],
-                // 'image'         => $request->getParams()['image'],
-                'privacy'       => $request->getParams()['privacy'],
-                'creator'       => $user['id'],
-                'status'        => 0,
-                'reported_at'   => null,
-            ];
-            $newItem = $item->create($data);
-            $recentItem = $item->find('id', $newItem);
-
-            return $this->responseDetail(201, false, 'Item baru berhasil ditambahkan', [
-                'data' => $recentItem
-            ]);
-
-        } else {
-
-            return $this->responseDetail(401, true, $this->validator->errors());
         }
     }
 
@@ -399,6 +427,7 @@ class ItemController extends BaseController
     {
         $item = new Item($this->db);
         $userGroup = new \App\Models\UserGroupModel($this->db);
+        $reported = new \App\Models\ReportedItem($this->db);
 
         $findItem = $item->find('id', $args['id']);
         $token = $request->getHeader('Authorization')[0];
@@ -406,14 +435,20 @@ class ItemController extends BaseController
         $userId = $user['id'];
         $userStatus = $user['status'];
         $groupId  = $findItem['group_id'];
+        $findReported = $reported->findTwo('item_id', $args['id'], 'item_id', $args['id']);
 
         $checkPic = $userGroup->findTwo('user_id', $userId, 'group_id', $groupId);
         if (!empty($checkPic)) {
         $pic = $checkPic[0]['status'];
         }
         if ($findItem) {
-            if ($userStatus == 1 || $pic == 1) {
+            if ($userStatus == 1 || $pic == 1 || $userId == $findItem['creator']) {
                 $item->hardDelete($args['id']);
+                if ($findReported[0]) {
+                    foreach ($findReported as $value) {
+                        $reported->hardDelete($value['id']);
+                    }
+                }
                 $data = $this->responseDetail(200, false, 'Item telah dihapus');
 
             } else {
@@ -987,7 +1022,7 @@ class ItemController extends BaseController
                  ]);
 
                  if (!empty($_FILES['image']['name'])) {
-                     $storage = new \Upload\Storage\FileSystem('assets/images');
+                     $storage = new \Upload\Storage\FileSystem('assets/images/');
                      $image = new \Upload\File('image', $storage);
                      $image->setName(uniqid());
                      $image->addValidations(array(

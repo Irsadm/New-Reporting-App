@@ -83,6 +83,69 @@ class ItemController extends BaseController
 		]);
 	}
 
+    public function createItem($request, $response)
+        {
+            // var_dump($request->getParams()); die();
+            if (empty($request->getParam('user_id'))) {
+                $user_id = null;
+            } else {
+                $user_id = $request->getParam('user_id');
+            }
+            try {
+                $result = $this->client->request('POST', 'item/user/create', [
+                    'form_params' => [
+                        'name'          => $request->getParam('name'),
+                        'description'   => $request->getParam('description'),
+                        'recurrent'     => $request->getParam('recurrent'),
+                        'start_date'    => $request->getParam('start_date'),
+                        'user_id'    	=> $user_id,
+                        'group_id'      => $_SESSION['group']['id'],
+                        'creator'    	=> $_SESSION['login']['id'],
+                        'privacy'       => $request->getParam('privacy'),
+                    ]
+                ]);
+            } catch (GuzzleException $e) {
+                $result = $e->getResponse();
+            }
+            $content = $result->getBody()->getContents();
+            $contents = json_decode($content, true);
+            // var_dump($contents); die();
+            if ($contents['code'] == 201) {
+                if (!empty($_FILES['image']['name'])) {
+                    $path = $_FILES['image']['tmp_name'];
+                    $mime = $_FILES['image']['type'];
+                    $name = $_FILES['image']['name'];
+                    try {
+                        $result2 = $this->client->request('POST', 'item/add/image', [
+                            'multipart' => [
+                                [
+                                    'name'     => 'image',
+                                    'filename' => $name,
+                                    'Mime-Type'=> $mime,
+                                    'contents' => fopen( $path, 'r' )
+                                ],
+                                [
+                                    'name'     => 'item_id',
+                                    'contents' => $contents['data']['id']
+                                ]
+                            ]
+                        ]);
+                    } catch (Exception $e) {
+                        $result2 = $e->getResponse();
+                    }
+                }
+                $this->flash->addMessage('success', $contents['message']);
+            } else {
+                $_SESSION['errors'] = $contents['message'];
+                $_SESSION['old']    = $request->getParams();
+            }
+            if (!empty($request->getParam('member'))) {
+                return $response->withRedirect($this->router->pathFor('unreported.item.user.group'));
+            } else {
+                return $response->withRedirect($this->router->pathFor('pic.item.group',['id' => $group ]));
+            }
+        }
+
 	//create item by user
 	public function createItemUser($request, $response, $args)
 	{
@@ -165,76 +228,80 @@ class ItemController extends BaseController
 	public function reportItem($request, $response, $args)
 	{
         // var_dump( $_FILES['image']['name']);die();
-        if (!empty($_FILES['image']['name'])) {
-            $path = $_FILES['image']['tmp_name'];
-            $mime = $_FILES['image']['type'];
-            $name = $_FILES['image']['name'];
-            try {
-                $result = $this->client->request('POST', 'item/report/'.$args['item'], [
-                    'multipart' => [
-                        [
-                            'name'     => 'image',
-                            'filename' => $name,
-                            'Mime-Type'=> $mime,
-                            'contents' => fopen( $path, 'r' )
-                        ],
-                        [
-                            'name'     => 'description',
-                            'contents' => $request->getParam('description')
-                        ],
-                        [
-                            'name'     => 'user',
-                            'contents' => $_SESSION['login']['id']
-                        ],
-                        [
-                            'name'     => 'item',
-                            'contents' => $request->getParam('item_id')
+        $this->validator
+            ->rule('required', ['description'])
+            ->message('{field} tidak boleh kosong')
+            ->label('Deskripsi');
+
+        if ($this->validator->validate()) {
+            if (!empty($_FILES['image']['name'])) {
+                $path = $_FILES['image']['tmp_name'];
+                $mime = $_FILES['image']['type'];
+                $name = $_FILES['image']['name'];
+                try {
+                    $result = $this->client->request('POST', 'item/report/'.$args['item'], [
+                        'multipart' => [
+                            [
+                                'name'     => 'image',
+                                'filename' => $name,
+                                'Mime-Type'=> $mime,
+                                'contents' => fopen( $path, 'r' )
+                            ],
+                            [
+                                'name'     => 'description',
+                                'contents' => $request->getParam('description')
+                            ],
+                            [
+                                'name'     => 'user',
+                                'contents' => $_SESSION['login']['id']
+                            ],
+                            [
+                                'name'     => 'item',
+                                'contents' => $request->getParam('item_id')
+                            ]
                         ]
-                    ]
-                ]);
-            } catch (GuzzleException $e) {
-                $result = $e->getResponse();
+                    ]);
+                } catch (GuzzleException $e) {
+                    $result = $e->getResponse();
+                }
+            } else {
+                try {
+                    $result = $this->client->request('POST', 'item/report/'.$args['item'], [
+                        'form_params' => [
+                            'description'   => $request->getParam('description'),
+                            'user'          => $_SESSION['login']['id'],
+                            'item'          => $request->getParam('item_id')
+                        ]
+                    ]);
+                } catch (GuzzleException $e) {
+                    $result = $e->getResponse();
+                }
+            }
+
+            $content = json_decode($result->getBody()->getContents(), true);
+
+            if ($content['error'] == false) {
+                $this->flash->addMessage('success', $content['message']);
+                return $response->withRedirect($this->router->pathFor('unreported.item.user.group', [
+                // 'group' => 	$request->getParam('group_id'),
+                // 'user'  => 	$_SESSION['login']['id']
+                ]));
+            } else {
+                $this->flash->addMessage('error', $content['message']);
+
+                return $response->withRedirect($this->router->pathFor('unreported.item.user.group', [
+                // 'group' => 	$request->getParam('group_id'),
+                // 'user'  => 	$_SESSION['login']['id']
+                ]));
             }
         } else {
-            try {
-                $result = $this->client->request('POST', 'item/report/'.$args['item'], [
-                    'form_params' => [
-                        'description'   => $request->getParam('description'),
-                        'user'          => $_SESSION['login']['id'],
-                        'item'          => $request->getParam('item_id')
-                    ]
-                ]);
-            } catch (GuzzleException $e) {
-                $result = $e->getResponse();
-            }
-        }
-
-        $content = json_decode($result->getBody()->getContents(), true);
-// var_dump($content);die();
-    	// return $response->withRedirect("http://localhost/Reporting-App/public/items/group/".$args['group'].'/reported');
-
-        if ($content['error'] == false) {
-            $this->flash->addMessage('success', $content['message']);
-            return $response->withRedirect($this->router->pathFor('unreported.item.user.group', [
-                'group' => 	$request->getParam('group_id'),
-                'user'  => 	$_SESSION['login']['id']
-            ]));
-        } else {
-            $this->flash->addMessage('error', $content['message']);
-
-            return $response->withRedirect($this->router->pathFor('unreported.item.user.group', [
-                'group' => 	$request->getParam('group_id'),
-                'user'  => 	$_SESSION['login']['id']
-            ]));
+            $_SESSION['errors'] = $this->validator->errors();
+            $_SESSION['old'] = $request->getParams();
+            $_SESSION['error_item'] = $request->getParam('item_id');
+            return $response->withRedirect($this->router->pathFor('unreported.item.user.group'));
         }
     }
 
-    //     $content = json_decode($result->getBody()->getContents(), true);
-    //     // var_dump($content);die();
-    // 	return $response->withRedirect($this->router->pathFor('group.user'), [
-    //         'group' 		=> 	$args['group']
-    //     ]);
-	// }
 	//Delete item by user
     public function deleteItemByUser($request, $response, $args)
     {
@@ -333,8 +400,8 @@ class ItemController extends BaseController
         $data = json_decode($result->getBody()->getContents(), true);
         $dataUser = json_decode($user->getBody()->getContents(), true);
 
-        return $this->view->render($response, 'users/guard/report-archives.twig', [
         // var_dump($data);die();
+        return $this->view->render($response, 'users/item/report-archives.twig', [
             'data'		=>	$data['data'],
             'user_id'	=>	$args['id'],
             'user'      => $dataUser['data'],
@@ -348,9 +415,15 @@ class ItemController extends BaseController
 
     public function getItemArchive($request, $response, $args)
     {
-        return  $this->view->render($response, 'users/guard/report-archives.twig', [
-            'user_id'		=>	$args['id']
-        ]);
+        if (isset($_SESSION['user'])) {
+            $userId = $_SESSION['user']['id'];
+        } else {
+            $userId = $_SESSION['login']['id'];
+
+        }
+            return  $this->view->render($response, 'users/item/report-archives.twig', [
+                'user_id' =>	$userId
+            ]);
     }
 
     //Get group item reported
@@ -398,7 +471,6 @@ class ItemController extends BaseController
         return $this->view->render($response, 'users/group/unreported-item.twig', [
             'data'			=>	$data['data'],
             'pagination'	=>	$data['pagination'],
-            // 'group' 		=> 	$dataGroup['data'],
         ]);
     }
 
@@ -585,6 +657,28 @@ class ItemController extends BaseController
         }
     }
 
+    //Get All item reported user
+    public function getAllUnreportedUserItem($request, $response)
+    {
+        try {
+            $result = $this->client->request('GET', 'item/user/unreported',[
+                'query' => [
+                    'user_id' =>  $_SESSION['user']['id'],
+                    'perpage' => 10,
+                    'page' => $request->getQueryParam('page')
+                    ]]);
+
+        } catch (GuzzleException $e) {
+            $result = $e->getResponse();
+        }
+        $data= json_decode($result->getBody()->getContents(), true);
+        // var_dump($data);die;
+        return $this->view->render($response, 'users/item/unreported-all.twig', [
+            'data'			=>	$data['data'],
+            'pagination'	=>	$data['pagination'],
+            // 'group' 		=> 	$dataGroup['data'],
+        ]);
+    }
 
 }
 

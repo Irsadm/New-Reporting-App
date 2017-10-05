@@ -18,10 +18,12 @@
             <div style="font-size:15px;" class="user-thumb">
                 {% if item.reported_at == null and item.creator_image != null %}
                 <img width="60" height="60" alt="User"
-                src="{{ base_url() }}/assets/images/{{ item.creator_image }}">
+                src="{{ base_url() }}/assets/images/{{ item.creator_image }}"
+                onerror=this.src="{{ base_url() }}/assets/images/avatar.png">
                 {% elseif item.reported_at != null and item.user_image != null %}
                 <img width="60" height="60" alt="User"
-                src="{{ base_url() }}/assets/images/{{ item.user_image }}">
+                src="{{ base_url() }}/assets/images/{{ item.user_image }}"
+                onerror=this.src="{{ base_url() }}/assets/images/avatar.png">
                 {% else %}
                 <img width="60" height="60" alt="User"
                 src="{{ base_url() }}/assets/images/avatar.png">
@@ -35,7 +37,10 @@
                     {% else %}
                     {{ item.creator }}
                     {% endif %}</b>
-                    <i>membuat tugas di grup</i> <b>{{ item.group_name }}</b>
+                    <i>membuat tugas di grup</i>
+                    <!-- <a href="{{ path_for('enter.group', {'id': item.group_id})}}"
+                     title="Masuk ke grup {{ item.grup }}">
+                     <b>{{ item.group_name }}</b></a> -->
                     {% else %}
                     &nbsp&nbsp&nbsp <b>
                     {% if item.user == login.username %}
@@ -43,24 +48,36 @@
                     {% else %}
                     {{ item.user }}
                     {% endif %}</b>
-                    <i>melaporkan tugas di grup</i> <b>{{ item.group_name }}</b>
+                    <i>melaporkan tugas di grup</i>
+                    <!-- <a href="{{ path_for('enter.group', {'id': item.group_id})}}"
+                     title="Masuk ke grup {{ item.grup }}">
+                     <b>{{ item.group_name }}</b></a> -->
                     {% endif %}
             </span>
             <div class="article-post">
                 <br>
                 {% if item.reported_at == null %}
                 <span style="font-size: 14pt;margin-left: 30px;" class="user-info"> <b>
-                    <span class="label label-warning">{{ item.name }}
-                    </span>&nbsp > &nbsp
-                    <span class="label label-success">{{ item.group_name }}
-                    </span></b>
-                </span>
+                    <a href="{{ base_url() }}/item/show/{{item.id}}" title="Lihat detail item">
+                        <span class="label label-warning">{{ item.name }}</span>
+                    </a>
+                &nbsp > &nbsp
+                <a href="{{ path_for('enter.group', {'id': item.group_id})}}"
+                title="Masuk ke grup {{ item.group_name }}">
+                <span class="label label-success">
+                    {{ item.group_name }}
+                </span></a></b>
+            </span>
                 {% else %}
                 <span style="font-size: 14pt;margin-left: 30px;" class="user-info"> <b>
-                    <span class="label label-warning">{{ item.name }}
-                    </span>&nbsp > &nbsp
+                    <a href="{{ base_url() }}/item/show/{{item.id}}" title="Lihat detail item">
+                        <span class="label label-warning">{{ item.name }}</span>
+                    </a>
+                &nbsp > &nbsp
+                    <a href="{{ path_for('enter.group', {'id': item.group_id})}}"
+                     title="Masuk ke grup {{ item.group_name }}">
                     <span class="label label-success">{{ item.group_name }}
-                    </span></b>
+                    </span></a></b>
                 </span>
                 {% endif %}
                 <br>

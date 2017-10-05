@@ -19,7 +19,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/2.3.11/css/skins/_all-skins.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="http://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.15/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css">
     <link rel="stylesheet" href="{{ base_url() }}/css/bootstrap-responsive.min.css" />
     <link rel="stylesheet" href="{{ base_url() }}/css/fullcalendar.css" />
     <link rel="stylesheet" href="{{ base_url() }}/css/matrix-style.css" />
@@ -79,7 +79,7 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
 
-<script src="https://cdn.datatables.net/1.10.13/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-formhelpers/2.3.0/js/bootstrap-formhelpers.min.js">
 </script>
 <script>
@@ -142,7 +142,9 @@ $('#previewing').attr('height', '230px');
 };
 });
 $(document).ready(function() {
-    $('#example2').DataTable();
+    $('#example2').DataTable({
+        "searching": false
+    } );
 } );
 </script>
 <script type="text/javascript">

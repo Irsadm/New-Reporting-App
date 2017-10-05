@@ -2,7 +2,7 @@
 $app->get('/signup', 'App\Controllers\web\UserController:getSignUp')->setName('signup');
 $app->post('/signup', 'App\Controllers\web\UserController:signUp')->setName('post.signup');
 $app->post('/reset', 'App\Controllers\web\UserController:forgotPassword')->setName('password.reset');
-// $app->get('/test', 'App\Controllers\web\HomeController:test')->setName('test');
+$app->get('/test', 'App\Controllers\web\HomeController:test')->setName('test');
 $app->get('/404', 'App\Controllers\web\HomeController:notFound')->setName('not.found');
 // $app->get('/admin', 'App\Controllers\web\UserController:getLoginAsAdmin')->setName('login.admin');
 $app->post('/admin', 'App\Controllers\web\UserController:loginAsAdmin');
@@ -21,7 +21,6 @@ $app->group('', function() use ($app, $container) {
 
     $app->group('/group', function() use ($app, $container) {
         $app->get('', 'App\Controllers\web\GroupController:index')->setName('group');
-        $app->get('/{id}', 'App\Controllers\web\GroupController:enter')->setName('pic.group');
         $app->get('/enter/{id}', 'App\Controllers\web\GroupController:enterGroup')->setName('enter.group');
         $app->post('/update', 'App\Controllers\web\GroupController:update')->setName('group.update');
         $app->post('/create', 'App\Controllers\web\GroupController:add')->setName('web.group.add');
@@ -36,6 +35,7 @@ $app->group('', function() use ($app, $container) {
         $app->get('/show/detail', 'App\Controllers\web\GroupController:getDetail')->setName('get.group.detail');
         $app->get('/timeline/', 'App\Controllers\web\GroupController:timeline')->setName('get.group.timeline');
         $app->post('/image/change', 'App\Controllers\web\GroupController:changeImage')->setName('group.change.image');
+        $app->get('/delete/{id}', 'App\Controllers\web\GroupController:delete')->setName('delete.group');
     });
     $app->group('/item', function() use ($app, $container) {
         $app->get('/show/{id}', 'App\Controllers\web\ItemController:getItem')->setName('show.item');
@@ -62,6 +62,8 @@ $app->group('', function() use ($app, $container) {
         $app->get('/all-item/{id}', 'App\Controllers\web\ItemController:getUserItem')->setName('get.user.item');
         $app->get('/item/reported', 'App\Controllers\web\ItemController:getReportedUserItem')->setName('reported.item.user');
         $app->get('/item/unreported', 'App\Controllers\web\ItemController:getUnreportedUserItem')->setName('unreported.item.user');
+        $app->get('/item/all-unreported', 'App\Controllers\web\ItemController:getAllUnreportedUserItem')->setName('all-unreported.item.user');
+        $app->post('/create/item', 'App\Controllers\web\ItemController:createItem')->setName('user.create.item');
     });
 
     $app->group('/guard', function() use ($app, $container) {
@@ -79,7 +81,7 @@ $app->group('', function() use ($app, $container) {
     $app->group('/pic', function() use ($app, $container){
         $app->get('/items/group', 'App\Controllers\web\PicController:getUnreportedItem')->setName('pic.item.group');
         $app->get('/items/group/reported', 'App\Controllers\web\PicController:getReportedItem')->setName('pic.group.reported');
-        $app->get('/items/delete/{id}', 'App\Controllers\web\PicController:deleteTugas')->setName('web.pic.delete.tugas');
+        $app->get('/items/delete/{id}', 'App\Controllers\web\PicController:deleteItem')->setName('pic.delete.item');
         $app->get('/search/{id}', 'App\Controllers\web\PicController:getSearchUser')->setName('web.pic.search');
         $app->get('/search/user/guard', 'App\Controllers\web\PicController:searchUser')->setName('web.pic.search.user');
         $app->get('/group/member', 'App\Controllers\web\PicController:getMemberGroup')->setName('pic.group.member');

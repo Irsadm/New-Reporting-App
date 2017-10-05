@@ -64,9 +64,9 @@ class GroupController extends BaseController
 		];
 
 		$this->validator->labels([
-			'name' 			=>	'Name',
-			'description'	=>	'Description',
-			'image'			=>	'Image',
+			'name' 			=>	'Nama grup',
+			'description'	=>	'Deskripsi',
+			'image'			=>	'Foto',
 		]);
 
 		$this->validator->rules($rules);
@@ -361,25 +361,28 @@ class GroupController extends BaseController
 	{
 		$group = new GroupModel($this->db);
 		$userGroup = new UserGroupModel($this->db);
-		$token = $request->getHeader('Authorization')[0];
 		$userToken = new \App\Models\Users\UserToken($this->db);
+
+		$token = $request->getHeader('Authorization')[0];
 		$userId = $userToken->getUserId($token);
-
 		$findGroup = $group->find('id', $args['id']);
-		$finduserGroup = $userGroup->findUsers('group_id', $args['id']);
 		$pic = $userGroup->findTwo('group_id', $args['id'], 'user_id', $userId);
-		$query = $request->getQueryParams();
 
-		if ($userId == 1 || $pic[0]['status'] == 1) {
-			$delete = $group->hardDelete($args['id']);
-
-			$data = $this->responseDetail(200, false, 'Data berhasil di hapus');
+		if ($findGroup) {
+			if ($userId == 1 || $pic[0]['status'] == 1) {
+				$delete = $group->hardDelete($args['id']);
+				if (file_exists('assets/images/'.$findGroup['image'])) {
+					unlink('assets/images/'.$findGroup['image']);
+				}
+				return $this->responseDetail(200, false, 'Grup berhasil di hapus');
+			} else {
+				return $this->responseDetail(400, true, 'Anda tidak memiliki akses untuk menghapus grup ini');
+			}
 		} else {
-			$data = $this->responseDetail(400, true, 'Ada masalah saat menghapus data');
+			return $this->responseDetail(404, true, 'Grup tidak ditemukan');
 		}
-
-		return $data;
 	}
+
 	//Set user as member of group
 	public function joinGroup(Request $request, Response $response, $args)
 	{
@@ -420,15 +423,15 @@ class GroupController extends BaseController
 		$query = $request->getQueryParams();
 
 		$group = $userGroup->findTwo('user_id', $userId, 'group_id', $args['id']);
-		$findPost = $posts->findTwo('creator', $userId, 'group_id', $args['id']);
+		// $findPost = $posts->findTwo('creator', $userId, 'group_id', $args['id']);
 
 		if ($group[0]) {
-
-			if ($findPost) {
-				foreach ($findPost as $key => $value) {
-					$post_del = $posts->hardDelete($value['id']);
-				}
-			}
+			//
+			// if ($findPost) {
+			// 	foreach ($findPost as $key => $value) {
+			// 		$post_del = $posts->hardDelete($value['id']);
+			// 	}
+			// }
 
 			$leaveGroup = $userGroup->hardDelete($group[0]['id']);
 
@@ -839,41 +842,4 @@ class GroupController extends BaseController
 		}
 	}
 
-	//Set user as member or PIC of group
-	// public function setUserGroup($request, $response)
-	// {
-	// 	$userGroup = new UserGroupModel($this->db);
-	// 	$groupId = $request->getParams()['id'];
-	// 	$pic = $userGroup->findUser('group_id', $groupId, 'user_id', $_SESSION['login']['id']);
-	//
-	// 	if ($_SESSION['login']['status'] == 1 || $pic['status'] == 1) {
-	// 		if (!empty($request->getParams()['pic'])) {
-	// 			foreach ($request->getParam('user') as $key => $value) {
-	// 				$finduserGroup = $userGroup->findUser('user_id', $value, 'group_id', $groupId);
-	// 				$userGroup->setPic($finduserGroup['id']);
-	// 			}
-	// 		} elseif (!empty($request->getParams()['member'])) {
-	// 			foreach ($request->getParam('user') as $key => $value) {
-	// 				$finduserGroup = $userGroup->findUser('user_id', $value, 'group_id', $groupId);
-	// 				$userGroup->setUser($finduserGroup['id']);
-	// 			}
-	// 		} elseif (!empty($request->getParams()['delete'])) {
-	// 			foreach ($request->getParam('user') as $key => $value) {
-	// 				$finduserGroup = $userGroup->findUser('user_id', $value, 'group_id', $groupId);
-	// 				$userGroup->hardDelete($finduserGroup['id']);
-	// 			}
-	// 		}
-	//
-	// 		if ($_SESSION['login']['status'] == 2 && $pic['status'] == 1) {
-	// 			return $response->withRedirect($this->router->pathFor('pic.member.group.get', ['id' => $groupId]));
-	// 		}
-	//
-	// 		return $response->withRedirect($this->router->pathFor('user.group.get', ['id' => $groupId]));
-	//
-	// 	} else {
-	// 		$this->flash->addMessage('error', 'Anda tidak memiliki akses ke user ini!');
-	// 		return $response->withRedirect($this->router
-	// 		->pathFor('home'));
-	// 	}
-	// }
 }
