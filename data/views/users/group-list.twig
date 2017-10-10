@@ -7,10 +7,10 @@
 {% if errors  %}
 <script type="text/javascript">
 $('#create').modal('show');
-// $('#create').modal({"backdrop": "static"});
 </script>
 {% endif %}
 {% endblock %}
+
 {% block content %}
 <div class="widget-box" style="margin-top:0px; background:#fff;">
 <a class="list-group-item active main-color-bg">
@@ -129,8 +129,6 @@ $('#create').modal('show');
 </div>
 
 <!-- line modal -->
-<!-- <div class="modal fade" id="squarespaceModal" tabindex="-1" role="dialog"
- aria-labelledby="modalLabel" aria-hidden="true"> -->
 <div class="modal fade" id="create" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-dialog">
@@ -175,6 +173,5 @@ $('#create').modal('show');
         </div>
     </div>
 </div>
-<!-- </div> -->
 
 {% endblock %}

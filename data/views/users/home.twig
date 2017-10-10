@@ -15,7 +15,7 @@
             <hr style="height: 30px; border-style:solid; border-color: #8c8b8b;
             border-width: 1px 0 0 0; border-radius: 30px; margin:0px;">
 
-            <div style="font-size:15px;" class="user-thumb">
+            <div style="font-size:15px; margin-right: 33px;" class="user-thumb">
                 {% if item.reported_at == null and item.creator_image != null %}
                 <img width="60" height="60" alt="User"
                 src="{{ base_url() }}/assets/images/{{ item.creator_image }}"
@@ -29,64 +29,56 @@
                 src="{{ base_url() }}/assets/images/avatar.png">
                 {% endif %}
             </div>
-            <span class="user-info" style="margin-left: 20px; font-size:14px;">
+            <span class="user-info" style="margin-left: 0px; font-size:14px;">
                 {% if item.reported_at == null  %}
-                &nbsp&nbsp&nbsp<b>
+                <b>
                     {% if item.creator == login.username %}
                     Anda
                     {% else %}
                     {{ item.creator }}
                     {% endif %}</b>
                     <i>membuat tugas di grup</i>
-                    <!-- <a href="{{ path_for('enter.group', {'id': item.group_id})}}"
-                     title="Masuk ke grup {{ item.grup }}">
-                     <b>{{ item.group_name }}</b></a> -->
+                    <a style="color:#4467B9; font-weight:bold;" href="{{ path_for('enter.group', {'id': item.group_id})}}"
+                    title="Masuk ke grup {{ item.group_name }}">
+                        {{ item.group_name }}
+                    </a>
                     {% else %}
-                    &nbsp&nbsp&nbsp <b>
+                    <b>
                     {% if item.user == login.username %}
                     Anda
                     {% else %}
                     {{ item.user }}
                     {% endif %}</b>
                     <i>melaporkan tugas di grup</i>
-                    <!-- <a href="{{ path_for('enter.group', {'id': item.group_id})}}"
-                     title="Masuk ke grup {{ item.grup }}">
-                     <b>{{ item.group_name }}</b></a> -->
+                    <a style="color:#4467B9; font-weight:bold;" href="{{ path_for('enter.group', {'id': item.group_id})}}"
+                    title="Masuk ke grup {{ item.group_name }}">
+                        {{ item.group_name }}
+                    </a>
                     {% endif %}
+                    <br>
+                    <i class="fa fa-clock-o" aria-hidden="true"></i>
+                        {{ item.updated_at | date('j F Y | H:i')}}
             </span>
             <div class="article-post">
                 <br>
-                {% if item.reported_at == null %}
-                <span style="font-size: 14pt;margin-left: 30px;" class="user-info"> <b>
-                    <a href="{{ base_url() }}/item/show/{{item.id}}" title="Lihat detail item">
-                        <span class="label label-warning">{{ item.name }}</span>
-                    </a>
-                &nbsp > &nbsp
-                <a href="{{ path_for('enter.group', {'id': item.group_id})}}"
-                title="Masuk ke grup {{ item.group_name }}">
-                <span class="label label-success">
-                    {{ item.group_name }}
-                </span></a></b>
-            </span>
-                {% else %}
-                <span style="font-size: 14pt;margin-left: 30px;" class="user-info"> <b>
-                    <a href="{{ base_url() }}/item/show/{{item.id}}" title="Lihat detail item">
-                        <span class="label label-warning">{{ item.name }}</span>
-                    </a>
-                &nbsp > &nbsp
-                    <a href="{{ path_for('enter.group', {'id': item.group_id})}}"
-                     title="Masuk ke grup {{ item.group_name }}">
-                    <span class="label label-success">{{ item.group_name }}
-                    </span></a></b>
-                </span>
-                {% endif %}
                 <br>
+                <br>
+                <span style="font-size: 13pt;" class="user-info"> <b>
+                    <a style="color:#4467B9;" href="{{ base_url() }}/item/show/{{item.id}}" title="Lihat detail item">
+                        <!-- <span class="label label-warning"> -->
+                        {{ item.name }}
+                    <!-- </span> -->
+                    </a>
+                </b>
+            </span>
+            <!-- {% if item.reported_at == null %} -->
+            <!-- {% endif %} -->
                 <br>
                 {% if item.image != null %}
-
+                <a href="{{ base_url() }}/item/show/{{item.id}}" title="Lihat detail item">
                 <img width="80%" style="max-width: 300px;"alt="Image item"
                 src="{{ base_url() }}/assets/images/{{ item.image[0] }}">
-                <br><br>
+            </a><br><br>
                 {% endif %}
                 <p>
                     {% if item.description|length > 155 %}
@@ -96,8 +88,6 @@
                     {{ item.description }}
                     {% endif %}
                 </p>
-                <p style="font-size: 10pt;"><i class="fa fa-clock-o" aria-hidden="true"></i>
-                    {{ item.updated_at | date('j F Y | H:i')}}</p>
                     <br><a href="{{ base_url() }}/item/show/{{item.id}}" title="Lihat detail item"
                     class="btn btn-primary btn-mini">{{ item.comment|length }} komentar</a>
                     <hr style="height: 30px; margin-top: -11px; margin-bottom: 10px; border-style: solid;

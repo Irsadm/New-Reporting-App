@@ -148,9 +148,11 @@ $(".picker").on("change", function() {
                                         </span>
 
                                         <div class="article-post">
-                                            <br><br><b><span style="font-size: 10pt;" class="label label-success">
-                                            {{ item.name }}
-                                            </span></b><br><br>
+                                            <br><br><b>
+                                                <a href="{{ base_url() }}/pic/show/item/{{item.id}}" title="Lihat detail item">
+                                                <span style="font-size: 10pt;" class="label label-success">
+                                                    {{ item.name }}</span>
+                                                </a></b><br><br>
                                         {% if item.image != null %}
                                         <img width="80%" style="max-width: 250px;"
                                         src="{{ base_url() }}/assets/images/{{ item.image }}">
@@ -160,7 +162,14 @@ $(".picker").on("change", function() {
                                          <p style="font-size: 10pt;"><i class="fa fa-clock-o" aria-hidden="true"></i>
                                          {{ item.updated_at | date('j F Y | H:i')}}</p>
                                          <br><a href="{{ base_url() }}/pic/show/item/{{item.id}}" title="Lihat detail item"
-                                         class="btn btn-primary btn-mini">{{ item.comment|length }} komentar</a>
+                                         class="btn btn-primary btn-mini">
+                                         {% if item.comment is null %}
+                                         0
+                                         {% elseif  item.comment is iterable %}
+                                         {{ item.comment|length }}
+                                         {% else %}
+                                         1
+                                         {% endif %} komentar</a>
                                          <hr style="height: 30px; margin-top: -11px; margin-bottom: 10px; border-style: solid;
                                          border-color: #8c8b8b; border-width: 0 0 1px 0; border-radius: 20px;">
                                     </div>
@@ -222,7 +231,8 @@ $(".picker").on("change", function() {
                 <div class="col-xs-12 col-sm-4 col-md-5">
                     <div class="form-group {{ errors.name ? 'has-error' : '' }}">
                         <label for="name">Nama :</label>
-                        <input type="text" name="name" class="form-control">
+                        <input type="text" name="name" style="text-transform: capitalize;"
+                        class="form-control">
                         {% if errors.name %}
                         <span class="help-block">{{ errors.name | first }}</span>
                         {% endif %}
@@ -231,7 +241,8 @@ $(".picker").on("change", function() {
                 <div class="col-xs-12 col-sm-6 col-md-7">
                     <div class="form-group {{ errors.description ? 'has-error' : '' }}">
                         <label for="description">Deskripsi :</label>
-                        <input type="text" name="description" class="form-control">
+                        <input type="text" name="description"
+                         style="text-transform: capitalize;" class="form-control">
                         {% if errors.description %}
                         <span class="help-block">{{ errors.description | first }}</span>
                         {% endif %}
@@ -243,7 +254,6 @@ $(".picker").on("change", function() {
                     <div class="form-group {{ errors.public ? 'has-error' : '' }}">
                         <label for="public">Privasi :</label>
                         <select class="form-control" name="public" >
-                            <option value="">Pilih privasi</option>
                             <option value="0">Publik</option>
                             <option value="1">Privat</option>
                         </select>

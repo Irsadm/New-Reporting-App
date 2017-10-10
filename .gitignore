@@ -1,7 +1,7 @@
 data/vendor
 data/mysql_directory
 data/docker-compose.yml
-/public/assets/image
+public_html/assets/images/
 /app/setting.php.exp
 data/phinx.yml
 data/composer.lock

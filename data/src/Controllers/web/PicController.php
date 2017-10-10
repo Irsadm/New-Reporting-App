@@ -9,8 +9,6 @@ class PicController extends BaseController
 
     public function getMemberGroup($request, $response)
 	{
-		// $query = $request->getQueryParams();
-        // $userGroup = new \App\Models\UserGroupModel($this->db);
         $id = $_SESSION['group']['id'];
         try {
             $result = $this->client->request('GET', 'group/'.$id.'/member', [
@@ -25,8 +23,7 @@ class PicController extends BaseController
 
         $data = json_decode($result->getBody()->getContents(), true);
         $count = count($data['data']);
-        // $findUser =
-		// var_dump($data); die();
+
         if ($data['error'] == false) {
             return $this->view->render($response, 'pic/group-member.twig', [
                 'members'	=> $data['data'],
@@ -37,13 +34,10 @@ class PicController extends BaseController
             return $response->withRedirect($this->router->pathFor('group.user'));
 
         }
-        // var_dump($data->reporting->results);die();
     }
 
     public function getUnreportedItem($request, $response)
     {
-        // $userGroup = new \App\Models\UserGroupModel($this->db);
-        // $page = !$request->getQueryParam('page') ? 1 : $request->getQueryParam('page');
         $id = $_SESSION['group']['id'];
         try {
             $result = $this->client->request('GET', 'item/group/'. $id, [
@@ -72,8 +66,6 @@ class PicController extends BaseController
         $data = json_decode($result->getBody()->getContents(), true);
 
         // var_dump($data2);
-        // echo "<br />";
-        // var_dump($data); die();
         return $this->view->render($response, 'pic/tugas.twig', [
             'items'	=> $data['data'],
             // 'group'	=> $args['id'],
@@ -113,7 +105,6 @@ class PicController extends BaseController
 		} catch (GuzzleException $e) {
 			$content = json_decode($e->getResponse()->getBody()->getContents(), true );
 		}
-// var_dump($content);die;
         if ($content['error'] == false) {
             $this->flash->addMessage('success', 'Tugas telah berhasil dihapus');
         } else {
@@ -125,8 +116,6 @@ class PicController extends BaseController
 
     public function createItem($request, $response)
     {
-        // var_dump($_FILES['image']['name']); die();
-
         if (empty($request->getParam('user_id'))) {
             $userId = null;
         } else {
@@ -192,9 +181,7 @@ class PicController extends BaseController
             $result = $e->getResponse();
         }
 
-        // $content = $result->getBody()->getContents();
         $content = json_decode($result->getBody()->getContents(), true);
-        // var_dump($result); die();
         if ($content['code'] == 201) {
             $this->flash->addMessage('success', $content['message']);
         } else {
@@ -219,7 +206,7 @@ class PicController extends BaseController
     {
         $id  = $_SESSION['item_id'];
         $group  = $_SESSION['group'];
-// var_dump($id);die;
+
         try {
             $result = $this->client->request('GET', 'item/show/'.$id.'?'
             . $request->getUri()->getQuery());
@@ -251,17 +238,14 @@ class PicController extends BaseController
         }
 
         $allComment = json_decode($comment->getBody()->getContents(), true);
-// var_dump($data);die;
+
         $userId = $data['data']['user_id'];
-        // $findUser = $user->find('id', $userId);
-        // var_dump($data['data']);die();
 
         if ($data['data']) {
             return $this->view->render($response, 'pic/show-item-tugas.twig', [
                 'items'     => $data['data'],
                 'comment'   => $allComment['data'],
                 'member'    => $member['data'],
-                // 'user'      => $findUser['username'],
             ]);
         } else {
             $this->flash->addMessage('error', $data['message']);
@@ -283,28 +267,21 @@ class PicController extends BaseController
 
     public function searchUser($request, $response, $args)
     {
-        // var_dump($request->getQueryParams());die;
         $user = new \App\Models\Users\UserModel($this->db);
-
+        
         $_SESSION['search'] = $request->getQueryParam('search');
-        // $userId = $_SESSION['login']['id'];
         $page = !$request->getQueryParam('page') ? 1 : $request->getQueryParam('page');
-        // $perpage = $request->getQueryParam('perpage');
         $result = $user->search($_SESSION['search'], $_SESSION['login']['id'])->setPaginate($page, 8);
 
-
-        // $data['guard']      = $_SESSION['guard'];
         $data['users']      = $result['data'];
         $data['count']      = count($data['users']);
         $data['pagination'] = $result['pagination'];
         $data['search']     = $_SESSION['search'];
         $data['group_id']   = $request->getQueryParam('group_id');
-        // var_dump($data); die();
-        if (!empty($_SESSION['search'])) {
 
+        if (!empty($_SESSION['search'])) {
             return $this->view->render($response, 'pic/search-user.twig', $data);
         }
-
     }
 
     public function deleteGroupRequest($request, $response, $args)
@@ -320,14 +297,11 @@ class PicController extends BaseController
 			$content = json_decode($e->getResponse()->getBody()->getContents(), true );
 			$this->flash->addMessage('warning', 'Anda tidak diizinkan menghapus tugas ini ');
 		}
-		// return $this->view->render($response, 'pic/tugas.twig');
-        // var_dump($content); die();
         return $response->withRedirect($this->router->pathFor('pic.item.group',['id' => $findItem['group_id']]));
 	}
 
     public function getSearch($request, $response, $args)
     {
-        // var_dump($args['group']);die;
         return  $this->view->render($response, 'pic/search-user.twig', [
             'group_id' => $args['group']
         ]);
@@ -342,7 +316,6 @@ class PicController extends BaseController
         }
 
         $data = json_decode($result->getBody()->getContents(), true);
-        // var_dump($data); die();
 
         if ($data['error'] == false) {
             $this->flash->addMessage('success', $data['message']);

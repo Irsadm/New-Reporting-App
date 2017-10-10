@@ -58,17 +58,19 @@
                 {% if items.image is iterable %}
                     {% for image in items.image %}
                     <div class="span3" style="margin-left:0px;">
-                    <center> <img height="200px" style="max-width: 250px;"
-                    src="{{ base_url() }}/assets/images/{{ image }}"> <br>
+                    <center><a href="" data-toggle="modal" data-target="#imgModal">
+                        <img height="200px" style="max-width: 250px;"
+                    src="{{ base_url() }}/assets/images/{{ image }}"> </a><br>
                     <a href="{{path_for('delete.item.image',{'image': image})}}">
                      <span class="label label-danger">hapus</span> </a></center>
                 </div>
                 {% endfor %}
-                {% elseif items.image == null%}
+                {% elseif items.image is null %}
                 {% else %}
                 <div class="span3">
-                <center><img height="200px" style="max-width: 300px;"
-                src="{{ base_url() }}/assets/images/{{ items.image }}"><br>
+                <center><a href="" data-toggle="modal" data-target="#imgModal">
+                    <img height="200px" style="max-width: 300px;"
+                src="{{ base_url() }}/assets/images/{{ items.image }}"></a><br>
                 <a href="{{path_for('delete.item.image',{'image': items.image})}}">
                  <span class="label label-danger">hapus</span></a></center>
                 </div>
@@ -88,7 +90,10 @@
                                                 <li>
                                                     <div class="user-thumb">
                                                         {% if comment.image != null %}
-                                                        <img width="40" height="40" src="{{ comment.image }}">
+                                                        <img width="40" height="40" src="{{ base_url() }}/assets/images/{{ comment.image }}"
+                                                        onerror=this.src="{{ base_url() }}/assets/images/avatar.png">
+                                                        {% else %}
+                                                        <img width="40" height="40" src="{{ base_url() }}/assets/images/avatar.png">
                                                         {% endif %}
                                                     </div>
                                                     <div class="article-post">
@@ -258,5 +263,61 @@
     </div>
   </div>
 </div>
+</div>
+
+<div class="modal fade" id="imgModal" role="dialog">
+  <div class="modal-dialog" style=" margin: auto; width: auto;">
+    <!-- Modal content-->
+    <div style="border-bottom:0px;" class="modal-header">
+        <button style="color:#bffbf3; font-size: 17px; opacity:0.7" type="button" class="close"
+        data-dismiss="modal" aria-hidden="true">Tutup(x)</button>
+    </div>
+    <div id="myCarousel" class="carousel slide" data-ride="carousel">
+        <!-- Indicators -->
+        <ol class="carousel-indicators">
+            {% if items.image is iterable %}
+            {% for key, image in items.image %}
+            <li data-target="#myCarousel" data-slide-to="{{key}}" class="active"></li>
+            {% endfor %}
+            {% elseif items.image != null %}
+            <li data-target="#myCarousel" data-slide-to="0"></li>
+            {% endif %}
+        </ol>
+
+        <!-- Wrapper for slides -->
+        <div class="carousel-inner"
+        style="margin:auto; max-width:82%; max-height:75%; border:3px solid #cfd0ce;">
+        {% if items.image is iterable %}
+        {% for key, image in items.image %}
+        <div class="item {% if key == 0 %} active{% endif %}">
+            <center>
+                <img src="{{ base_url() }}/assets/images/{{ image }}"
+                alt="{{items.name}}" style="width:auto; max-height:650px">
+            </center>
+        </div>
+        {% endfor %}
+        {% elseif items.image != null %}
+        <div class="item {% if items.name == 0 %} active{% endif %}">
+            <center>
+                <img src="{{ base_url() }}/assets/images/{{ items.image }}"
+                alt="{{items.name}}" style="width:auto; max-height:650px">
+            </center>
+        </div>
+        {% endif %}
+
+    </div>
+    <!-- Left and right controls -->
+    <a class="left carousel-control" href="#myCarousel" data-slide="prev">
+        <span class="glyphicon glyphicon-chevron-left"></span>
+        <span class="sr-only">Previous</span>
+    </a>
+    <a class="right carousel-control" href="#myCarousel" data-slide="next">
+        <span class="glyphicon glyphicon-chevron-right"></span>
+        <span class="sr-only">Next</span>
+    </a>
+</div>
+</div>
+</div>
+
 
 {% endblock %}

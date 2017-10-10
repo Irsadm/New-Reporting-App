@@ -23,7 +23,6 @@ class CommentController extends BaseController
 
     public function postComment($request, $response)
     {
-        // var_dump($request->getParams());die();
         try {
             $result = $this->client->request('POST', 'comment',
                 ['form_params' => [
@@ -104,8 +103,6 @@ class CommentController extends BaseController
 
             $data = json_decode($result->getBody()->getContents(), true);
 
-            // var_dump($data);die();
-
             if ($data['code'] == 201) {
                 $this->flash->addMessage('success', 'Pendaftaran berhasil,
                 silakan cek email anda untuk mengaktifkan akun');
@@ -120,14 +117,12 @@ class CommentController extends BaseController
             $_SESSION['errors'] = $this->validator->errors();
             $_SESSION['old'] = $request->getParams();
 
-            // $this->flash->addMessage('info');
             return $response->withRedirect($this->router->pathFor('signup'));
         }
     }
 
     public function postPicComment($request, $response)
     {
-        // var_dump( $request->getParams());die();
         try {
             $result = $this->client->request('POST', 'comment',
                 ['form_params' => [

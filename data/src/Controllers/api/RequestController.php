@@ -17,11 +17,9 @@ class RequestController extends BaseController
     public function createUserToGroup($request, $response, $args)
     {
         $requestModel = new RequestModel($this->db);
-        // $userToken = new UserToken($this->db);
         $userGroups = new UserGroupModel($this->db);
         $groups = new GroupModel($this->db);
 
-        // $token = $request->getHeader('Authorization')[0];
 		$userId = $request->getQueryParam('user_id');
         $groupId = $request->getQueryParam('group_id');
 
@@ -67,6 +65,7 @@ class RequestController extends BaseController
         }
         return $data;
     }
+
     public function createUserToGuard($request, $response, $args)
     {
         $requestModel = new RequestModel($this->db);
@@ -96,7 +95,6 @@ class RequestController extends BaseController
 
 		$userId = $request->getQueryParam('user_id');
         $userReq = $requestModel->findGuardRequest(4)->setPaginate($page, $perPage);
-        // var_dump($userReq);die;
 
         if ($userReq) {
             return $this->responseDetail(200, false, 'Data ditemukan', $userReq);
@@ -114,7 +112,6 @@ class RequestController extends BaseController
 
 		$userId = $request->getQueryParam('user_id');
         $userReq = $requestModel->findUserRequest(2)->setPaginate($page, $perPage);
-        // var_dump($userReq);die;
 
         if ($userReq) {
             return $this->responseDetail(200, false, 'Data ditemukan', $userReq);
@@ -132,7 +129,6 @@ class RequestController extends BaseController
 
 		$groupId = $request->getQueryParam('group_id');
         $userReq = $requestModel->findGroupRequest($groupId)->setPaginate($page, $perPage);
-        // var_dump($userReq);die;
 
         if ($userReq) {
             return $this->responseDetail(200, false, 'Data ditemukan', $userReq);
@@ -151,7 +147,6 @@ class RequestController extends BaseController
 		$userId = $request->getQueryParam('user_id');
         $userReq = $requestModel->findAllGroupRequest(2)->setPaginate($page, $perPage);
         $reqData = array_map("unserialize", array_unique(array_map("serialize", $userReq['data'])));
-        // var_dump($reqData);die;
 
         if ($userReq) {
             return $this->responseDetail(200, false, 'Data ditemukan', [
@@ -196,7 +191,6 @@ class RequestController extends BaseController
         $requestModel = new RequestModel($this->db);
 
 		$userReq = $requestModel->find('id', $args['id']);
-// var_dump($userReq);die;
         if ($userReq) {
             $requestModel->hardDelete($args['id']);
             return $this->responseDetail(200, false, 'Request berhasil dihapus');
@@ -241,7 +235,7 @@ class RequestController extends BaseController
         $guardian  = $userToken->getUserId($token);
         $findGuardian = $guard->findTwo('guard_id', $guardian, 'user_id', $user);
         $findRequest  = $req->findTwo('guard_id', $guardian, 'user_id', $user);
-        // var_dump($findGuardian); die();
+
         if (empty($findGuardian[0]) && empty($findRequest[0]) && $user != $guardian) {
                 $data = [
                     'user_id'  => $user,

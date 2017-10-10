@@ -36,7 +36,7 @@ class CommentModel extends BaseModel
 						  ->where('item_id = :id')
 						  ->setParameter(':id', $id)
 						  ->join('c', 'users', 'u', 'u.id = c.creator')
-						  ->orderBy('c.updated_at', 'desc')
+						  ->orderBy('c.updated_at', 'asc')
 						  ->execute();
 
 		return $this->query->fetchAll();

@@ -46,7 +46,7 @@ class CronJob
                     $data = [
                         'item_id' => $val['id'],
                         'user_id' => $value['id'],
-                        'date'    => $now,
+                        'date'    => date('Y-m-d', strtotime($now. '-1 day'))
                     ];
                     $unreported->create($data);
                 }

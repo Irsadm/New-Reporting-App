@@ -20,13 +20,14 @@ class GroupController extends BaseController
         } catch (GuzzleException $e) {
             $result = $e->getResponse();
         }
-        $data = json_decode($result->getBody()->getContents(), true);
-		// var_dump($data);die();
+
+		$data = json_decode($result->getBody()->getContents(), true);
 		return $this->view->render($response, 'users/group-list.twig', [
 			'data'			=> $data['data'],
 			'pagination'	=> $data['pagination']
 		]);
 	}
+
 	//Get Group user
 	public function getGeneralGroup($request, $response)
 	{
@@ -39,8 +40,8 @@ class GroupController extends BaseController
         } catch (GuzzleException $e) {
             $result = $e->getResponse();
         }
+
         $data = json_decode($result->getBody()->getContents(), true);
-	//	 var_dump($data);die();
 		if (!isset($data['pagination'])) {
 			$data['pagination'] = null;
 		}
@@ -69,6 +70,7 @@ class GroupController extends BaseController
 	{
 		return $this->view->render($response, 'admin/group/add.twig');
 	}
+
 	//Post create group
 	public function add($request, $response)
 	{
@@ -84,17 +86,17 @@ class GroupController extends BaseController
 		}
 		$content = $result->getBody()->getContents();
         $data = json_decode($content, true);
-		// var_dump($data);die;
+
 		if ($data['code'] == 201) {
 			$this->flash->addMessage('success', $data['message']);
 			return $response->withRedirect($this->router->pathFor('group.user'));
 		} else {
-			// $this->flash->addMessage('error', $data['message']);
 			$_SESSION['old'] = $request->getParams();
 			$_SESSION['errors'] = $data['message'];
 			return $response->withRedirect($this->router->pathFor('group.user'));
 		}
 	}
+
 	//Get edit group
 	public function getUpdate($request, $response, $args)
 	{
@@ -102,12 +104,12 @@ class GroupController extends BaseController
         $data['group'] = $group->find('id', $args['id']);
 		return $this->view->render($response, 'admin/group/edit.twig', $data);
 	}
+
 	//Edit group
 	public function update($request, $response)
 	{
 		$id = $_SESSION['group']['id'];
-// 		var_dump($_SESSION['group']['id']);
-// var_dump($request->getParams());die;
+
         try {
             $result = $this->client->request('POST', 'group/update',
             ['form_params' =>  [
@@ -121,7 +123,7 @@ class GroupController extends BaseController
         }
 
         $data = json_decode($result->getBody()->getContents(), true);
-        // var_dump($data);die();
+
         if ($data['code'] == 201) {
             $this->flash->addMessage('success',  $data['message']);
             // return $response->withRedirect($this->router->pathFor('user.setting.profile'));
@@ -147,6 +149,7 @@ class GroupController extends BaseController
 		}
 		return $response->withRedirect($this->router->pathFor('group.user'));
 	}
+
 	//restore
 	public function restore($request, $response, $args)
 	{
@@ -160,15 +163,15 @@ class GroupController extends BaseController
 		}
 		return $response->withRedirect($this->router->pathFor('group.user'));
 	}
+
 	//Set user as member or PIC of group
 	public function setUserGroup($request, $response)
 	{
-		// var_dump($request->getParams());die;
 		try {
 			$client = $this->client->request('POST',
 			$this->router->pathFor('api.user.add.group'), [
 				'form_params'	=> [
-					'group_id' 			=>	$request->getParams()['group_id'],
+					'group_id' 			=>	$_SESSION['group']['id'],
 					'user_id'			=>	$request->getParams()['user_id'],
 					'status'			=>	0
 				]
@@ -178,9 +181,7 @@ class GroupController extends BaseController
 		}
 
 		$content = json_decode($client->getBody()->getContents(), true);
-
-		// var_dump($content);die;
-
+// var_dump($content);die;
 		if ($content['code'] == 201) {
 			if (!empty($request->getParams()['req_id'])) {
 				try {
@@ -194,8 +195,8 @@ class GroupController extends BaseController
 				return $response->withRedirect($this->router->pathFor('notification'));
 			} else {
 				$this->flash->addMessage('success', $content['message']);
-				return  $response->withRedirect($this->router->pathFor('pic.group.member', [
-					'id' => $request->getParams()['group_id']
+				return  $response->withRedirect($this->router->pathFor('web.pic.search', [
+					'id' => $_SESSION['group']['id']
 				]));
 			}
 		} else {
@@ -203,8 +204,8 @@ class GroupController extends BaseController
 			if (!empty($request->getParams()['req_id'])) {
 				return  $response->withRedirect($this->router->pathFor('notification'));
 			}
-			return  $response->withRedirect($this->router->pathFor('pic.group.member', [
-				'id' => $request->getParams()['group_id']
+			return  $response->withRedirect($this->router->pathFor('web.pic.search', [
+				'id' => $_SESSION['group']['id']
 			]));
 		}
 	}
@@ -235,6 +236,7 @@ class GroupController extends BaseController
 			return $response->withRedirect($this->router->pathFor('login'));
 		}
 	}
+
 	//Get all user in group
 	public function getGroupMember($request, $response, $args)
 	{
@@ -254,13 +256,13 @@ class GroupController extends BaseController
 			return $this->view->render($response, 'users/group/member.twig', [
 				'data'			=>	$content['data'],
 				'pagination'  	=>	$content['pagination'],
-				// 'group' 		=> 	$dataGroup['data']
 			]);
 		} else {
 			$this->flash->addMessage('warning', $content['message']);
 			return $response->withRedirect($this->router->pathFor('login'));
 		}
 	}
+
 	public function getGroupPic($request, $response, $args)
 	{
 		try {
@@ -275,19 +277,18 @@ class GroupController extends BaseController
 		} catch (GuzzleException $e) {
 			$content = json_decode($e->getResponse()->getBody()->getContents(), true);
 		}
-		// var_dump($content);die();
+
 		if ($data['error'] == false) {
 			return $this->view->render($response, 'users/group/pic.twig', [
 				'data'			=>	$content['data'],
 				'pagination'  	=>	$content['pagination'],
-				// 'group' 		=> 	$dataGroup['data']
 			]);
         } else {
             $this->flash->addMessage('warning', $content['message']);
             return $response->withRedirect($this->router->pathFor('login'));
         }
-		// return $this->view->render($response, '', $content->reporting);
 	}
+
 	//Get all user in group
 	public function getNotMember($request, $response, $args)
 	{
@@ -300,10 +301,10 @@ class GroupController extends BaseController
 		}
 		return $this->router->pathFor('home');
 	}
+
 	//Set user as member of group
 	public function setMemberGroup($request, $response)
 	{
-		// var_dump($request->getParams()); die();
 		try {
 			$client = $this->client->request('POST',
 						'group/pic/addusers', [
@@ -312,15 +313,13 @@ class GroupController extends BaseController
 						'user_id'  => $request->getParam('user_id'),
 					]
 			]);
-			// $client = $client->getBody()->getContents();
-			// $content = json_decode($client);
 		} catch (GuzzleException $e) {
 			$client = $e->getResponse();
-			// $content = json_decode($e->getResponse()->getBody()->getContents());
 		}
+
 		$groupId = $request->getParam('group_id');
 		$content = json_decode($client->getBody()->getContents(), true);
-		var_dump($content); die();
+		// var_dump($content); die();
 		if ($content['code'] == 201) {
 			$this->flash->addMessage('success', $content['message']);
 			return $response->withRedirect($this->router->pathFor('pic.group.member', ['id' => $groupId]));
@@ -340,17 +339,7 @@ class GroupController extends BaseController
 		}
 		return $this->view->render($response, '', $content->reporting);
 	}
-	// public function getPicGroup($request, $response)
-	// {
-	// 	try {
-	// 		$client = $this->client->request('GET',
-	// 					$this->router->pathFor('api.getPic'));
-	// 		$content = json_decode($client->getBody()->getContents());
-	// 	} catch (GuzzleException $e) {
-	// 		$content = json_decode($e->getResponse()->getBody()->getContents());
-	// 	}
-	// 	return $this->view->render($response, '', $content->reporting);
-	// }
+
 	public function getPicGroup($request, $response)
 	{
 		try {
@@ -365,6 +354,7 @@ class GroupController extends BaseController
 		}
 		return $this->view->render($response, '', $content->reporting);
 	}
+
 	//Post create group
 	public function createByUser($request, $response)
 	{
@@ -387,6 +377,7 @@ class GroupController extends BaseController
 		// return $this->router->pathFor('group.user');
     	return $response->withRedirect($this->router->pathFor('group.user'));
 	}
+
 	//Find group by id
 	public function delGroup($request, $response, $args)
 	{
@@ -400,6 +391,7 @@ class GroupController extends BaseController
 		}
 		return $this->router->render($response, 'user.group');
 	}
+
 	public function searchGroup($request, $response)
     {
         $query = $request->getQueryParams();
@@ -418,6 +410,7 @@ class GroupController extends BaseController
             'data' => $data['data']['groups']
         ]);
     }
+
     //leave group
 	public function leaveGroup($request, $response, $args)
     {
@@ -428,7 +421,6 @@ class GroupController extends BaseController
     	}
 
 		$data = json_decode($result->getBody()->getContents(), true);
-// var_dump($data);die;
 		if ($data['code'] == 200) {
 			$this->flash->addMessage('succes', 'Berhasil meninggalkan group');
 		}else {
@@ -449,7 +441,7 @@ class GroupController extends BaseController
 		}
 
 		$content = json_decode($client->getBody()->getContents(), true);
-// var_dump($content);die;
+
 		if ($content['code'] == 200) {
 			$this->flash->addMessage('success', $content['message']);
 			unset($_SESSION['group']);
@@ -469,256 +461,256 @@ class GroupController extends BaseController
 	public function joinGroup($request, $response, $args)
     {
         try {
-            $result = $this->client->request('GET', 'group/join/'.$args['id'],
-                ['query' => [
-                    'group_id'  => $args['id'],
-                    'user_id'   => $_SESSION['login']['id']
-                ]
-            ]);
-            $this->flash->addMessage('success', 'Berhasil bergabung ke dalam group');
-        } catch (GuzzleException $e) {
-            $result = $e->getResponse();
-            $this->flash->addMessage('error', 'Anda telah bergabung di dalam group');
-        }
-        $data = json_decode($result->getBody()->getContents(), true);
-        return $response->withRedirect($this->router->pathFor('group.user'));
+			$result = $this->client->request('GET', 'group/join/'.$args['id'],
+			['query' => [
+				'group_id'  => $args['id'],
+				'user_id'   => $_SESSION['login']['id']
+			]
+		]);
+		$this->flash->addMessage('success', 'Berhasil bergabung ke dalam group');
+	} catch (GuzzleException $e) {
+		$result = $e->getResponse();
+		$this->flash->addMessage('error', 'Anda telah bergabung di dalam group');
+	}
+	$data = json_decode($result->getBody()->getContents(), true);
+	return $response->withRedirect($this->router->pathFor('group.user'));
 }
-	//set As guardian
-	public function setAsGuardian($request, $response, $args)
-	{
-		try {
-			$client = $this->client->request('POST',
-						$this->router->pathFor('api.user.set.guardian',
-								['group' => $args['group'], 'id' => $args['id']]));
-			$client = $client->getBody()->getContents();
-			$content = json_decode($client);
-		} catch (GuzzleException $e) {
-			$client = $e->getResponse()->getBody()->getContents();
-			$content = json_decode($client);
-		}
-		return $this->view->render($response, '', $content->reporting);
+//set As guardian
+public function setAsGuardian($request, $response, $args)
+{
+	try {
+		$client = $this->client->request('POST',
+		$this->router->pathFor('api.user.set.guardian',
+		['group' => $args['group'], 'id' => $args['id']]));
+		$client = $client->getBody()->getContents();
+		$content = json_decode($client);
+	} catch (GuzzleException $e) {
+		$client = $e->getResponse()->getBody()->getContents();
+		$content = json_decode($client);
 	}
-	//set As member
-	public function setAsMemberGroup($request, $response, $args)
-	{
-		$userGroup = new \App\Models\UserGroupModel($this->db);
-		$user = $args['id'];
-		$group = $args['group'];
-		$finduserGroup = $userGroup->findTwo('user_id', $user, 'group_id', $group);
-		// var_dump($finduserGroup); die();
-		try {
-			$client = $this->client->request('POST',
-						'group/pic/set/member/'.$finduserGroup[0]['id']);
-			$client = $client->getBody()->getContents();
-			$content = json_decode($client, true);
-		} catch (GuzzleException $e) {
-			$client = $e->getResponse()->getBody()->getContents();
-			$content = json_decode($client, true);
-		}
-		// var_dump($content); die();
-		if ($content['code'] == 200 ){
+	return $this->view->render($response, '', $content->reporting);
+}
+
+//set As member
+public function setAsMemberGroup($request, $response, $args)
+{
+	$userGroup = new \App\Models\UserGroupModel($this->db);
+	$user = $args['id'];
+	$group = $args['group'];
+	$finduserGroup = $userGroup->findTwo('user_id', $user, 'group_id', $group);
+
+	try {
+		$client = $this->client->request('POST',
+		'group/pic/set/member/'.$finduserGroup[0]['id']);
+		$client = $client->getBody()->getContents();
+		$content = json_decode($client, true);
+	} catch (GuzzleException $e) {
+		$client = $e->getResponse()->getBody()->getContents();
+		$content = json_decode($client, true);
+	}
+
+	if ($content['code'] == 200 ){
+		$this->flash->addMessage('success', $content['message']);
+		return $response->withRedirect($this->router->pathFor('pic.group.member', ['id'=> $group]));
+	} else {
+		$this->flash->addMessage('warning', $content['message']);
+		return $response->withRedirect($this->router->pathFor('pic.group.member', ['id'=> $group]));
+	}
+}
+
+//set As PIC
+public function setAsPic($request, $response, $args)
+{
+	try {
+		$client = $this->client->request('POST',
+		$this->router->pathFor('api.user.set.pic',
+		['id' => $args['id'], 'group' => $args['group']]));
+		$client = $client->getBody()->getContents();
+		$content = json_decode($client);
+	} catch (GuzzleException $e) {
+		$client = $e->getResponse()->getBody()->getContents();
+		$content = json_decode($client);
+	}
+	return $this->view->render($response, '', $content->reporting);
+}
+
+public function deleteUser($request, $response, $args)
+{
+	$user = $args['id'];
+	$group = $args['group'];
+
+	try {
+		$client = $this->client->request('GET',
+		'group/delete/member/'.$args['id'].'/'.$args['group']);
+		$client = $client->getBody()->getContents();
+		$content = json_decode($client, true);
+	} catch (GuzzleException $e) {
+		$client = $e->getResponse()->getBody()->getContents();
+		$content = json_decode($client, true);
+	}
+
+	if ($content['error'] == false) {
+		$this->flash->addMessage('success', $content['message']);
+		return $response->withRedirect($this->router->pathFor('pic.group.member', ['id'=> $group]));
+	} else {
+		$this->flash->addMessage('warning', $content['message']);
+		return $response->withRedirect($this->router->pathFor('pic.group.member', ['id'=> $group]));
+	}
+}
+
+//set user as PIC
+public function setAsPicGroup($request, $response, $args)
+{
+	$userGroup = new \App\Models\UserGroupModel($this->db);
+
+	$group = $args['group'];
+	$user = $args['id'];
+	$findUser = $userGroup->findTwo('user_id', $user, 'group_id', $group);
+
+	try {
+		$client = $this->client->request('POST',
+		'group/pic/set/status/'.$findUser[0]['id']);
+		$client = $client->getBody()->getContents();
+		$content = json_decode($client, true);
+	} catch (GuzzleException $e) {
+		$client = $e->getResponse()->getBody()->getContents();
+		$content = json_decode($client, true);
+	}
+
+	if ($findUser[0]['status'] == 0) {
+		if ($content['code'] == 200) {
 			$this->flash->addMessage('success', $content['message']);
 			return $response->withRedirect($this->router->pathFor('pic.group.member', ['id'=> $group]));
 		} else {
 			$this->flash->addMessage('warning', $content['message']);
 			return $response->withRedirect($this->router->pathFor('pic.group.member', ['id'=> $group]));
 		}
+	} else {
+		$this->flash->addMessage('warning', 'Pengguna sudah menjadi PIC');
+		return $response->withRedirect($this->router->pathFor('pic.group.member', ['id'=> $group]));
 	}
-	//set As PIC
-	public function setAsPic($request, $response, $args)
-	{
+}
+
+//delete user
+public function postImage($request, $response, $args)
+{
+	try {
+		$client = $this->client->request('POST',
+		$this->router->pathFor('api.change.photo.group',
+		['id' => $args['id']]));
+		$client = $client->getBody()->getContents();
+		$content = json_decode($client);
+	} catch (GuzzleException $e) {
+		$client = $e->getResponse()->getBody()->getContents();
+		$content = json_decode($client);
+	}
+	return $this->view->render($response, '', $content->reporting);
+}
+
+public function enterGroup($request, $response, $args)
+{
+	try {
+		$result = $this->client->request('GET', 'group/enter/'.$args['id']);
 		try {
-			$client = $this->client->request('POST',
-						$this->router->pathFor('api.user.set.pic',
-								['id' => $args['id'], 'group' => $args['group']]));
-			$client = $client->getBody()->getContents();
-			$content = json_decode($client);
+			$findGroup = $this->client->request('GET', 'group/find/'. $args['id']);
 		} catch (GuzzleException $e) {
-			$client = $e->getResponse()->getBody()->getContents();
-			$content = json_decode($client);
+			$findGroup = $e->getResponse();
 		}
-		return $this->view->render($response, '', $content->reporting);
-	}
-	//delete user
-	public function deleteUser($request, $response, $args)
-	{
-		$user = $args['id'];
-		$group = $args['group'];
+		$dataGroup = json_decode($findGroup->getBody()->getContents(), true);
 
-		try {
-			$client = $this->client->request('GET',
-			'group/delete/member/'.$args['id'].'/'.$args['group']);
-			$client = $client->getBody()->getContents();
-			$content = json_decode($client, true);
-		} catch (GuzzleException $e) {
-			$client = $e->getResponse()->getBody()->getContents();
-			$content = json_decode($client, true);
-		}
-		// var_dump($content); die();
-		if ($content['error'] == false) {
-			$this->flash->addMessage('success', $content['message']);
-			return $response->withRedirect($this->router->pathFor('pic.group.member', ['id'=> $group]));
-		} else {
-			$this->flash->addMessage('warning', $content['message']);
-			return $response->withRedirect($this->router->pathFor('pic.group.member', ['id'=> $group]));
-		}
-		// return $this->view->render($response, '', $content->reporting);
+	} catch (GuzzleException $e) {
+		$result = $e->getResponse();
 	}
-	//set user as PIC
-	public function setAsPicGroup($request, $response, $args)
-	{
-		$userGroup = new \App\Models\UserGroupModel($this->db);
-		// $group = $request->getParam('group');
-		// $user  = $request->getParam('user');
-		$group = $args['group'];
-		$user = $args['id'];
-		$findUser = $userGroup->findTwo('user_id', $user, 'group_id', $group);
-		// var_dump($user); die();
-		try {
-			$client = $this->client->request('POST',
-			'group/pic/set/status/'.$findUser[0]['id']);
-			$client = $client->getBody()->getContents();
-			$content = json_decode($client, true);
-		} catch (GuzzleException $e) {
-			$client = $e->getResponse()->getBody()->getContents();
-			$content = json_decode($client, true);
-		}
-		// var_dump($content); die();
-		if ($findUser[0]['status'] == 0) {
-			if ($content['code'] == 200) {
-				$this->flash->addMessage('success', $content['message']);
-				return $response->withRedirect($this->router->pathFor('pic.group.member', ['id'=> $group]));
-			} else {
-				$this->flash->addMessage('warning', $content['message']);
-				return $response->withRedirect($this->router->pathFor('pic.group.member', ['id'=> $group]));
-			}
-		} else {
-			$this->flash->addMessage('warning', 'Pengguna sudah menjadi PIC');
-			return $response->withRedirect($this->router->pathFor('pic.group.member', ['id'=> $group]));
-		}
-		// return $this->view->render($response, '', $content->reporting);
-	}
-	//delete user
-	public function postImage($request, $response, $args)
-	{
-		try {
-			$client = $this->client->request('POST',
-						$this->router->pathFor('api.change.photo.group',
-								['id' => $args['id']]));
-			$client = $client->getBody()->getContents();
-			$content = json_decode($client);
-		} catch (GuzzleException $e) {
-			$client = $e->getResponse()->getBody()->getContents();
-			$content = json_decode($client);
-		}
-		return $this->view->render($response, '', $content->reporting);
-	}
-	public function enterGroup($request, $response, $args)
-	{
-		try {
-			$result = $this->client->request('GET', 'group/enter/'.$args['id']);
-			try {
-				$findGroup = $this->client->request('GET', 'group/find/'. $args['id']);
-			} catch (GuzzleException $e) {
-				$findGroup = $e->getResponse();
-			}
-			$dataGroup = json_decode($findGroup->getBody()->getContents(), true);
+	$content = $result->getBody()->getContents();
+	$data = json_decode($content, true);
+	$_SESSION['group'] = $dataGroup['data'];
+	$_SESSION['user_id'] = $_SESSION['login']['id'];
 
-		} catch (GuzzleException $e) {
-			$result = $e->getResponse();
-		}
-		$content = $result->getBody()->getContents();
-		$data = json_decode($content, true);
-		$_SESSION['group'] = $dataGroup['data'];
-		$_SESSION['user_id'] = $_SESSION['login']['id'];
-		// var_dump($_SESSION['group']);die;
-		if ($data['error'] == true) {
-			$this->flash->addMessage('error', $data['message']);
-			return $response->withRedirect($this->router->pathFor('group.user'));
-		} elseif ($data['data'] == 'PIC') {
-			$this->flash->addMessage('success', $data['message']);
-			return $response->withRedirect($this->router->pathFor('get.group.timeline'));
-		} elseif ($data['data'] == 'member') {
-			$this->flash->addMessage('success', $data['message']);
-			return $response->withRedirect($this->router->pathFor('unreported.item.user.group'));
-		}
+	if ($data['code'] != 200) {
+		$this->flash->addMessage('error', $data['message']);
+		return $response->withRedirect($this->router->pathFor('group.user'));
+	} elseif ($data['data'] == 'PIC') {
+		$this->flash->addMessage('success', $data['message']);
+		return $response->withRedirect($this->router->pathFor('get.group.timeline'));
+	} elseif ($data['data'] == 'member') {
+		$this->flash->addMessage('success', $data['message']);
+		return $response->withRedirect($this->router->pathFor('unreported.item.user.group'));
+	}
+}
+
+public function getDetail($request, $response)
+{
+	return  $this->view->render($response, 'pic/group-info.twig');
+}
+
+public function changeImage($request, $response)
+{
+	$path = $_FILES['image']['tmp_name'];
+	$mime = $_FILES['image']['type'];
+	$name  = $_FILES['image']['name'];
+	$id = $_SESSION['group']['id'];
+
+	try {
+		$result = $this->client->request('POST', 'group/change/photo/'.$id, [
+		'multipart' => [
+		[
+		'name'     => 'image',
+		'filename' => $name,
+		'Mime-Type'=> $mime,
+		'contents' => fopen( $path, 'r' )
+		]
+		]
+		]);
+	} catch (GuzzleException $e) {
+		$result = $e->getResponse();
 	}
 
-	public function getDetail($request, $response)
-	{
-		return  $this->view->render($response, 'pic/group-info.twig');
+	try {
+		$group = $this->client->request('GET', 'group/find/'.$id);
+	} catch (GuzzleException $e) {
+		$group = $e->getResponse();
 	}
 
-	public function changeImage($request, $response)
-    {
-        // var_dump($_FILES);die();
-        $path = $_FILES['image']['tmp_name'];
-        $mime = $_FILES['image']['type'];
-        $name  = $_FILES['image']['name'];
-        $id = $_SESSION['group']['id'];
+	$data = json_decode($result->getBody()->getContents(), true);
+	$newGroup = json_decode($group->getBody()->getContents(), true);
 
-        try {
-            $result = $this->client->request('POST', 'group/change/photo/'.$id, [
-                'multipart' => [
-                    [
-                        'name'     => 'image',
-                        'filename' => $name,
-                        'Mime-Type'=> $mime,
-                        'contents' => fopen( $path, 'r' )
-                    ]
-                ]
-            ]);
-        } catch (GuzzleException $e) {
-            $result = $e->getResponse();
-        }
-
-        try {
-            $group = $this->client->request('GET', 'group/find/'.$id);
-        } catch (GuzzleException $e) {
-            $group = $e->getResponse();
-        }
-
-        $data = json_decode($result->getBody()->getContents(), true);
-        $newGroup = json_decode($group->getBody()->getContents(), true);
-
-        // var_dump($data);die();
-        if ($data['code'] == 200) {
-            $this->flash->addMessage('success', 'Foto grup berhasil diubah');
-			if ($newGroup['code'] == 200) {
-				$_SESSION['group'] = $newGroup['data'];
-			}
-            return $response->withRedirect($this->router->pathFor('get.group.detail'));
-        } else {
-            $this->flash->addMessage('warning', $data['message']);
-            return $response->withRedirect($this->router->pathFor('get.group.detail'));
-        }
-    }
-
-	public function timeline($request, $response)
-	{
-		$id = $_SESSION['group']['id'];
-
-		try {
-            $result = $this->client->request('GET', 'group/timeline',[
-                'query' => [
-					'perpage' => 5,
-                    'group_id' => $id,
-                    'page' => $request->getQueryParam('page')
-                    ]]);
-                } catch (GuzzleException $e) {
-                    $result = $e->getResponse();
-                }
-
-        $data = json_decode($result->getBody()->getContents(), true);
-		// var_dump($data);die;
-        if (!isset($data['pagination'])) {
-        $data['pagination'] = null;
-        }
-
-		return $this->view->render($response, 'pic/laporan.twig', [
-            'items'	=> $data['data'],
-            // 'group'	=> $args['id'],
-            'pagination'	=> $data['pagination'],
-        ]);
+	// var_dump($data);die();
+	if ($data['code'] == 200) {
+		$this->flash->addMessage('success', 'Foto grup berhasil diubah');
+		if ($newGroup['code'] == 200) {
+			$_SESSION['group'] = $newGroup['data'];
+		}
+		return $response->withRedirect($this->router->pathFor('get.group.detail'));
+	} else {
+		$this->flash->addMessage('warning', $data['message']);
+		return $response->withRedirect($this->router->pathFor('get.group.detail'));
 	}
+}
+
+public function timeline($request, $response)
+{
+	$id = $_SESSION['group']['id'];
+
+	try {
+		$result = $this->client->request('GET', 'group/timeline',[
+		'query' => [
+		'perpage' => 5,
+		'group_id' => $id,
+		'page' => $request->getQueryParam('page')
+		]]);
+	} catch (GuzzleException $e) {
+		$result = $e->getResponse();
+	}
+
+	$data = json_decode($result->getBody()->getContents(), true);
+
+	if (!isset($data['pagination'])) {
+		$data['pagination'] = null;
+	}
+
+	return $this->view->render($response, 'pic/laporan.twig', [
+		'items'	=> $data['data'],
+		'pagination'	=> $data['pagination'],
+	]);
+}
 }

@@ -23,16 +23,14 @@
             </tr>
           </thead>
           <tbody>
-            {% for group in data %}    
+            {% for group in data %}
             <tr>
                 <td> {{ loop.index }}</td>
                 <td> {{ group.name }} </td>
                 <td> {{ group.gender }} </td>
                 <td> {{ group.email }} </td>
-                <td> 
-               <!--  <a href="" style="color:red"  data-toggle="tooltip" data-placement="top" title="delete"><i class="fa fa-times"></i></a> 
-                <a href="" style="color:#179FFC" data-toggle="tooltip" data-placement="top" title="Update"><i class="fa fa-pencil"></i></a> -->
-                <a href="" style="color:green" data-toggle="tooltip" data-placement="top" title="Set Member"><i class="fa fa-users"></i></a>
+                <td>
+                  <a href="" style="color:green" data-toggle="tooltip" data-placement="top" title="Set Member"><i class="fa fa-users"></i></a>
                 </td>
             </tr>
           {% endfor %}

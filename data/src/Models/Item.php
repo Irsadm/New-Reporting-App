@@ -100,6 +100,7 @@ class Item extends BaseModel
             // ->where('i.user_id = '. $userId || 'i.user_id = NULL')
             // ->andWhere('i.group_id = '. $groupId)
             ->andWhere('i.deleted = 0 && i.status = 0')
+            ->orderBy('i.end_date', 'asc')
             ->groupBy('i.id');
         } else {
             $this->query = $qb1->select('*')
@@ -107,6 +108,7 @@ class Item extends BaseModel
             ->where('user_id = '. $userId .'&& group_id = '. $groupId)
             ->orWhere('group_id = '. $groupId . '&& user_id is NULL')
             ->andWhere('deleted = 0 && status = 0')
+            ->orderBy('i.end_date', 'asc')
             ->groupBy('id');
         }
         // var_dump($this->fetchAll());die;
@@ -120,6 +122,7 @@ class Item extends BaseModel
         ->from($this->table)
         ->where('user_id = '. $userId .'&&'. 'group_id = '. $groupId)
         ->andWhere('deleted = 0 && status = 1')
+        ->orderBy('reported_at', 'desc')
         ->groupBy('id');
 
         return $this->fetchAll();
@@ -298,7 +301,8 @@ class Item extends BaseModel
             ->andWhere('MONTH(it.reported_at) = :month')
             ->andWhere('it.user_id = :id')
             ->andWhere('it.status = 1')
-            ->join('it', 'groups', 'g', 'g.id = it.group_id');
+            ->join('it', 'groups', 'g', 'g.id = it.group_id')
+            ->orderBy('it.reported_at', 'desc');
 
         $qb->setParameter('year', $year)
             ->setParameter('month', $month)
@@ -316,7 +320,8 @@ class Item extends BaseModel
             ->where('YEAR(it.reported_at) = :year')
             ->andWhere('it.user_id = :id')
             ->andWhere('status = 1')
-            ->join('it', 'groups', 'g', 'g.id = it.group_id');
+            ->join('it', 'groups', 'g', 'g.id = it.group_id')
+            ->orderBy('it.reported_at', 'desc');
 
         $qb->setParameter('year', $year)
            ->setParameter('id', $user_id);
@@ -435,10 +440,8 @@ class Item extends BaseModel
         ->from($this->table, 'i')
         ->leftJoin('i', 'users', 'u', 'u.id = i.user_id')
         ->where('i.group_id = '. $groupId.' && '.'i.status = 0');
-        // ->execute();
+
         return $this;
-        // $result = $qb->execute();
-        // return $result->fetchAll();
     }
 
     public function getUserReported($userId)
@@ -449,7 +452,7 @@ class Item extends BaseModel
         ->where('i.user_id = '. $userId)
         ->andWhere('i.deleted = 0 && i.status = 1')
         ->leftJoin('i', 'groups', 'g', 'g.id = i.group_id')
-        ->orderBy('i.updated_at', 'desc');
+        ->orderBy('i.reported_at', 'desc');
 
         return $this;
     }
@@ -461,7 +464,8 @@ class Item extends BaseModel
         ->from('unreported_item', 'ui')
         ->where('ui.user_id =' . $userId)
         ->leftJoin('ui', 'items', 'i', 'ui.item_id = i.id')
-        ->leftJoin('i', 'groups', 'g', 'g.id = i.group_id');
+        ->leftJoin('i', 'groups', 'g', 'g.id = i.group_id')
+        ->orderBy('i.end_date', 'desc');
 
         return $this;
     }

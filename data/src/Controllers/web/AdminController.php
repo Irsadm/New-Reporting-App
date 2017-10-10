@@ -9,9 +9,18 @@ class AdminController extends BaseController
 {
     public function index($request, $response)
     {
-        return $this->view->render($response, 'admin/admin.twig');
+        try {
+            $count = $this->client->request('GET', 'admin/count/all');
+        } catch (GuzzleException $e) {
+            $count = $e->getResponse();
+        }
+        $data = json_decode($count->getBody()->getContents(), true);
+
+        return $this->view->render($response, 'admin/admin.twig',[
+            'count' => $data['data']['count']
+        ]);
     }
-    public function getLoginAsAdmin($request, $response)
+    public function getLogin($request, $response)
     {
         return $this->view->render($response, 'admin/login.twig');
     }
@@ -25,6 +34,7 @@ class AdminController extends BaseController
                     'password' => $request->getParam('password')
                 ]
             ]);
+
         } catch (GuzzleException $e) {
             $result = $e->getResponse();
         }
@@ -33,16 +43,12 @@ class AdminController extends BaseController
         if ($data['code'] == 200) {
             $_SESSION['key'] = $data['key'];
             $_SESSION['login'] = $data['data'];
-            // if (!empty($request->getParams()['guard'])) {
-            //     $_SESSION['guard'] = $_SESSION['login']['id'];
-            // }
-            if ($_SESSION['login']['status'] == 1) {
-                $_SESSION['user_group'] = $groups;
+
+            if ( $data['data']['status'] == 1) {
                 $this->flash->addMessage('success', 'Selamat datang, '. $login['username']);
-                return $response->withRedirect($this->router->pathFor('register'));
+                return $response->withRedirect($this->router->pathFor('admin.dashboard'));
             } else {
-                $this->flash->addMessage('warning',
-                'Anda belum terdaftar sebagai user atau akun anda belum diverifikasi');
+                $this->flash->addMessage('warning', 'Anda tidak terdaftar sebagai admin');
                 return $response->withRedirect($this->router->pathFor('login.admin'));
             }
         } else {
@@ -53,9 +59,6 @@ class AdminController extends BaseController
 
     public function userList($request, $response)
     {
-        $id = $_SESSION['login']['id'];
-// var_dump($id);die();
-        $query = $request->getQueryParams();
         try {
             $result = $this->client->request('GET', $this->router->pathFor('api.user.list'), [
                     'query' => [
@@ -70,14 +73,12 @@ class AdminController extends BaseController
 
         return $this->view->render($response, 'admin/data/user-list.twig', [
             'data'          =>  $data['data'],
-            // 'count_item'    =>  count($data['data']),
             'pagination'     =>  $data['pagination'],
         ]);
     }
 
     public function groupList($request, $response)
     {
-        $query = $request->getQueryParams();
         try {
             $result = $this->client->request('GET', $this->router->pathFor('api.group.list'), [
                     'query' => [
@@ -89,10 +90,9 @@ class AdminController extends BaseController
             $result = $e->getResponse();
         }
         $data = json_decode($result->getBody()->getContents(), true);
-        // var_dump($data);die();
+
         return $this->view->render($response, 'admin/data/group/group-list.twig', [
             'data'          =>  $data['data'],
-            // 'count_item'    =>  count($data['data']),
             'pagination'     =>  $data['pagination'],
         ]);
     }
@@ -113,35 +113,32 @@ class AdminController extends BaseController
 
         return $this->view->render($response, 'admin/data/guard-list.twig', [
             'data'          =>  $data['data'],
-            // 'count_item'    =>  count($data['data']),
             'pagination'     =>  $data['pagination'],
         ]);
     }
 
-    // public function getAllUserGroup($request, $response)
-    // {
-    //     $query = $request->getQueryParams();
-    //     try {
-    //         $result = $this->client->request('GET', $this->router->pathFor('api.group.all.user').['id' => $args['id']], [
-    //                 'query' => [
-    //                 'perpage' => 5,
-    //                 'page' => $request->getQueryParam('page')
-    //                 ]
-    //             ]);
-    //     } catch (GuzzleException $e) {
-    //         $result = $e->getResponse();
-    //     }
-    //     $data = json_decode($result->getBody()->getContents(), true);
-    //     // var_dump($data);die();
-    //     return $this->view->render($response, 'admin/data/guard-list.twig', [
-    //         'data'          =>  $data['data'],
-    //         // 'count_item'    =>  count($data['data']),
-    //         'pagination'     =>  $data['pagination'],
-    //     ]);
-    // }
+    public function childList($request, $response)
+    {
+        try {
+            $result = $this->client->request('GET', $this->router->pathFor('api.child'), [
+                    'query' => [
+                        'perpage'   => 10,
+                        'page'      => $request->getQueryParam('page')
+                    ]
+                ]);
+        } catch (GuzzleException $e) {
+            $result = $e->getResponse();
+        }
+        $data = json_decode($result->getBody()->getContents(), true);
+
+        return $this->view->render($response, 'admin/data/child-list.twig', [
+            'data'          =>  $data['data'],
+            'pagination'     =>  $data['pagination'],
+        ]);
+    }
+
     public function getAllItem($request, $response)
     {
-        $query = $request->getQueryParams();
         try {
             $result = $this->client->request('GET', $this->router->pathFor('api.item.all'), [
                     'query' => [
@@ -153,10 +150,9 @@ class AdminController extends BaseController
             $result = $e->getResponse();
         }
         $data = json_decode($result->getBody()->getContents(), true);
-        // var_dump($data);die();
+
         return $this->view->render($response, 'admin/data/item-list.twig', [
             'data'          =>  $data['data'],
-            // 'count_item'    =>  count($data['data']),
             'pagination'     =>  $data['pagination'],
         ]);
     }
@@ -178,16 +174,12 @@ class AdminController extends BaseController
 
            return $this->view->render($response, 'admin/data/group/group-member.twig', [
             'data'          =>  $data['data'],
-            // 'count_item'    =>  count($data['data']),
             'pagination'     =>  $data['pagination'],
         ]);
     }
 
     public function getAddMember($request, $response)
     {
-        $id = $_SESSION['login']['id'];
-// var_dump($id);die();
-        $query = $request->getQueryParams();
         try {
             $result = $this->client->request('GET', $this->router->pathFor('api.user.list'), [
                     'query' => [
@@ -202,7 +194,6 @@ class AdminController extends BaseController
 
          return $this->view->render($response, 'admin/data/group/add-member.twig', [
             'data'          =>  $data['data'],
-            // 'count_item'    =>  count($data['data']),
             'pagination'     =>  $data['pagination'],
         ]);
     }

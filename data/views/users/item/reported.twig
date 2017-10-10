@@ -46,7 +46,7 @@
                                                     <td class="taskDesc">
                                                         {{ (pagination.current - 1) * pagination.perpage + (key + 1) }}</td>
                                                     <td class="taskDesc">
-                                                        <a href="{{ base_url() }}/item/show/{{item.id}}">
+                                                        <a href="{{ base_url() }}/item/show/{{item.id}}" title="Lihat lebih detail">
                                                         {{ item.name }}</a>
                                                         <span style="float:right;">
                                                             {% if item.recurrent != null %}

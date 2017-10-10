@@ -58,7 +58,7 @@
             <tr>
               <th>No</th>
               <th>Nama</th>
-              <th>Deskripsi Group</th>
+              <th>Deskripsi</th>
               <th class="col-md-2">Option</th>
             </tr>
           </thead>
@@ -71,15 +71,14 @@
                 <td> {{ group.description }} </td>
                 <td>
                 <center>
-                <a href="" style="color:red"  data-toggle="tooltip" data-placement="top" title="delete"><
-
-                i class="fa fa-times"></i></a>
+                <a href="" style="color:red"  data-toggle="tooltip" data-placement="top" title="delete">
+                    <i class="fa fa-trash"></i></a>&nbsp
                 <a href="" style="color:#179FFC" data-toggle="tooltip" data-placement="top" title="Update">
-                    <i class="fa fa-pencil"></i></a>
+                    <i class="fa fa-pencil"></i></a>&nbsp
                 <a href="" style="color:green" data-toggle="tooltip" data-placement="top" title="View detail">
-                    <i class="fa fa-eye"></i></a>
+                    <i class="fa fa-eye"></i></a>&nbsp
                 <a href=" {{path_for('admin.group.member', {'id':group.id})}} " style="color:green" data-toggle="tooltip" data-placement="top" title="View member">
-                    <i class="fa fa-users"></i></a>
+                    <i class="fa fa-users"></i></a>&nbsp
                  <a href="{{path_for('admin.group.add.member', {'id':group.id})}}" style="color:#00C254" data-toggle="tooltip" data-placement="top" title="Add member">
                      <i class="fa fa-user-plus"></i></a>
                 </center>
@@ -88,7 +87,8 @@
           {% endfor %}
           </tbody>
         </table>
-      </div><!--end of .table-responsive-->
+      </div>
+      <!--end of .table-responsive-->
       <nav aria-label="...">
           <ul class="pager">
               {% if pagination.current > pagination.first_page %}

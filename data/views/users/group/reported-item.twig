@@ -28,15 +28,15 @@
                                         <i class="icon-collapse"></i>Lainnya &nbsp<i class="fa fa-sort-desc" aria-hidden="true"></i>
                                     </a>
                                     <ul class="dropdown-menu">
-                                        <li><a href="#" data-toggle="modal" data-target="#squarespaceModal">
-                                            <i class="icon-fixed-width icon-pencil">
-                                                Buat tugas</i></a>
+                                        <li><a style="font-size: medium" href="#" data-toggle="modal" data-target="#squarespaceModal">
+                                            <i class="">Buat kiriman</i></a>
                                             </li>
-                                                <li><a href="{{path_for('get.group.member')}}"><i class="icon-fixed-width icon-pencil">
-                                                    Detail grup</i></a></li>
-                                                    </ul>
-                                                </div>
-                                            </span>
+                                            <li><a style="font-size: medium" href="{{path_for('get.group.member')}}">
+                                                <i class="">Detail grup</i>
+                                            </a></li>
+                                    </ul>
+                                </div>
+                            </span>
                             <div class="widget-box">
                                 <h4><i class="fa" aria-hidden="true">
                                     &nbsp {% if login.id == user.id %}Tugas saya di
@@ -49,6 +49,7 @@
                                                 <tr>
                                                     <th>No</th>
                                                     <th>Nama</th>
+                                                    <th>Dilaporkan</th>
                                                     <th>Tindakan</th>
                                                 </tr>
                                             </thead>
@@ -64,9 +65,10 @@
                                                         ({{ item.recurrent }}){% endif %}
                                                          </span>
                                                      </td>
+                                                     <td><center> {{item.reported_at | date('j-M-Y') }}</center></td>
                                                     <td class="taskOptions">
                                                         {% if item.creator == login.id %} &nbsp&nbsp&nbsp
-                                                        <a href="{{ path_for('pic.delete.item', {'id': item.id})}}"
+                                                        <a href="{{ path_for('user.delete.item', {'item': item.id})}}"
                                                          value="{{item.id}}"title="Hapus tugas">
                                                          <i style="color:red" class="fa fa-trash-o fa-lg"></i></a>
                                                          {% endif %}
@@ -108,14 +110,14 @@
 
 <!-- line modal items-->
 <div class="modal fade" id="squarespaceModal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+
     <!-- line modal items-->
-    <!-- <div class="modal fade" id="create" role="dialog"> -->
       <div class="modal-dialog">
         <div style="padding-left:20px;" class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal">
-                    <span aria-hidden="true">×</span><span class="sr-only">Close</span></button>
-                <h3 class="modal-title" id="lineModalLabel">Form Tambah tugas</h3>
+                    <span aria-hidden="true">×</span><span class="sr-only">Tutup</span></button>
+                <h3 class="modal-title" id="lineModalLabel">Buat kiriman di {{group.name}}</h3>
             </div>
             <div class="modal-body">
 
@@ -132,7 +134,8 @@
                     <div class="col-xs-12 col-sm-4 col-md-5">
                         <div class="form-group {{ errors.name ? 'has-error' : '' }}">
                             <label for="name">Nama :</label>
-                            <input type="text" name="name" value="{{old.name}}" class="form-control">
+                            <input type="text" style="text-transform: capitalize;"
+                             name="name" value="{{old.name}}" class="form-control">
                             {% if errors.name %}
                             <span class="help-block">{{ errors.name | first }}</span>
                             {% endif %}
@@ -141,7 +144,8 @@
                     <div class="col-xs-12 col-sm-6 col-md-7">
                         <div class="form-group {{ errors.description ? 'has-error' : '' }}">
                             <label for="description">Deskripsi :</label>
-                            <input type="text" name="description" value="{{old.description}}"class="form-control">
+                            <input type="text" name="description" style="text-transform: capitalize;"
+                            value="{{old.description}}"class="form-control">
                             {% if errors.description %}
                             <span class="help-block">{{ errors.description | first }}</span>
                             {% endif %}
@@ -153,45 +157,13 @@
                         <div class="form-group {{ errors.privacy ? 'has-error' : '' }}">
                             <label for="privacy">Privasi :</label>
                             <select class="form-control" name="privacy" >
-                                <option value="">Pilih</option>
                                 <option {% if old.privacy == 0 %}
-                                 selected="selected"{% endif %}value="0">Public</option>
+                                 selected="selected"{% endif %}value="0">Publik</option>
                                 <option {% if old.privacy == 1 %}
                                  selected="selected"{% endif %} value="1">Privat</option>
                             </select>
                             {% if errors.public %}
                             <span class="help-block">{{ errors.privacy | first }}</span>
-                            {% endif %}
-                        </div>
-                    </div>
-                    <div class="col-xs-12 col-sm-6 col-md-7">
-                        <div class="form-group {{ errors.recurrent ? 'has-error' : '' }}">
-                            <label for="recurrent">Perulangan :</label>
-                            <select class="form-control" name="recurrent" value="">
-                                <option value="">Tanpa Perulangan</option>
-                                <option {% if old.recurrent == "harian" %}
-                                 selected="selected"{% endif %} value="harian">Harian</option>
-                                <option {% if old.recurrent == "mingguan" %}
-                                 selected="selected"{% endif %} value="mingguan">Mingguan</option>
-                                <option {% if old.recurrent == "bulanan" %}
-                                 selected="selected"{% endif %} value="bulanan">Bulanan</option>
-                                <option {% if old.recurrent == "tahunan" %}
-                                 selected="selected"{% endif %} value="tahunan">Tahunan</option>
-                            </select>
-                            {% if errors.recurrent %}
-                            <span class="help-block">{{ errors.recurrent | first }}</span>
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-xs-12 col-sm-5 col-md-5">
-                        <div class="form-group {{ errors.start_date ? 'has-error' : '' }}">
-                            <label for="start_date">Tanggal dimulai :</label>
-                            <input type="date" name="start_date" value="{{old.start_date}}" class="form-control">
-                            <input type="hidden" name="group" value="{{ group }}">
-                            {% if errors.start_date %}
-                            <span class="help-block">{{ errors.start_date | first }}</span>
                             {% endif %}
                         </div>
                     </div>
@@ -208,6 +180,18 @@
                             {% if errors.image %}
                             <span class="help-block">{{errors.image | first}}</span>
                             {% endif %}<br />
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-5 col-md-5">
+                        <div class="form-group {{ errors.start_date ? 'has-error' : '' }}">
+                            <input type="hidden" name="recurrent" value="">
+                            <input type="hidden" name="start_date" value="{{"now"|date("Y-m-d")}}">
+                            <input type="hidden" name="group" value="{{ group.id }}">
+                            {% if errors.start_date %}
+                            <span class="help-block">{{ errors.start_date | first }}</span>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
@@ -230,5 +214,5 @@
         </div>
       </div>
     </div>
-    </div>
+</div>
 {% endblock %}

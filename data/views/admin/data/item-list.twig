@@ -83,16 +83,16 @@
       <nav aria-label="...">
           <ul class="pager">
               {% if pagination.current > pagination.first_page %}
-              <li class="previous"><a href="{{ base_url() }}/admin/user?page={{ pagination.first_page }}" title="halaman pertama">
+              <li class="previous"><a href="{{ base_url() }}/admin/item?page={{ pagination.first_page }}" title="halaman pertama">
                   <i class="fa fa-fast-backward" aria-hidden="true"></i> {{ pagination.first_page }}</a></li>
-              <li class=""><a href="{{ base_url() }}/admin/user?page={{ pagination.current - 1 }}" title="halaman sebelumnya">
+              <li class=""><a href="{{ base_url() }}/admin/item?page={{ pagination.current - 1 }}" title="halaman sebelumnya">
                   <i class="fa fa-backward" aria-hidden="true"></i> {{ pagination.current - 1 }}</a></li>
               {% endif %}
               <li class=""><a>{{ pagination.current }}</a></li>
               {% if pagination.current < pagination.total_page %}
-              <li class=""><a href="{{ base_url() }}/admin/user?page={{ pagination.current + 1 }}" title="halaman selanjutnya">
+              <li class=""><a href="{{ base_url() }}/admin/item?page={{ pagination.current + 1 }}" title="halaman selanjutnya">
                   {{ pagination.current + 1 }} <i class="fa fa-forward" aria-hidden="true"></i></a></li>
-              <li class="next"><a href="{{ base_url() }}/admin/user?page={{ pagination.total_page }}" title="halaman terakhir">
+              <li class="next"><a href="{{ base_url() }}/admin/item?page={{ pagination.total_page }}" title="halaman terakhir">
                   {{ pagination.total_page }} <i class="fa fa-fast-forward" aria-hidden="true"></i></a></li>
               {% endif %}
           </ul>

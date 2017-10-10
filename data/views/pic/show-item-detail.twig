@@ -65,7 +65,7 @@
             {% for comment in comment %}
             <div class="user-thumb">
                 {% if comment.image != null %}
-                <img width="40" height="40" src="{{ comment.image }}">
+                <img width="40" height="40" src="{{ base_url() }}/assets/images/{{ comment.image }}">
                 {% endif %}
                 <b> &nbsp&nbsp{{ comment.username }}</b>&nbsp&nbsp{{ comment.comment }}
                 <br>

@@ -22,7 +22,7 @@
             </tr>
           </thead>
           <tbody>
-            {% for member in data %}    
+            {% for member in data %}
             <tr>
                 <td> {{ loop.index }}</td>
                 <td> {{ member.name }} </td>
@@ -37,9 +37,9 @@
                     <center><span class="label label-success" style="border-radius:10%">Wali</span></center>
                 {% endif %}
                     </td>
-                <td> 
-                <a href="" style="color:red"  data-toggle="tooltip" data-placement="top" title="delete"><i class="fa fa-times"></i></a> 
-                <a href="" data-toggle="tooltip" data-placement="top" title="Set PIC"><i class="fa fa-male"></i></a> 
+                <td>
+                <a href="" style="color:red"  data-toggle="tooltip" data-placement="top" title="delete"><i class="fa fa-times"></i></a>
+                <a href="" data-toggle="tooltip" data-placement="top" title="Set PIC"><i class="fa fa-male"></i></a>
                 <a href="" data-toggle="modal" data-target="#{{member.id}}" style="color:green" value="{{member.id}}" title="View detail"><i class="fa fa-eye"></i></a>
                 </td>
             </tr>
@@ -85,7 +85,8 @@
                           </ul>
                 </nav>
                 </td>
-      </div><!--end of .table-responsive-->
+      </div>
+      <!--end of .table-responsive-->
           {% endfor %}
     </div>
   </div>
@@ -104,7 +105,7 @@
                             <li class="next"><a href="{{ base_url() }}/admin/group/1/members?page={{ pagination.current + 1 }}">
                                 Selanjutnya <span aria-hidden="true">&rarr;</span></a></li>
                         {% endif %}
-          
+
 
 </div>
 

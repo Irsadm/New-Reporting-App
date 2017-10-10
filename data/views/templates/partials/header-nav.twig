@@ -24,12 +24,11 @@
         </ul>
         {% if login.id != null %}
         <ul style="margin-top:5px;" class="nav navbar-nav navbar-right hidden-xs">
-
             <li class="user-header">
                 <a title="" href="#" data-toggle="dropdown" data-target="#profile-messages" class="dropdown-toggle">
                 {% if login.image != null %}
                 <img width="40" height="40" src="{{ base_url() }}/assets/images/{{ login.image }}"
-                class="img-circle" alt="User Image">
+                class="img-circle" alt="User Image" onerror=this.src="{{ base_url() }}/assets/images/avatar.png">
                 {% else %}
                 <img width="40" height="40"src="{{ base_url() }}/assets/images/avatar.png"
                 class="img-circle" alt="User Image">

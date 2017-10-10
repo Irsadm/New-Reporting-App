@@ -25,14 +25,12 @@ class CommentController extends BaseController
                 'result'  => $getComment['data'],
                 'meta' => $getComment['pagination']
             ]);
-
         } else {
             $data = $this->responseDetail(200, 'OK', [
             'result' => null,
             'query'  => $query
             ]);
         }
-
         return $data;
     }
 
@@ -44,23 +42,19 @@ class CommentController extends BaseController
         $user = $comments->getUserByToken($token);
 
         $rules = ['required'  => [['comment']]];
-
         $this->validator->rule('required', ['comment', 'item_id']);
         $this->validator->labels([
             'comment'      => 'Komentar'
         ]);
 
         if ($this->validator->validate()) {
-
             $addComment = $comments->add($request->getParsedBody());
             $recentComment = $comments->find('id', $addComment);
 
             return $this->responseDetail(201, false, 'Komentar berhasil ditambahkan', [
                 'data'  => $recentComment
             ]);
-
         } else {
-
             return $this->responseDetail(400, true, $this->validator->errors());
         }
     }
@@ -78,7 +72,7 @@ class CommentController extends BaseController
         $findItem = $item->find('id', $findComment['item_id']);
         $member = $userGroup->findTwo('group_id', $findItem['group_id'],
                     'user_id', $findUser['id']);
-                    // var_dump($findUser);die();
+
         if (($findComment && $member[0]['status'] == 1) || $findUser['status'] == 1) {
             $comment->hardDelete($args['id']);
             $data['id'] = $args['id'];
@@ -92,13 +86,13 @@ class CommentController extends BaseController
         } else {
             return $this->responseDetail(404, true, 'Data tidak ditemukan');
         }
-
     }
 
     //Edit by id
     public function editComment($request, $response, $args)
     {
         $comment = new CommentModel($this->db);
+
         $findComment = $comment->find('id', $args['id']);
 
         if ($findComment) {
@@ -121,7 +115,6 @@ class CommentController extends BaseController
         } else {
             $data = $this->responseDetail(404, 'Data tidak ditemukan');
         }
-
         return $data;
     }
 
@@ -129,17 +122,16 @@ class CommentController extends BaseController
     public function findComment($request, $response, $args)
     {
         $comment = new CommentModel($this->db);
+
         $findComment = $comment->find('id', $args['id']);
 
         if ($findComment) {
             $data = $this->responseDetail(200, 'Data tersedia', [
                 'result'    => $findComment,
             ]);
-
         } else {
             $data = $this->responseDetail(404, 'Data tidak ditemukan');
         }
-
         return $data;
     }
 
@@ -147,17 +139,16 @@ class CommentController extends BaseController
     public function getItemComment($request, $response, $args)
     {
         $comment = new CommentModel($this->db);
+
         $findComment = $comment->getComment($args['id']);
 
         if ($findComment) {
             $data = $this->responseDetail(200, false, 'Data tersedia', [
                 'data'    => $findComment,
             ]);
-
         } else {
             $data = $this->responseDetail(404, true, 'Data tidak ditemukan');
         }
-// var_dump($data);die();
         return $data;
     }
 

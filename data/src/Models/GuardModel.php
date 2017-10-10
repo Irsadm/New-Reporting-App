@@ -23,9 +23,24 @@ class GuardModel extends BaseModel
 		$this->query = $qb->select('users.*')
 			 ->from('users', 'users')
 			 ->join('users', $this->table, 'guard', 'users.id = guard.guard_id')
-			 ->where('users.status = 2');
-			 // $result = $qb->execute();
-			 return array_map("unserialize", array_unique(array_map("serialize", $this->fetchAll())));
+			 ->where('users.status = 2')
+			 ->andWhere('users.deleted = 0');
+
+		return array_map("unserialize", array_unique(array_map("serialize", $this->fetchAll())));
+
+	}
+
+	// Get all users of guard by guard_id
+	public function findAllChild()
+	{
+		$qb = $this->db->createQueryBuilder();
+		$this->query = $qb->select('users.*')
+			 ->from('users', 'users')
+			 ->join('users', $this->table, 'guard', 'users.id = guard.user_id')
+			 ->where('users.status = 2')
+			 ->andWhere('users.deleted = 0');
+
+		return array_map("unserialize", array_unique(array_map("serialize", $this->fetchAll())));
 
 	}
 

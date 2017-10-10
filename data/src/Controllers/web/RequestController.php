@@ -24,7 +24,7 @@ class RequestController extends BaseController
             $result = $e->getResponse();
         }
         $data = json_decode($result->getBody()->getContents(), true);
-        // var_dump($data);die;
+
         if ($data['error'] == false) {
             $this->flash->addMessage('success', $data['message']);
         }
@@ -97,7 +97,7 @@ class RequestController extends BaseController
             $this->flash->addMessage('error', 'Ada kesalahan saat mengirim permintaan');
         }
         $data = json_decode($result->getBody()->getContents(), true);
-        var_dump($data);die();
+        // var_dump($data);die();
         return $this->view->render($response, 'users/group-list.twig', [
             'data'			=> $data['data'],
             'pagination'	=> $data['pagination']
@@ -120,7 +120,7 @@ class RequestController extends BaseController
             $this->flash->addMessage('error', 'Ada kesalahan saat mengirim permintaan');
         }
         $data = json_decode($result->getBody()->getContents(), true);
-        var_dump($data);die();
+        // var_dump($data);die();
         return $this->view->render($response, 'users/group-list.twig', [
             'data'			=> $data['data'],
             'pagination'	=> $data['pagination']
@@ -143,7 +143,7 @@ class RequestController extends BaseController
             $this->flash->addMessage('error', 'Ada kesalahan saat mengirim permintaan');
         }
         $data = json_decode($result->getBody()->getContents(), true);
-        var_dump($data);die();
+        // var_dump($data);die();
         return $this->view->render($response, 'users/group-list.twig', [
             'data'			=> $data['data'],
             'pagination'	=> $data['pagination']
@@ -201,7 +201,6 @@ class RequestController extends BaseController
 
     public function deleteRequest($request, $response)
     {
-        // die('fff');
         try {
             $result = $this->client->request('GET', 'request/delete/'.$request->getParams()['req_id']);
         } catch (GuzzleException $e) {

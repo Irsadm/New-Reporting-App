@@ -131,7 +131,7 @@ $(".picker").on("change", function() {
                                           <td class="taskDesc">{{ item.username }}</td>
                                       {% endif %}
                                       <!-- <td class="taskDesc">{{ item.recurrent }}</td> -->
-                                      <td class="taskDesc">{{ item.end_date }}</td>
+                                      <td class="taskDesc">{{ item.end_date | date('j-M-Y') }}</td>
                                       <td class="taskOptions">
                                           <div class="btn-group-sm">
                                               <a class="btn btn-danger" href="{{ path_for('pic.delete.item', {'id': item.id})}}"
@@ -201,7 +201,8 @@ $(".picker").on("change", function() {
                 <div class="col-xs-12 col-sm-4 col-md-5">
                     <div class="form-group {{ errors.name ? 'has-error' : '' }}">
                         <label for="name">Nama :</label>
-                        <input type="text" name="name" value="{{old.name}}" class="form-control">
+                        <input type="text" name="name" style="text-transform: capitalize;"
+                         value="{{old.name}}" class="form-control">
                         {% if errors.name %}
                         <span class="help-block">{{ errors.name | first }}</span>
                         {% endif %}
@@ -210,7 +211,8 @@ $(".picker").on("change", function() {
                 <div class="col-xs-12 col-sm-6 col-md-7">
                     <div class="form-group {{ errors.description ? 'has-error' : '' }}">
                         <label for="description">Deskripsi :</label>
-                        <input type="text" name="description" value="{{old.description}}"class="form-control">
+                        <input type="text" name="description" style="text-transform: capitalize;"
+                         value="{{old.description}}"class="form-control">
                         {% if errors.description %}
                         <span class="help-block">{{ errors.description | first }}</span>
                         {% endif %}
@@ -223,7 +225,7 @@ $(".picker").on("change", function() {
                         <label for="privacy">Privasi :</label>
                         <select class="form-control" name="privacy" >
                             <option {% if old.privacy == 0 %}
-                             selected="selected"{% endif %}value="0">Public</option>
+                             selected="selected"{% endif %}value="0">Publik</option>
                             <option {% if old.privacy == 1 %}
                              selected="selected"{% endif %} value="1">Privat</option>
                         </select>

@@ -15,25 +15,24 @@
                     <div id="panel1">
                         <div class="col-lg-4">
                             <br>
+                            <a href="" data-toggle="modal" data-target="#foto"
+                            value="{{user.id}}" title="View Group Details"
+                            style="color:#fff;">
                             <img style="width:300px" class="img-thumbnail"
                             src="{{ base_url() }}/assets/images/{{user.image}}"
                             onerror=this.src="{{ base_url() }}/assets/images/avatar.png">
+                        </a>
                             <br><br>
                             <div class='wrapper text-center'>
                                 <div class="btn-group" role="group">
-                                    <button type="button" class="btn btn-social-button btn-pinterest">
-                                        <a href="" data-toggle="modal" data-target="#foto"
-                                        value="{{user.id}}" title="View Group Details"
-                                        style="color:#fff;">
-                                        Ubah foto
-                                    </a>
-                                </button>
-
-                                <button type="button" class="btn btn-social-button btn-github">
-                                    <a style="color:#fff;" href="{{ base_url() }}/user/profile/setting">
-                                        <i class="fa fa-cogs"></i> Pengaturan
-                                    </a>
-                                </button>
+                                    <a class="btn btn-social-button btn-pinterest" href="" data-toggle="modal" data-target="#foto"
+                                    value="{{user.id}}" title="Ubah foto profil"
+                                    style="color:#fff;">
+                                    Ubah foto
+                                </a>
+                                <a class="btn btn-social-button btn-github" style="color:#fff;" href="{{ base_url() }}/user/profile/setting">
+                                    <i class="fa fa-cogs"></i> Pengaturan
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -79,12 +78,9 @@
                                                 <i class="fa fa-sort-desc" aria-hidden="true"></i>
                                             </a>
                                             <ul style="left: -140px; top: 13px; " class="dropdown-menu">
-                                                <!-- <li><a style="font-size: small" href="#"><i class="icon-fixed-width icon-pencil">
-                                                     Lihat detail</i></a></li>
-                                                <li><a style="font-size: small" href="{{ path_for('item.archive', {'id': user.id }) }}"><i class="icon-fixed-width icon-pencil">
-                                                     Lihat arsip laporan</i></a></li> -->
                                                 <li class="divider"></li>
-                                                <li><a style="font-size: small" href="{{ path_for('guard.delete', {'id': guard.id }) }}"><i class="i"> Hapus wali</i></a></li>
+                                                <li><a style="font-size: small" href="{{ path_for('guard.delete', {'id': guard.id }) }}">
+                                                    <i class="i"> Hapus wali</i></a></li>
                                             </ul>
                                         </div>
                                     </span><br><br>

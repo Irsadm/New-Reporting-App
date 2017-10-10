@@ -32,12 +32,11 @@ $('#{{error_item}}').modal('show');
                                         <i class="icon-collapse"></i>Lainnya &nbsp<i class="fa fa-sort-desc" aria-hidden="true"></i>
                                     </a>
                                     <ul class="dropdown-menu">
-                                        <li><a href="#" data-toggle="modal" data-target="#create">
-                                            <i class="icon-fixed-width icon-pencil">
-                                            Buat tugas</i></a>
+                                        <li><a style="font-size: medium" href="#" data-toggle="modal" data-target="#create">
+                                            <i class="">Buat tugas</i></a>
                                         </li>
-                                        <li><a href="{{path_for('get.group.member')}}"><i class="icon-fixed-width icon-pencil">
-                                            Detail grup</i></a></li>
+                                        <li><a style="font-size: medium" href="{{path_for('get.group.member')}}">
+                                            <i class="">Detail grup</i></a></li>
                                     </ul>
                                 </div>
                             </span>
@@ -53,6 +52,7 @@ $('#{{error_item}}').modal('show');
                                 <tr>
                                   <th>No</th>
                                   <th>Nama</th>
+                                  <th>Batas lapor</th>
                                   <th>Tindakan</th>
                                 </tr>
                               </thead>
@@ -68,6 +68,7 @@ $('#{{error_item}}').modal('show');
                                           ({{ item.recurrent }}){% endif %}
                                            </span>
                                        </td>
+                                       <td><center> {{item.end_date | date('j-M-Y') }}</center></td>
                                       <td class="taskOptions">
                                           <a class="btn btn-success" href="" data-toggle="modal" data-target="#{{item.id}}"
                                           value="{{item.id}}"title="Laporkan"
@@ -121,8 +122,8 @@ $('#{{error_item}}').modal('show');
     <div style="padding-left:20px;" class="modal-content">
         <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal">
-                <span aria-hidden="true">×</span><span class="sr-only">Close</span></button>
-            <h3 class="modal-title" id="lineModalLabel">Form Tambah tugas</h3>
+                <span aria-hidden="true">×</span><span class="sr-only">Tutuo</span></button>
+            <h3 class="modal-title" id="lineModalLabel">Buat kiriman di {{group.name}}</h3>
         </div>
         <div class="modal-body">
 
@@ -139,7 +140,8 @@ $('#{{error_item}}').modal('show');
                 <div class="col-xs-12 col-sm-4 col-md-5">
                     <div class="form-group {{ errors.name ? 'has-error' : '' }}">
                         <label for="name">Nama :</label>
-                        <input type="text" name="name" value="{{old.name}}" class="form-control">
+                        <input style="text-transform: capitalize;" type="text"
+                         name="name" value="{{old.name}}" class="form-control">
                         {% if errors.name %}
                         <span class="help-block">{{ errors.name | first }}</span>
                         {% endif %}
@@ -148,7 +150,8 @@ $('#{{error_item}}').modal('show');
                 <div class="col-xs-12 col-sm-6 col-md-7">
                     <div class="form-group {{ errors.description ? 'has-error' : '' }}">
                         <label for="description">Deskripsi :</label>
-                        <input type="text" name="description" value="{{old.description}}"class="form-control">
+                        <input style="text-transform: capitalize;" type="text"
+                        name="description" value="{{old.description}}"class="form-control">
                         {% if errors.description %}
                         <span class="help-block">{{ errors.description | first }}</span>
                         {% endif %}
@@ -160,45 +163,13 @@ $('#{{error_item}}').modal('show');
                     <div class="form-group {{ errors.privacy ? 'has-error' : '' }}">
                         <label for="privacy">Privasi :</label>
                         <select class="form-control" name="privacy" >
-                            <option value="">Pilih</option>
                             <option {% if old.privacy == 0 %}
-                             selected="selected"{% endif %}value="0">Public</option>
+                             selected="selected"{% endif %}value="0">Publik</option>
                             <option {% if old.privacy == 1 %}
                              selected="selected"{% endif %} value="1">Privat</option>
                         </select>
                         {% if errors.public %}
                         <span class="help-block">{{ errors.privacy | first }}</span>
-                        {% endif %}
-                    </div>
-                </div>
-                <div class="col-xs-12 col-sm-6 col-md-7">
-                    <div class="form-group {{ errors.recurrent ? 'has-error' : '' }}">
-                        <label for="recurrent">Perulangan :</label>
-                        <select class="form-control" name="recurrent" value="">
-                            <option value="">Tanpa Perulangan</option>
-                            <option {% if old.recurrent == "harian" %}
-                             selected="selected"{% endif %} value="harian">Harian</option>
-                            <option {% if old.recurrent == "mingguan" %}
-                             selected="selected"{% endif %} value="mingguan">Mingguan</option>
-                            <option {% if old.recurrent == "bulanan" %}
-                             selected="selected"{% endif %} value="bulanan">Bulanan</option>
-                            <option {% if old.recurrent == "tahunan" %}
-                             selected="selected"{% endif %} value="tahunan">Tahunan</option>
-                        </select>
-                        {% if errors.recurrent %}
-                        <span class="help-block">{{ errors.recurrent | first }}</span>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-xs-12 col-sm-5 col-md-5">
-                    <div class="form-group {{ errors.start_date ? 'has-error' : '' }}">
-                        <label for="start_date">Tanggal dimulai :</label>
-                        <input type="date" name="start_date" value="{{old.start_date}}" class="form-control">
-                        <input type="hidden" name="group" value="{{ group.id }}">
-                        {% if errors.start_date %}
-                        <span class="help-block">{{ errors.start_date | first }}</span>
                         {% endif %}
                     </div>
                 </div>
@@ -215,6 +186,18 @@ $('#{{error_item}}').modal('show');
                         {% if errors.image %}
                         <span class="help-block">{{errors.image | first}}</span>
                         {% endif %}<br />
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12 col-sm-5 col-md-5">
+                    <div class="form-group {{ errors.start_date ? 'has-error' : '' }}">
+                        <input type="hidden" name="recurrent" value="">
+                        <input type="hidden" name="start_date" value="{{"now"|date("Y-m-d")}}">
+                        <input type="hidden" name="group" value="{{ group.id }}">
+                        {% if errors.start_date %}
+                        <span class="help-block">{{ errors.start_date | first }}</span>
+                        {% endif %}
                     </div>
                 </div>
             </div>
@@ -284,7 +267,6 @@ $('#{{error_item}}').modal('show');
                             <label for="description">Deskripsi :</label>
                             <textarea rows="5" name="description" class="form-control"
                             value="{{ item.description }}">{{ item.description }}</textarea>
-                                    <!-- <input type="text" name="description" class="form-control" id="coba"> -->
                             <input type="hidden" id="data-id" name="item_id"
                              value="{{ item.id }}">
                              <input type="hidden" id="data-id" name="group_id"
@@ -311,8 +293,7 @@ $('#{{error_item}}').modal('show');
             </div>
         </div>
     </div>
-    </div>
-<!-- </div> -->
+</div>
 
 <!-- line modal report -->
 

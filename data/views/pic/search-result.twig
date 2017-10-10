@@ -19,10 +19,8 @@
                         {% else %}
                         <i>{{ pagination.total_data }} pengguna ditemukan</i>
                         {% endif %}
-
                          </a></li>
                     </ul>
-
                     </div>
                 </div>
                 <div class="panel-body" style="padding-top:40px;">
@@ -61,48 +59,42 @@
                                                   </p>
                                                      {% endif %}
                                                  </span>
-                            			  	<!-- <div class="btn btn-primary" style="padding:0">
-                                                <div class="col-lg-12" style="padding-top:4px; padding-bottom:4px"> -->
                                                 <input type="hidden" name="group_id" value="{{ group }}">
-
-                                                    <p class="text-center">
-                                                        <button type="submit" class="btn btn-primary  " name="user_id" value="{{ user.id }}">Tambahkan</button>
-                                                    </p>
-                                                <!-- </div> -->
-                            			  	<!-- </div> -->
-                                        </center>
-                                    <!-- </div> -->
-                            			</div>
-                            	  	</div>
+                                                <p class="text-center">
+                                                    <button type="submit" class="btn btn-primary  " name="user_id" value="{{ user.id }}">Tambahkan</button>
+                                                </p>
+                                            </center>
+                                        </div>
+                                    </div>
                                     {% endfor %}
                                 </form>
 
                             </div>
-                            </div>
                         </div>
                     </div>
+                </div>
                 {% if users != null %}
-                    <nav aria-label="...">
-                        <ul class="pager">
-                            <div class="pagination">
-                                <ul>
-                                    <li class="{% if pagination.current == 1 %}disabled{% endif %}">
-                                        <a href="{{ base_url() }}/pic/search/user?search={{ search }}&group={{ group }}&page={{ pagination.current - 1 }}">
-                                            Sebelumnya</a></li>
-                                            <li class="active"> <a>{{ pagination.current }}</a></li>
-                                            <li class="{% if pagination.current == pagination.total_page %}disabled{% endif %}">
-                                                <a href="{{ base_url() }}/pic/search/user?search={{ search }}&group={{ group }}&page={{ pagination.current + 1 }}">
-                                                    Selanjutnya</a></li>
-                                                </ul>
-                                            </div>
-                                        </ul>
-                                    </nav>
-                {% else %}
-                    <center><em> Pengguna tidak ditemukan </em></center>
-                    <br>
-                {% endif %}
-        </div>
-    </div>
-</div>
+                <nav aria-label="...">
+                    <ul class="pager">
+                        <div class="pagination">
+                            <ul>
+                                <li class="{% if pagination.current == 1 %}disabled{% endif %}">
+                                    <a href="{{ base_url() }}/pic/search/user?search={{ search }}&group={{ group }}&page={{ pagination.current - 1 }}">
+                                        Sebelumnya</a></li>
+                                <li class="active"> <a>{{ pagination.current }}</a></li>
+                                <li class="{% if pagination.current == pagination.total_page %}disabled{% endif %}">
+                                    <a href="{{ base_url() }}/pic/search/user?search={{ search }}&group={{ group }}&page={{ pagination.current + 1 }}">
+                                        Selanjutnya</a></li>
+                                    </ul>
+                                </div>
+                            </ul>
+                        </nav>
+                        {% else %}
+                        <center><em> Pengguna tidak ditemukan </em></center>
+                        <br>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
 
 {% endblock %}

@@ -14,6 +14,10 @@
                     <span align="center" aria-hidden="true">
                         <i class="fa fa-newspaper-o"></i></span> Pencarian
                 </a>
+                <span style="float:left; margin:20px 0px 0px 25px;">
+                    <a class="btn" href="{{path_for('pic.group.member')}}">
+                        <i class="fa fa-angle-double-left" aria-hidden="true">&nbsp&nbsp Kembali</i></a>
+                </span>
                 <div class="panel-body" style="margin-top:40px;">
                     <div class="widget-content tab-content">
                                 <div class="col-lg-12">
@@ -36,8 +40,8 @@
                                 <div id="tab1" class="tab-pane active">
                             <div class="row">
                             	{% for user in users %}
-                                <form class="" action="{{path_for('group.setuser')}}" method="post">
                             		<div class="col-sm-2 col-md-3">
+                                        <form class="" action="{{path_for('group.setuser')}}" method="post">
                             			<div class="panel box-body">
                             			<center><a href="#"><img src="{{ base_url() }}/assets/images/{{ user.image }}"
                             				 height="151" width="151" style="margin-bottom:5px"
@@ -78,11 +82,11 @@
                             <div class="pagination">
                                 <ul>
                                     <li class="{% if pagination.current == 1 %}disabled{% endif %}">
-                                        <a href="{{ base_url() }}/pic/search/user/guard?search={{ search }}&page={{ pagination.current - 1 }}">
+                                        <a href="{{ base_url() }}/pic/group/member/search?search={{ search }}&page={{ pagination.current - 1 }}">
                                             Sebelumnya</a></li>
                                             <li class="active"> <a>{{ pagination.current }}</a></li>
                                             <li class="{% if pagination.current == pagination.total_page %}disabled{% endif %}">
-                                                <a href="{{ base_url() }}/pic/search/user/guard?search={{ search }}&page={{ pagination.current + 1 }}">
+                                                <a href="{{ base_url() }}/pic/group/member/search?search={{ search }}&page={{ pagination.current + 1 }}">
                                                     Selanjutnya</a></li>
                                                 </ul>
                                             </div>

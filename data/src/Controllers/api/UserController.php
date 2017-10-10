@@ -25,8 +25,6 @@ class UserController extends BaseController
         } else {
             return $this->responseDetail(200, false, 'Data kosong');
         }
-
-        // return $data;
     }
 
     //User register
@@ -59,7 +57,7 @@ class UserController extends BaseController
                 $storage = new \Upload\Storage\FileSystem('assets/images');
                 $image = new \Upload\File('image',$storage);
 
-                $image->setName(uniqid('img-'.date('Ymd').'-'));
+                $image->setName(uniqid('usr-'.date('Ymd').'-'));
                 $image->addValidations(array(
                 new \Upload\Validation\Mimetype(array('image/png', 'image/gif',
                 'image/jpg', 'image/jpeg')),
@@ -172,7 +170,7 @@ class UserController extends BaseController
                 $storage = new \Upload\Storage\FileSystem('assets/images');
                 $image = new \Upload\File('image',$storage);
 
-                $image->setName(uniqid('img-'.date('Ymd').'-'));
+                $image->setName(uniqid('usr-'.date('Ymd').'-'));
                 $image->addValidations(array(
                     new \Upload\Validation\Mimetype(array('image/png', 'image/gif',
                     'image/jpg', 'image/jpeg')),
@@ -204,10 +202,8 @@ class UserController extends BaseController
             }
         } else {
             $errors = $this->validator->errors();
-
             return  $this->responseDetail(400, true, $errors);
         }
-
     }
 
     //Delete user account by id
@@ -227,8 +223,6 @@ class UserController extends BaseController
         } else {
             return $this->responseDetail(400, true, 'Akun tidak ditemukan');
         }
-
-        // return $data;
     }
 
     //Delete user account
@@ -249,7 +243,6 @@ class UserController extends BaseController
         } else {
             return $this->responseDetail(400, true, 'Akun tidak ditemukan');
         }
-        // return $data;
     }
 
     //Update user account by id
@@ -280,7 +273,6 @@ class UserController extends BaseController
         } else {
             return $this->responseDetail(404, true, 'Akun tidak ditemukan');
         }
-        // return $data;
     }
 
     //Update user account
@@ -314,7 +306,6 @@ class UserController extends BaseController
         } else {
             return $this->responseDetail(400, true, 'Data tidak ditemukan');
         }
-        // return $data;
     }
 
     //Find User by id
@@ -330,8 +321,6 @@ class UserController extends BaseController
         } else {
             return $this->responseDetail(400, true, 'Akun tidak ditemukan');
         }
-
-        // return $data;
     }
 
     //Find User by id
@@ -351,8 +340,6 @@ class UserController extends BaseController
         } else {
             return $this->responseDetail(400, true, 'Data tidak ditemukan');
         }
-
-        // return $data;
     }
 
     //User login
@@ -386,7 +373,6 @@ class UserController extends BaseController
                 return $this->responseDetail(401, true, 'Password salah');
             }
         }
-        // return $data;
     }
 
     public function activateAccount($request, $response, $args)
@@ -412,16 +398,13 @@ class UserController extends BaseController
             return  $this->view->render($response, 'response/activation.twig', [
                 'message' => 'Token telah kadaluarsa'
             ]);
-            // return $this->responseDetail(400, true, 'Token telah kadaluarsa');
 
         } else{
 
             return  $this->view->render($response, 'response/activation.twig', [
                 'message' => 'Token salah atau anda belum mendaftar'
             ]);
-            // return $this->responseDetail(400, true, 'Anda belum mendaftar');
         }
-
     }
 
     public function logout($request, $response )
@@ -450,8 +433,6 @@ class UserController extends BaseController
         } elseif ($findUser) {
             $token = str_shuffle('r3c0Ve12y').substr(md5(microtime()),rand(0,26),37);
             $tokenId = $registers->setToken($findUser['id'], $token);
-            // $data['new_password'] = substr(md5(microtime()),rand(0,26),17);
-            // $users->changePassword($data, $findUser['id']);
 
             $resetUrl = '<a href ='.$base ."/password/reset/".$token.'>
             <h3>RESET PASSWORD</h3></a>';
@@ -520,7 +501,6 @@ class UserController extends BaseController
         $user = $users->find('id', $findUser['user_id']);
 
         $password = password_verify($request->getParam('password'), $user['password']);
-        // var_dump($request->getParams());die();
 
         if ($password) {
             $this->validator->rule('required', ['new_password', 'password']);
@@ -553,11 +533,10 @@ class UserController extends BaseController
         $token = $request->getHeader('Authorization')[0];
         $user = $userToken->find('token', $token);
         $findUser = $users->find('id', $user['user_id']);
-        // var_dump($findUser);die();
+
         if ($findUser) {
             $this->validator->rule('required', ['name', 'email', 'gender', 'address', 'phone']);
             $this->validator->rule('email', 'email');
-            // $this->validator->rule('alphaNum', 'username');
             $this->validator->rule('numeric', 'phone');
             $this->validator->rule('lengthMin', ['name', 'email'], 5);
             $this->validator->rule('integer', 'id');
@@ -574,7 +553,6 @@ class UserController extends BaseController
         } else {
             return $this->responseDetail(400, true, 'Data tidak ditemukan');
         }
-        // return $data;
     }
 
     public function getResetPassword($request, $response, $args)
@@ -583,7 +561,7 @@ class UserController extends BaseController
         $registers = new \App\Models\RegisterModel($this->db);
 
         $findToken = $registers->find('token', $args['token']);
-        // var_dump($user);die();
+
         if ($findToken) {
             return $this->responseDetail(200, false, 'Token diterima', [
                 'data'  => [

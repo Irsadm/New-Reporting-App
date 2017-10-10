@@ -50,14 +50,9 @@ abstract class BaseController
 			'key'		=> $data['key']
 		];
 
-		// if ($data['pagination'] == null) {
-		// 	unset($response['pagination']);
-		// }
-
 		if ($data['key'] == null) {
 			unset($response['key']);
 		}
-
 		return $this->responseWithJson($response, $code);
 	}
 
@@ -68,7 +63,6 @@ abstract class BaseController
 		$pages = (int) ceil($total / $per_page);
 
 		$start = ($page - 1) * ($per_page);
-		// $offset = $per_page;
 
 		$outArray = array_slice($data, $start, $per_page);
 
@@ -82,7 +76,6 @@ abstract class BaseController
 				'first_page'	=> 1,
 			]
 		];
-
 		return $result;
 	}
 

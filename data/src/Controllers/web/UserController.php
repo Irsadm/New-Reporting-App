@@ -17,7 +17,6 @@ class UserController extends BaseController
 
         $data = json_decode($result->getBody()->getContents(), true);
 
-        // var_dump($data); die();
     }
 
     public function getLogin($request, $response)
@@ -30,7 +29,6 @@ class UserController extends BaseController
 
      public function login($request, $response)
     {
-        // var_dump($request->getParams());die();
         try {
             $result = $this->client->request('POST', 'login',
                 ['form_params' => [
@@ -46,9 +44,7 @@ class UserController extends BaseController
         if ($data['code'] == 200) {
             $_SESSION['key'] = $data['key'];
             $_SESSION['login'] = $data['data'];
-            // if (!empty($request->getParams()['guard'])) {
-            //     $_SESSION['guard'] = $_SESSION['login']['id'];
-            // }
+
             if ($_SESSION['login']['status'] == 2) {
                 $_SESSION['user_group'] = $groups;
                 $this->flash->addMessage('succes', 'Selamat datang, '. $_SESSION['login']['username']);
@@ -63,7 +59,6 @@ class UserController extends BaseController
             return $response->withRedirect($this->router->pathFor('login'));
         }
     }
-
 
     public function logout($request, $response)
     {
@@ -118,8 +113,6 @@ class UserController extends BaseController
 
             $data = json_decode($result->getBody()->getContents(), true);
 
-            // var_dump($data);die();
-
             if ($data['code'] == 201) {
                 $this->flash->addMessage('success', 'Pendaftaran berhasil,
                 silakan cek email anda untuk mengaktifkan akun');
@@ -158,22 +151,16 @@ class UserController extends BaseController
         $page = !$request->getQueryParam('page') ? 1 : $request->getQueryParam('page');
         $perpage = $request->getQueryParam('perpage');
         $result = $user->search($search, $userId)->setPaginate($page, 8);
-        // $page = $result['pagination']['current_page'];
-        // $perpage = $result['pagination']['perpage'];
-
-        // var_dump($result); die();
 
         $data['group'] = $request->getParam('group');
-        // $data['users']    = $this->paginateArray($result['data'], $page, $perpage
         $data['users'] = $result['data'];
         $data['count']    = count($data['users']);
         $data['pagination'] = $result['pagination'];
         $data['search'] = $search;
-        // var_dump($data['users']); die();
+
         if (!empty($data['group'])) {
             return $this->view->render($response, 'pic/search-result.twig', $data);
         }
-
     }
 
     public function viewProfile($request, $response)
@@ -192,7 +179,6 @@ class UserController extends BaseController
 
         $data = json_decode($result->getBody()->getContents(), true);
         $dataGuard = json_decode($guard->getBody()->getContents(), true);
-// var_dump($dataGuard['data']);die();
         return $this->view->render($response, 'users/view-profile.twig', [
             'user'  => $data['data'],
             'guard' => $dataGuard['data']
@@ -313,7 +299,7 @@ class UserController extends BaseController
         }
 
         $data = json_decode($result->getBody()->getContents(), true);
-// var_dump($data);die;
+
         if ($data['error'] == false) {
             $this->flash->addMessage('success', $data['message']);
             return $response->withRedirect($this->router->pathFor('change.password'));
@@ -336,7 +322,7 @@ class UserController extends BaseController
         }
 
         $data = json_decode($result->getBody()->getContents(), true);
-        // var_dump($data);die;
+
         if ($data['error'] == false) {
             $this->flash->addMessage('success', $data['message']);
             return $response->withRedirect($this->router->pathFor('login'));
@@ -362,7 +348,7 @@ class UserController extends BaseController
         }
 
         $data = json_decode($result->getBody()->getContents(), true);
-        // var_dump($data);die;
+
         if ($data['code'] == 200) {
             $this->flash->addMessage('success', $data['message']);
             return $response->withRedirect($this->router->pathFor('login'));
@@ -386,7 +372,7 @@ class UserController extends BaseController
         }
 
         $data = json_decode($result->getBody()->getContents(), true);
-        // var_dump($data);die;
+
         if ($data['error'] == false) {
             $this->flash->addMessage('success', $data['message']);
             return  $this->view->render($response, 'auth/reset-password.twig',[
@@ -397,6 +383,5 @@ class UserController extends BaseController
             return $response->withRedirect($this->router->pathFor('login'));
         }
     }
-
 
 }
