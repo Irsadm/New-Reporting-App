@@ -22,7 +22,7 @@
         <div style="padding:5px;" class="col-md-4" >
             <div class="well dash-box" style="background:#f2f2f2; height: auto; padding:20px 20px 20px 20px;">
             <center>
-                <a href="{{ path_for('get.user.item', {'id': user.id }) }}">
+                <a href="{{ path_for('get.user.item', {'id': user.id }) }}" title="Lihat laporan {{ user.name }}">
                 {% if user.image != null %}
                     <img style="margin-right:17px;" width="146" height="146" alt="Foto"
                     src="{{ base_url() }}/assets/images/{{ user.image }}" onerror=this.src="{{ base_url() }}/assets/images/avatar.png">
@@ -37,7 +37,8 @@
                         <i class="fa fa-sort-desc" aria-hidden="true"></i>
                     </a>
                     <ul style="left: -140px; top: 13px; " class="dropdown-menu">
-                        <li><a style="font-size: small" href="{{ path_for('guard.delete.user', {'id': user.id }) }}"><i class="i"> Hapus anak</i></a></li>
+                        <li><a style="font-size: medium" href="{{ path_for('guard.delete.user', {'id': user.id }) }}">
+                            <i class="fa fa-trash"> Hapus anak</i></a></li>
                     </ul>
                 </div>
                 </span>

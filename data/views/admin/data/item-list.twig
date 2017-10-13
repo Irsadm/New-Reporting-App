@@ -60,6 +60,7 @@
               <th>Nama</th>
               <th>Deskripsi</th>
               <th>Perulangan</th>
+              <th>Status</th>
               <th class="col-md-1">Tindakan</th>
             </tr>
           </thead>
@@ -71,36 +72,73 @@
                 <td> {{ item.description }} </td>
                 <td> {{ item.recurrent }} </td>
                 <td>
-                <a href="" style="color:red"  data-toggle="tooltip" data-placement="top" title="delete"><i class="fa fa-times"></i></a>
-                <a href="" style="color:#179FFC" data-toggle="tooltip" data-placement="top" title="Update"><i class="fa fa-pencil"></i></a>
-                <a href="" style="color:green" data-toggle="tooltip" data-placement="top" title="View detail"><i class="fa fa-eye"></i></a>
+                    {% if item.status == 1 %}
+                    dilaporkan
+                    {% else %}
+                    belum dilaporkan
+                    {% endif %}
+                </td>
+                <td>
+                    <a data-toggle="modal" data-target="#delete{{item.id}}" href="" style="color:red"
+                     data-toggle="tooltip" data-placement="top" title="Hapus item"><i class="fa fa-times"></i></a>
+                &nbsp&nbsp<a href="" style="color:#179FFC" data-toggle="tooltip" data-placement="top" title="Update"><i class="fa fa-pencil"></i></a>
+                <!-- <a href="" style="color:green" data-toggle="tooltip" data-placement="top" title="View detail"><i class="fa fa-eye"></i></a> -->
                 </td>
             </tr>
           {% endfor %}
           </tbody>
         </table>
+    </div><!--end of .table-responsive-->
       </div><!--end of .table-responsive-->
       <nav aria-label="...">
           <ul class="pager">
               {% if pagination.current > pagination.first_page %}
+              {% if pagination.current > 2 %}
               <li class="previous"><a href="{{ base_url() }}/admin/item?page={{ pagination.first_page }}" title="halaman pertama">
                   <i class="fa fa-fast-backward" aria-hidden="true"></i> {{ pagination.first_page }}</a></li>
+            {% endif %}
               <li class=""><a href="{{ base_url() }}/admin/item?page={{ pagination.current - 1 }}" title="halaman sebelumnya">
-                  <i class="fa fa-backward" aria-hidden="true"></i> {{ pagination.current - 1 }}</a></li>
+                  <i class="fa fa-angle-double-left" aria-hidden="true"></i> {{ pagination.current - 1 }}</a></li>
               {% endif %}
               <li class=""><a>{{ pagination.current }}</a></li>
               {% if pagination.current < pagination.total_page %}
               <li class=""><a href="{{ base_url() }}/admin/item?page={{ pagination.current + 1 }}" title="halaman selanjutnya">
-                  {{ pagination.current + 1 }} <i class="fa fa-forward" aria-hidden="true"></i></a></li>
+                  {{ pagination.current + 1 }} <i class="fa fa-angle-double-right" aria-hidden="true"></i></a></li>
+                  {% if pagination.current <  pagination.total_page - 1 %}
               <li class="next"><a href="{{ base_url() }}/admin/item?page={{ pagination.total_page }}" title="halaman terakhir">
                   {{ pagination.total_page }} <i class="fa fa-fast-forward" aria-hidden="true"></i></a></li>
+                  {% endif %}
               {% endif %}
           </ul>
       </nav>
   </div>
   </div>
-</div>
 
-    </div>
+
+  {% for item in data %}
+
+  <!-- Delete Group -->
+  <div class="modal fade" id="delete{{item.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+          <div class="modal-content">
+              <div class="modal-header">
+                  <h3 class="modal-title" id="exampleModalLabel">Hapus Item</h3>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                  </button>
+              </div>
+              <div class="modal-body">
+                  Apakah anda yakin akan menghapus <b>{{item.name}}</b>?
+              </div>
+              <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+                  <a class="btn btn-danger" href="{{path_for('admin.delete.item', {'id':item.id})}}" style="color:"
+                  data-toggle="tooltip" data-placement="top" title="delete">Hapus
+              </a>
+          </div>
+      </div>
+  </div>
 </div>
+{% endfor %}
+
 {% endblock %}

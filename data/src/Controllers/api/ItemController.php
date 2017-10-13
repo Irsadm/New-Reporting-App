@@ -426,20 +426,19 @@ class ItemController extends BaseController
         if ($findItem) {
             if ($userStatus == 1 || $pic == 1 || $userId == $findItem['creator']) {
                 $item->hardDelete($args['id']);
-                if ($findReported[0]) {
+                if (!empty($findReported[0])) {
                     foreach ($findReported as $value) {
                         $reported->hardDelete($value['id']);
                     }
                 }
-                $data = $this->responseDetail(200, false, 'Item telah dihapus');
 
+                return $this->responseDetail(200, false, 'Item telah dihapus');
             } else {
-                $data = $this->responseDetail(401, true, 'Anda tidak berhak menghapus item ini');
+                return $this->responseDetail(401, true, 'Anda tidak berhak menghapus item ini');
             }
         } else {
-            $data = $this->responseDetail(404, true, 'Item tidak ditemukan');
+            return $this->responseDetail(404, true, 'Item tidak ditemukan');
         }
-        return $data;
     }
 
     //Delete item by User

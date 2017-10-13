@@ -2,7 +2,7 @@
 
 {% block title %} Arsip Laporan {% endblock %}
 {% block js %}
-<style >
+<style>
 input[type=search] {
 -moz-appearance:none;
 -webkit-appearance:none;
@@ -43,7 +43,7 @@ Saya
                 </div>
                 <div class="panel-body" style="padding-top:0px;">
                     <div id="tab1" class="tab-pane active"><br><br>
-                        <div class="widget-box">
+                        <div class="table-responsive">
                             <h4 style="margin-left:5px;"><i class="fa fa-list-alt" aria-hidden="true">
                                 Arsip Laporan
                                 {% if query.month != null %}
@@ -111,7 +111,8 @@ Saya
                                     <b>Cari arsip</b></button></span>
                             </div><br>
                             <div class="widget-content nopadding">
-                                <table id="example2" class="display" cellspacing="0" width="100%">
+                            <!-- <table id="example2" class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%"> -->
+                                <table class="table table-bordered data-table">
                                     <thead>
                                         <tr>
                                             <th>Nama</th>
@@ -119,18 +120,18 @@ Saya
                                             <th>Dilaporkan</th>
                                         </tr>
                                     </thead>
-                                    <tr>
                                     <tbody>
                                         {% for key, item in data %}
-                                            <td class="taskDesc">
+                                        <tr>
+                                            <td>
                                                 <a href="{{ base_url() }}/item/show/{{item.id}}"
                                                 title="Lihat detail item">{{ item.name }}</a></td>
-                                                <td>{{ item.grup }}</td>
-                                                <td><span class="in-progress">
+                                            <td><center>{{ item.grup }}</center></td>
+                                            <td><center>
                                                 {{ item.reported_at | date('j-M-Y | H:i')}}
-                                                </span></td>
-                                            </tr>
-                                            {% endfor %}
+                                            </center></td>
+                                        </tr>
+                                        {% endfor %}
                                     </tbody>
                                 </table>
                             </div>
@@ -144,5 +145,8 @@ Saya
 {% for key, item in data %}
 
 {% endfor %}
-
+{% block script %}
+<script src="{{ base_url() }}/js/jquery.dataTables.min.js"></script>
+<script src="{{ base_url() }}/js/matrix.tables.js"></script>
+{% endblock %}
 {% endblock %}

@@ -256,8 +256,8 @@ $(".picker").on("change", function() {
             </div>
             <div class="row">
                 <div class="col-xs-12 col-sm-5 col-md-5">
-                    <div style="height: 50px;" class="form-group {{ errors.start_date ? 'has-error' : '' }} wrap">
-                        <label for="start_date">Tanggal dimulai :</label>
+                    <b>Tanggal dimulai :</b>
+                    <div style="height: 50px; margin-top: 6px;" class="form-group {{ errors.start_date ? 'has-error' : '' }} wrap">
                         <input type="date" name="start_date" value="{{old.start_date}}" class="form-control date">
                         <input class="picker" type="date">
                         <input type="hidden" name="group" value="{{ group.id }}">

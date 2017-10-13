@@ -1,0 +1,115 @@
+{% extends 'admin/template/app.twig' %}
+{% block title %} Admin - User Detail{% endblock %}
+{% block current %}
+    User list > {{user.username}}
+{% endblock %}
+{% block content %}
+<div class="panel panel-primary">
+    <div class="panel-heading main-color-bg">
+        <h3 class="panel-title">User info</h3>
+    </div>
+    <div class="panel-body">
+    <div class="col-xs-12">
+    <div class="col-lg-4">
+        <br>
+        <a href="" data-toggle="modal" data-target="#foto"
+        value="{{user.id}}" title="Ubah foto profil"
+        style="color:#fff;">
+        <img style="width:300px" class="img-thumbnail"
+        src="{{ base_url() }}/assets/images/{{user.image}}"
+        onerror=this.src="{{ base_url() }}/assets/images/avatar.png">
+    </a>
+        <br><br>
+        <div class='wrapper text-center'>
+            <div class="btn-group" role="group">
+                <a class="btn btn-social-button btn-pinterest" href="" data-toggle="modal" data-target="#foto"
+                value="{{user.id}}" title="Ubah foto profil"
+                style="color:#fff;">
+                Ubah foto
+            </a>
+            <a class="btn btn-social-button btn-github"title="Pengaturan profil"
+             style="color:#fff;" href="{{ base_url() }}/user/profile/setting">
+                <i class="fa fa-cogs"></i> Pengaturan
+            </a>
+        </div>
+    </div>
+</div>
+<div class="col-lg-8" style="margin-top:20px; padding-bottom:7px;">
+    <div style="margin: 0px;" class="widget-box">
+        <div class="widget-title">
+            <ul class="nav nav-tabs">
+                <li class="active"><a data-toggle="tab" href="#1">Data diri</a></li>
+                <li><a data-toggle="tab" href="#2">Wali</a></li>
+            </ul>
+        </div>
+        <div style="padding-top:0px;" class="widget-content tab-content">
+            <div id="1" class="tab-pane active"><br>
+                <b><span class="span2">Nama </span></b>{{user.name}}<br><br>
+                <b><span class="span2">Username </span></b>{{user.username}}<br><br>
+                <b><span class="span2">Email </span></b>{{user.email}}<br><br>
+                <b><span class="span2">Jenis Kelamin </span></b>{{user.gender}}<br><br>
+                <b><span class="span2">Alamat </span></b>{{user.address}}<br><br>
+                <b><span class="span2">Telepon </span></b>{{user.phone}}<br><br>
+                <b><span class="span2">Mulai Bergabung</span></b>{{user.created_at | date("j F Y")}}<hr>
+            </div>
+            <div id="2" class="tab-pane">
+                <h4>Daftar Wali Anda
+                    <a class="btn btn-mini btn-bitbucket pull-right"
+                    href="{{ path_for('guard.search', {'search': 2 })}}">
+                    <i class="fa fa-plus"></i>&nbsp; Cari wali</a>
+                </h4>
+                <hr style="margin-top:20px;">
+                {% for guard in guard %}
+                   <a href="#">
+                    {% if guard.image != null %}
+                        <img style="margin-right:17px;" width="100" height="100" alt="User"
+                        src="{{ base_url() }}/assets/images/{{ guard.image }}">
+                    {% else %}
+                        <img style="margin-right:17px;" width="100" height="100" alt="User"
+                        src="{{ base_url() }}/assets/images/avatar.png">
+                    {% endif %}
+                </a>
+                {{guard.username}}
+                    <span style="float: right; top: 1px; ">
+                        <div class="btn-group">
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                            <i class="fa fa-sort-desc" aria-hidden="true"></i>
+                        </a>
+                        <ul style="left: -140px; top: 13px; " class="dropdown-menu">
+                            <li class="divider"></li>
+                            <li><a style="font-size: small" href="{{ path_for('guard.delete', {'id': guard.id }) }}">
+                                <i class="i"> Hapus wali</i></a></li>
+                        </ul>
+                    </div>
+                </span><br><br>
+                    {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+                <!-- </td> -->
+      <!-- </div><!--end of .table-responsive-->
+      <nav aria-label="...">
+          <ul class="pager">
+              {% if pagination.current > pagination.first_page %}
+              <li class="previous"><a href="{{ base_url() }}/admin/user?page={{ pagination.first_page }}" title="halaman pertama">
+                  <i class="fa fa-fast-backward" aria-hidden="true"></i> {{ pagination.first_page }}</a></li>
+              <li class=""><a href="{{ base_url() }}/admin/user?page={{ pagination.current - 1 }}" title="halaman sebelumnya">
+                  <i class="fa fa-backward" aria-hidden="true"></i> {{ pagination.current - 1 }}</a></li>
+              {% endif %}
+              <li class=""><a>{{ pagination.current }}</a></li>
+              {% if pagination.current < pagination.total_page %}
+              <li class=""><a href="{{ base_url() }}/admin/user?page={{ pagination.current + 1 }}" title="halaman selanjutnya">
+                  {{ pagination.current + 1 }} <i class="fa fa-forward" aria-hidden="true"></i></a></li>
+              <li class="next"><a href="{{ base_url() }}/admin/user?page={{ pagination.total_page }}" title="halaman terakhir">
+                  {{ pagination.total_page }} <i class="fa fa-fast-forward" aria-hidden="true"></i></a></li>
+              {% endif %}
+          </ul>
+      </nav>
+  </div>
+</div>
+</div>
+
+    </div>
+</div>
+{% endblock %}

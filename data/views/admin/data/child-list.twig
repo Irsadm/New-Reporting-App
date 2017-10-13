@@ -30,7 +30,14 @@
             {% for key, user in data %}
             <tr>
                 <td> {{ key + 1 + (pagination.perpage * (pagination.current - 1)) }}</td>
-                <td> {{ user.name }} </td>
+                <td>
+                    <a href="" data-toggle="modal" data-target="#{{user.id}}" style="color:green" value="{{member.id}}" title="Lihat detail">
+                    {% if user.name is null %}
+                    {{ user.username }}
+                    {% else %}
+                    {{ user.name }}
+                    {% endif %}</a>
+                </td>
                 <td> {{ user.gender }} </td>
                 <td> {{ user.email }} </td>
                 <td> {{ user.phone }} </td>
@@ -43,29 +50,67 @@
           {% endfor %}
           </tbody>
         </table>
-
-      </div><!--end of .table-responsive-->
-      <nav aria-label="...">
-          <ul class="pager">
-              {% if pagination.current > pagination.first_page %}
-              <li class="previous"><a href="{{ base_url() }}/admin/child?page={{ pagination.first_page }}" title="halaman pertama">
-                  <i class="fa fa-fast-backward" aria-hidden="true"></i> {{ pagination.first_page }}</a></li>
-              <li class=""><a href="{{ base_url() }}/admin/child?page={{ pagination.current - 1 }}" title="halaman sebelumnya">
-                  <i class="fa fa-backward" aria-hidden="true"></i> {{ pagination.current - 1 }}</a></li>
-              {% endif %}
-              <li class=""><a>{{ pagination.current }}</a></li>
-              {% if pagination.current < pagination.total_page %}
-              <li class=""><a href="{{ base_url() }}/admin/child?page={{ pagination.current + 1 }}" title="halaman selanjutnya">
-                  {{ pagination.current + 1 }} <i class="fa fa-forward" aria-hidden="true"></i></a></li>
-              <li class="next"><a href="{{ base_url() }}/admin/child?page={{ pagination.total_page }}" title="halaman terakhir">
-                  {{ pagination.total_page }} <i class="fa fa-fast-forward" aria-hidden="true"></i></a></li>
-              {% endif %}
-          </ul>
-      </nav>
-    </div>
-  </div>
+    </div><!--end of .table-responsive-->
 </div>
 
+{% if data == null %}
+<center><h4>Tidak ada data</h4></center><hr>
+{% else %}
+<nav aria-label="...">
+    <ul class="pager">
+        <div class="pagination">
+            {% if pagination.current > 1 %}
+            <li><a href="{{ base_url() }}/admin/group/{{group_id}}/members?page={{ pagination.current - 1 }}">
+                Sebelumnya</a></li>
+                {% endif %}
+                <li class="active"> <a>{{ pagination.current }}</a></li>
+                {% if pagination.current < pagination.total_page %}
+                <li><a href="{{ base_url() }}/admin/group/{{group_id}}/members?page={{ pagination.current + 1 }}">
+                    Selanjutnya</a></li>
+                    {% endif %}
+                </div>
+            </ul>
+        </nav>
+        {% endif %}
     </div>
 </div>
+
+{% for user in data %}
+<div class="modal fade" id="{{user.id}}" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+<div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">
+                <span aria-hidden="true">×</span><span class="sr-only">Close</span></button>
+                <h3 class="modal-title" id="lineModalLabel">Detail Anak</h3>
+            </div>
+            <div class="modal-body">
+                <!-- modal content -->
+                {% if user.image != null %}
+                <center><img width="30%" alt="User"
+                    src="{{ base_url() }}/assets/images/{{ user.image }}"
+                    onerror=this.src="{{ base_url() }}/assets/images/avatar.png"></center>
+                {% else %}
+                <center><img width="30%" alt="User"
+                    src="{{ base_url() }}/assets/images/avatar.png"></center>
+                {% endif %}
+                <br>
+                <b><span class="span2"> Nama </span></b>
+                {{user.name}}<br>
+                <b><span class="span2"> Username </span></b>
+                {{user.username}} <br>
+                <b><span class="span2"> Jenis Kelamin </span></b>
+                {{user.gender}} <br>
+                <b><span class="span2"> Email </span></b>
+                {{user.email}} <br>
+                <b><span class="span2"> Nomor Telepon </span></b>
+                {{user.phone}} <br>
+                <b><span class="span2"> Alamat </span></b>
+                {{user.address}} <hr>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
 {% endblock %}

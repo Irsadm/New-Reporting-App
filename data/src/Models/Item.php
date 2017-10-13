@@ -108,7 +108,7 @@ class Item extends BaseModel
             ->where('user_id = '. $userId .'&& group_id = '. $groupId)
             ->orWhere('group_id = '. $groupId . '&& user_id is NULL')
             ->andWhere('deleted = 0 && status = 0')
-            ->orderBy('i.end_date', 'asc')
+            ->orderBy('end_date', 'asc')
             ->groupBy('id');
         }
         // var_dump($this->fetchAll());die;

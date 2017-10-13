@@ -1,8 +1,8 @@
 {% extends 'templates/default.twig' %}
 
-{% block title %} Group {% endblock %}
+{% block title %} Daftar tugas {% endblock %}
 
-{% block current %} Group {{group.name}} > Item belum dilaporkan {% endblock %}
+{% block current %} {{user.name}} > Item belum dilaporkan {% endblock %}
 {% block script %}
 {% if errors.description %}
 <script type="text/javascript">
@@ -22,7 +22,7 @@ $('#{{error_item}}').modal('show');
                           <a href="{{ path_for('reported.item.user') }}" class="btn btn-primary">Dilaporkan</a>
                        </div>
                    </div>
-            </div>
+               </div>
                 <div class="panel-body" style="padding:0px;">
                     <div class="widget-content tab-content">
                         <div id="tab1" class="tab-pane active">
@@ -72,13 +72,12 @@ $('#{{error_item}}').modal('show');
                                        {% if user.id == login.id  %}
                                       <td>
                                           <center>
-                                          <a href="" data-toggle="modal" data-target="#{{item.id}}"
-                                          value="{{item.id}}"title="Laporkan {{item.name}}"
-                                          style="margin-bottom:7px">
-                                          <button class="btn btn-success btn-md"
-                                          style="margin-right:10px">Laporkan</button>
-                                      </center>
-                                      </a>
+                                          <a href="" class="btn btn-success"  data-toggle="modal"
+                                           data-target="#{{item.id}}" value="{{item.id}}"
+                                           title="Laporkan {{item.name}}" style="font-size: 17px">
+                                           <i class="fa fa-check-circle"></i>
+                                       </a>
+                                  </center>
                                   </td>
                                   {% endif %}
                               </tr>
@@ -116,7 +115,7 @@ $('#{{error_item}}').modal('show');
 </div>
 </div>
 
-{# {% for key, item in data %}
+ {% for key, item in data %}
 
 <div id="{{item.id}}" class="modal fade" role="dialog">
     <div class="modal-dialog">
@@ -124,7 +123,7 @@ $('#{{error_item}}').modal('show');
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal">
                     <span aria-hidden="true">×</span><span class="sr-only">Tutup</span></button>
-                <h3 class="modal-title" id="lineModalLabel">Form laporan tugas</h3>
+                <h3 class="modal-title" id="lineModalLabel">Laporkan {{item.name}}</h3>
             </div>
             <div class="modal-body">
 
@@ -160,11 +159,12 @@ $('#{{error_item}}').modal('show');
                             <textarea style="text-transform: capitalize;" rows="5"
                              name="description" class="form-control"
                             value="{{ item.description }}">{{ item.description }}</textarea>
-                                    <!-- <input type="text" name="description" class="form-control" id="coba"> -->
                             <input type="hidden" id="data-id" name="item_id"
                              value="{{ item.id }}">
                              <input type="hidden" id="data-id" name="group_id"
                               value="{{ item.group_id }}">
+                             <input type="hidden" id="data-id" name="user_item"
+                              value="1">
                             {% if errors.description %}
                             <span class="help-block">{{ errors.description | first }}</span>
                             {% endif %}
@@ -187,8 +187,8 @@ $('#{{error_item}}').modal('show');
             </div>
         </div>
     </div>
-</div> #}
+</div>
 
-{# {% endfor %} #}
+{% endfor %}
 
 {% endblock %}

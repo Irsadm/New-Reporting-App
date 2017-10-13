@@ -268,16 +268,17 @@ class ItemController extends BaseController
 
             if ($content['error'] == false) {
                 $this->flash->addMessage('success', $content['message']);
-                return $response->withRedirect($this->router->pathFor('unreported.item.user.group'));
             } else {
                 $this->flash->addMessage('error', $content['message']);
-
-                return $response->withRedirect($this->router->pathFor('unreported.item.user.group'));
             }
         } else {
             $_SESSION['errors'] = $this->validator->errors();
             $_SESSION['old'] = $request->getParams();
             $_SESSION['error_item'] = $request->getParam('item_id');
+        }
+        if ($request->getParam('user_item') == "1") {
+            return $response->withRedirect($this->router->pathFor('all-unreported.item.user'));
+        } else {
             return $response->withRedirect($this->router->pathFor('unreported.item.user.group'));
         }
     }
@@ -473,7 +474,7 @@ class ItemController extends BaseController
             $result = $e->getResponse();
         }
         $data= json_decode($result->getBody()->getContents(), true);
-
+// var_dump($data);die;
         return $this->view->render($response, 'users/item/reported.twig', [
             'data'			=>	$data['data'],
             'pagination'	=>	$data['pagination'],

@@ -15,6 +15,7 @@ $app->group('/api', function() use ($app, $container) {
     $app->group('', function() use ($app, $container) {
         $app->post('/comment', 'App\Controllers\api\CommentController:createComment')->setname('api.post.comment');
         $app->get('/comment/delete/{id}', 'App\Controllers\api\CommentController:deleteComment')->setname('api.delete.comment');
+
     $app->group('/item', function() use ($app, $container) {
         $app->get('', 'App\Controllers\api\ItemController:all')->setname('api.item.all');
         $app->get('/{id}', 'App\Controllers\api\ItemController:getItemDetail')->setname('api.item.Detail');
@@ -51,7 +52,8 @@ $app->group('/api', function() use ($app, $container) {
         $this->get('/detail/{id}', 'App\Controllers\api\UserController:findUser')->setName('api.detail.user');
         $this->get('/groups', 'App\Controllers\api\GroupController:getGeneralGroup');
         $this->post('/{id}/change-image', 'App\Controllers\api\UserController:postImage')->setname('api.user.image');
-        $app->get('/timeline/{id}', 'App\Controllers\api\ItemController:userTimeline')->setname('api.item.timeline');
+        $this->get('/timeline/{id}', 'App\Controllers\api\ItemController:userTimeline')->setname('api.item.timeline');
+        $this->get('/delete/{id}', 'App\Controllers\api\UserController:deleteUser')->setname('api.delete.user');
     });
 
     $app->group('/group', function() use ($app, $container) {

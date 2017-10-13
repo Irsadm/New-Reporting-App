@@ -48,7 +48,7 @@ class CronJob
                         'user_id' => $value['id'],
                         'date'    => date('Y-m-d', strtotime($now. '-1 day'))
                     ];
-                    $unreported->create($data);
+                    // $unreported->create($data);
                 }
             }
         }
@@ -81,11 +81,14 @@ class CronJob
                 $data['end_date'] = '';
             }
 
-            $item->updateData($data, $val['id']);
-            $reported = $reportedItem->find('item_id', $val['id']);
-
-            if ($reported) {
-                $reportedItem->hardDelete($reported['id']);
+            // $item->updateData($data, $val['id']);
+            $reported = $reportedItem->findTwo('item_id', $val['id'], 'item_id', $val['id']);
+// var_dump($reported[0]);die;
+            if ($reported[0]) {
+                foreach ($reported as $valItem) {
+                    // var_dump($valItem);die;
+                    $reportedItem->hardDelete($valItem['id']);
+                }
             }
         }
     }

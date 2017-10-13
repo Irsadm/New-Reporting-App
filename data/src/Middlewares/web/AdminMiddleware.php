@@ -15,9 +15,9 @@ class AdminMiddleware extends BaseMiddleware
 
             return $response;
         } else {
-            $this->container->flash->addMessage('warning', 'You aren\'t authorized to access this page!');
+            $this->container->flash->addMessage('warning', 'Anda login sebagai admin untuk mengakses halaman ini!');
 
-            return $response->withRedirect($this->container->router->pathFor('home'));
+            return $response->withRedirect($this->container->router->pathFor('login.admin'));
         }
     }
 }

@@ -14,7 +14,6 @@ class GroupController extends BaseController
 	//Get active Group
 	public function index($request, $response)
 	{
-		$query = $request->getQueryParams();
         try {
             $result = $this->client->request('GET', 'group/list'.$request->getUri()->getQuery());
         } catch (GuzzleException $e) {
@@ -347,7 +346,7 @@ class GroupController extends BaseController
 						$this->router->pathFor('api.getPicGroup'));
 			$client = $client->getBody()->getContents();
 			$content = json_decode($client);
-			var_dump($content);die();
+			// var_dump($content);die();
 		} catch (GuzzleException $e) {
 			$content = json_decode($e->getResponse()->getBody()->getContents());
 			$this->flash->addMessage('error', 'Data tidak ditemukan');
@@ -358,7 +357,6 @@ class GroupController extends BaseController
 	//Post create group
 	public function createByUser($request, $response)
 	{
-		$query = $request->getQueryParams();
 		try {
             $result = $this->client->request('POST', 'group/pic/create',
                 ['query' => [
@@ -394,7 +392,6 @@ class GroupController extends BaseController
 
 	public function searchGroup($request, $response)
     {
-        $query = $request->getQueryParams();
 		try {
             $result = $this->client->request('POST', 'group/search',
                 ['query' => [

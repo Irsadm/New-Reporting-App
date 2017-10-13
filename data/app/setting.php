@@ -2,7 +2,7 @@
 
 return [
 	//setting display error
-	'displayErrorDetails'	=> true,
+	'displayErrorDetails'	=> false,
 
 	'addContentLengthHeader' => false,
 

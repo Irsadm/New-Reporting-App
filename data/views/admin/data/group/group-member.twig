@@ -1,7 +1,7 @@
 {% extends 'admin/template/app.twig' %}
-{% block title %} Admin - GroupMember {% endblock %}
+{% block title %} Admin - Member {{group.name}} {% endblock %}
 {% block current %}
-    Group member list
+    {{group.name}} > Member
 {% endblock %}
 {% block content %}
 <div class="panel panel-primary">
@@ -22,10 +22,12 @@
             </tr>
           </thead>
           <tbody>
-            {% for member in data %}
+            {% for key, member in data %}
             <tr>
-                <td> {{ loop.index }}</td>
-                <td> {{ member.name }} </td>
+                <td>{{ (pagination.current - 1) * pagination.perpage + (key + 1) }}</td>
+                <td>
+                <a href="" data-toggle="modal" data-target="#{{member.id}}" style="color:green" value="{{member.id}}" title="Lihat detail">
+                {{ member.name }} </a></td>
                 <td> {{ member.gender }} </td>
                 <td> {{ member.email }} </td>
                 <td>
@@ -36,79 +38,105 @@
                 {% elseif member.status_member == 2 %}
                     <center><span class="label label-success" style="border-radius:10%">Wali</span></center>
                 {% endif %}
-                    </td>
+                </td>
                 <td>
-                <a href="" style="color:red"  data-toggle="tooltip" data-placement="top" title="delete"><i class="fa fa-times"></i></a>
-                <a href="" data-toggle="tooltip" data-placement="top" title="Set PIC"><i class="fa fa-male"></i></a>
-                <a href="" data-toggle="modal" data-target="#{{member.id}}" style="color:green" value="{{member.id}}" title="View detail"><i class="fa fa-eye"></i></a>
+                    <a data-toggle="modal" data-target="#delete{{member.id}}" href="" style="color:red"
+                     data-toggle="tooltip" data-placement="top" title="hapus"><i class="fa fa-times"></i></a>
+                    <!-- <a href="{{path_for('web.pic.set.status', {'id':member.id, 'group':group_id})}}"
+                     data-toggle="tooltip" data-placement="top" title="Set PIC"><i class="fa fa-user-secret"></i></a>
+                    <a href="{{path_for('web.pic.set.as.member', {'id':member.id, 'group':group_id})}}"
+                     data-toggle="tooltip" data-placement="top" title="Set sebagai member"><i class="fa fa-user-o"></i></a> -->
                 </td>
             </tr>
-          </tbody>
-         <!-- line modal -->
-<div class="modal fade" id="{{member.id}}" tabindex="-1" role="dialog"
- aria-labelledby="modalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">
-                    <span aria-hidden="true">×</span><span class="sr-only">Close</span></button>
+      {% endfor %}
+  </tbody>
+  </table>
+</div>
+
+{% if data == null %}
+<center><h4>Tidak ada data</h4></center><hr>
+{% else %}
+<nav aria-label="...">
+    <ul class="pager">
+        <div class="pagination">
+                {% if pagination.current > 1 %}
+                <li><a href="{{ base_url() }}/admin/group/{{group_id}}/members?page={{ pagination.current - 1 }}">
+                    Sebelumnya</a></li>
+                {% endif %}
+                <li class="active"> <a>{{ pagination.current }}</a></li>
+                {% if pagination.current < pagination.total_page %}
+                <li><a href="{{ base_url() }}/admin/group/{{group_id}}/members?page={{ pagination.current + 1 }}">
+                    Selanjutnya</a></li>
+                    {% endif %}
+            </div>
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+</div>
+
+<!-- line modal -->
+{% for member in data %}
+<div class="modal fade" id="{{member.id}}" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+<div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">
+                <span aria-hidden="true">×</span><span class="sr-only">Close</span></button>
                 <h3 class="modal-title" id="lineModalLabel">Detail User Member Group</h3>
             </div>
             <div class="modal-body">
 
                 <!-- modal content -->
                 {% if member.image != null %}
-                   <!--  <img  style="margin-right:10px;" width="75" height="75" alt="User"
-                    src="{{ base_url() }}/assets/images/{{ member.image }}"> -->
-                     <center><img width="30%" alt="User"
-                    src="{{ base_url() }}/assets/images/avatar.jpg"></center>
+                <center><img width="30%" alt="User"
+                    src="{{ base_url() }}/assets/images/{{ member.image }}"
+                    onerror=this.src="{{ base_url() }}/assets/images/avatar.png"></center>
                 {% else %}
-                    <center><img width="30%" alt="User"
-                    src="{{ base_url() }}/assets/images/avatar.jpg"></center>
+                <center><img width="30%" alt="User"
+                    src="{{ base_url() }}/assets/images/avatar.png"></center>
                 {% endif %}
                 <br>
-                <b> Nama :  </b>
-                    {{member.name}}<br>
-                 <b> Username :  </b>
-                    {{member.username}} <br>
-                 <b> Jenis Kelamin :  </b>
-                    {{member.gender}} <br>
-                 <b> Email :  </b>
-                    {{member.email}} <br>
-                 <b> Nomor Telepon :  </b>
-                    {{member.phone}} <br>
-                 <b> Alamat :  </b>
-                    {{member.address}} <br>
+                <span class="span2"><b> Nama </span>:</b>
+                {{member.name}}<br>
+                <span class="span2"><b> Username </span>:</b>
+                {{member.username}} <br>
+                <span class="span2"><b> Jenis Kelamin </span>:</b>
+                {{member.gender}} <br>
+                <span class="span2"><b> Email </span>:</b>
+                {{member.email}} <br>
+                <span class="span2"><b> Nomor Telepon </span>:</b>
+                {{member.phone}} <br>
+                <span class="span2"><b> Alamat </span>:</b>
+                {{member.address}} <hr>
+            </div>
         </div>
     </div>
 </div>
-                          </ul>
-                </nav>
-                </td>
+
+<!-- Delete Member -->
+<div class="modal fade" id="delete{{member.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title" id="exampleModalLabel">Hapus Member</h3>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
       </div>
-      <!--end of .table-responsive-->
-          {% endfor %}
+      <div class="modal-body">
+        Apakah anda yakin akan mengeluarkan <b>{{member.username}}</b> dari <b>{{group.name}}</b>?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+        <a class="btn btn-danger" href="{{path_for('admin.delete.member', {'user':member.id})}}" style="color:"
+        data-toggle="tooltip" data-placement="top" title="delete">Keluarkan {{member.username}}
+    </a>
+      </div>
     </div>
   </div>
-        </table>
-        <nav aria-label="...">
-                    <ul class="pager">
-                        {% if pagination.current > pagination.first_page %}
-                            <li class="previous"><a href="{{ base_url() }}/admin/group/1/members?page={{ pagination.first_page }}">
-                                <span aria-hidden="true">&larr;</span> Halaman pertama</a></li>
-                            <li class="previous"><a href="{{ base_url() }}/admin/group/1/members?page={{ pagination.current - 1 }}">
-                                <span aria-hidden="true">&larr;</span> Kembali</a></li>
-                        {% endif %}
-                        {% if pagination.current < pagination.total_page %}
-                            <li class="next"><a href="{{ base_url() }}/admin/group/1/members?page={{ pagination.total_page }}">
-                                Halaman terakhir <span aria-hidden="true">&rarr;</span></a></li>
-                            <li class="next"><a href="{{ base_url() }}/admin/group/1/members?page={{ pagination.current + 1 }}">
-                                Selanjutnya <span aria-hidden="true">&rarr;</span></a></li>
-                        {% endif %}
-
-
 </div>
 
-    </div>
-</div>
+{% endfor %}
+
 {% endblock %}

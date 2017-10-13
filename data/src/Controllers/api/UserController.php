@@ -209,19 +209,27 @@ class UserController extends BaseController
     //Delete user account by id
     public function deleteUser($request, $response, $args)
     {
-        $user = new UserModel($this->db);
-        $findUser = $user->find('id', $args['id']);
+        $users = new UserModel($this->db);
+
+        $findUser = $users->find('id', $args['id']);
         $token = $request->getHeader('Authorization')[0];
+        $user = $users->getUserByToken($token);
 
         if ($findUser) {
-            if (file_exists('assets/images/'.$findUser['image'])) {
-                unlink('assets/images/'.$findUser['image']);
+            if ($findUser['id'] == $user['id'] || $user['status'] == 1) {
+                if (!empty($findUser['image'])) {
+                    if (file_exists('assets/images/'.$findUser['image'])) {
+                        unlink('assets/images/'.$findUser['image']);
+                    }
+                }
+                $deleteUser = $users->hardDelete($args['id']);
+                return $this->responseDetail(200, false, 'Akun berhasil dihapus');
+            } else {
+                return $this->responseDetail(401, true, 'Anda tidak mempunyai wewenang untuk menghapus akun ini');
+
             }
-            $user->hardDelete($args['id']);
-            $data['id'] = $args['id'];
-            return $this->responseDetail(200, false, 'Akun berhasil dihapus');
         } else {
-            return $this->responseDetail(400, true, 'Akun tidak ditemukan');
+            return $this->responseDetail(404, true, 'Akun tidak ditemukan');
         }
     }
 

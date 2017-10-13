@@ -117,15 +117,30 @@ $app->group('', function() use ($app, $container) {
     $app->group('/admin', function() use ($app, $container) {
         $app->get('/home', 'App\Controllers\web\AdminController:index')->setName('admin.dashboard');
         $app->get('/guard', 'App\Controllers\web\AdminController:guardList')->setName('admin.guard.list');
-        $app->get('/user', 'App\Controllers\web\AdminController:userList')->setName('admin.user.list');
-        $app->get('/item', 'App\Controllers\web\AdminController:getAllItem')->setName('admin.item.list');
         $app->get('/child', 'App\Controllers\web\AdminController:childList')->setName('admin.child.list');
 
-    $app->group('/group', function() use ($app, $container) {
-        $app->get('', 'App\Controllers\web\AdminController:groupList')->setName('admin.group.list');
-        $app->get('/{id}/members', 'App\Controllers\web\AdminController:getAllUserInGroup')->setName('admin.group.member');
-        $app->get('/user', 'App\Controllers\web\AdminController:getAllUserGroup')->setName('admin.group.user');
-        $app->get('/addMember/{id}', 'App\Controllers\web\AdminController:getAddMember')->setName('admin.group.add.member');
+        $app->group('/item', function() use ($app, $container) {
+            $app->get('', 'App\Controllers\web\AdminController:getAllItem')->setName('admin.item.list');
+            $app->get('/delete/{id}', 'App\Controllers\web\AdminController:deleteItem')->setName('admin.delete.item');
+
         });
-    });
+
+        $app->group('/user', function() use ($app, $container) {
+            $app->get('', 'App\Controllers\web\AdminController:userList')->setName('admin.user.list');
+            $app->get('/detail/{id}', 'App\Controllers\web\AdminController:detailUser')->setName('admin.user.detail');
+            $app->get('/delete/{id}', 'App\Controllers\web\AdminController:deleteUser')->setName('admin.delete.user');
+
+        });
+
+        $app->group('/group', function() use ($app, $container) {
+            $app->get('', 'App\Controllers\web\AdminController:groupList')->setName('admin.group.list');
+            $app->get('/{id}/members', 'App\Controllers\web\AdminController:getMemberGroup')->setName('admin.group.member');
+            $app->get('/user', 'App\Controllers\web\AdminController:getAllUserGroup')->setName('admin.group.user');
+            $app->get('/addMember/{id}', 'App\Controllers\web\AdminController:getAddMember')->setName('admin.group.add.member');
+            $app->post('/create', 'App\Controllers\web\AdminController:createGroup')->setName('admin.create.group');
+            $app->get('/delete/{id}', 'App\Controllers\web\AdminController:deleteGroup')->setName('admin.delete.group');
+            $app->post('/update', 'App\Controllers\web\AdminController:updateGroup')->setName('admin.update.group');
+            $app->get('/member/delete/{user}', 'App\Controllers\web\AdminController:deleteMember')->setName('admin.delete.member');
+        });
+    })->add(new \App\Middlewares\web\AdminMiddleware($container));
 })->add(new \App\Middlewares\web\AuthMiddleware($container));
